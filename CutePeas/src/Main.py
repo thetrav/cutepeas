@@ -12,10 +12,7 @@ class Game:
         self.screen = pygame.display.get_surface()
         
         self.images = {}
-        
-        cacheImage(self.images, "Background")
-        cacheImage(self.images, "Gold-Ball")
-        cacheImage(self.images, "Happy-Points")
+        loadImages(self.images)
     
     def handleInput(self, events):
         for event in events:
@@ -33,13 +30,14 @@ class Game:
     
     def render(self, screen):
         screen.blit(self.images["Background"], (0,0))
+        screen.blit(self.images["Tool-Background"], (720, 10))
         self.button.render(screen)
         screen.blit(self.images["Gold-Ball"], (400,500))
         
         pygame.display.flip()
         
     def main(self):
-        self.button = Button(loadImage("up"), loadImage("down"), 50, 50, 200, 200)
+        self.button = Button(self.images["Tool-StandardBlock"], self.images["Tool-StandardBlock"], 50, 50, 47, 47)
         
         while True:
             self.handleInput(pygame.event.get())
