@@ -1,5 +1,7 @@
 import pygame
 
+images = {}
+
 def loadImage(name, colorkey=None):
     fullname = '../data/images/' + name + '.png'
     try:
@@ -12,12 +14,12 @@ def loadImage(name, colorkey=None):
 def cacheImage(cache, name):
     cache[name] = loadImage(name)
     
-def loadImages(cache):
-    images = ("Background",
+def loadImages():
+    imageStrings = ("Background",
               "Gold-Ball",
               "Happy-Points",
               "Tool-StandardBlock",
               "Tool-Background")
-    for image in images:
-        cacheImage(cache, image)
+    for image in imageStrings:
+        cacheImage(images, image)
     
