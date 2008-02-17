@@ -29,7 +29,10 @@ def loadImages():
               "Tool-RightRamp", 
               "Tool-Spring",
               "Pointer-Standard",
-              "Plate")
+              "Pointer-Delete",
+              "Plate",
+              "Block-Place-Normal",
+              "Block-Place-Gel")
     for image in imageStrings:
         cacheImage(images, image)
     
