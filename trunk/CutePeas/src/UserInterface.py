@@ -4,18 +4,56 @@ from pygame.locals import *
 from Button import Button
 from Images import images
 
+LEFT = 1
+RIGHT = 3
+
+def newButton(image, yPos):
+    return Button(images["Tool-"+image], images["Tool-"+image], images["Tool-Selected"], 725, yPos, 47, 47)
+
 class UserInterface:
     def __init__(self):
-        self.button = Button(images["Tool-StandardBlock"], images["Tool-StandardBlock"], 725, 15, 47, 47)
-    
+        self.selectedButton = None
+        yStart = 15
+        spacing = 50
+        
+        self.buttons = (
+                        newButton("Delete", yStart),
+                        newButton("GelBlock", yStart + spacing),
+                        newButton("StandardBlock", yStart + spacing*2),
+                        newButton("LeftRamp", yStart + spacing*3),
+                        newButton("RightRamp", yStart + spacing*4),
+                        newButton("Spring", yStart + spacing*5),
+                        )
+        
+        for button in self.buttons:
+            button.addListener(self)
+        
     def render(self, screen):
         screen.blit(images["Tool-Background"], (720, 10))
-        self.button.render(screen)
+        for button in self.buttons:
+            button.render(screen)
     
     def handleEvent(self, event):
         if event.type == MOUSEMOTION:
-            self.button.mouseMotion(event)
+            for button in self.buttons:
+                button.mouseMotion(event)
         elif event.type == MOUSEBUTTONDOWN:
-            self.button.mouseDown(event)
+            if event.button == LEFT:
+                for button in self.buttons:
+                    button.mouseDown(event)
+            elif event.button == RIGHT and self.selectedButton:
+                self.deSelectEvent()
         elif event.type == MOUSEBUTTONUP:
-            self.button.mouseUp(event)
+            for button in self.buttons:
+                button.mouseUp(event)
+            
+    def buttonFired(self, button):
+        self.deSelectEvent()
+        button.select()
+        self.selectedButton = button
+        
+    def deSelectEvent(self):
+        if self.selectedButton:
+            self.selectedButton.deSelect()
+            self.selectedButton = None
+            

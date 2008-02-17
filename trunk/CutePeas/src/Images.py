@@ -15,11 +15,19 @@ def cacheImage(cache, name):
     cache[name] = loadImage(name)
     
 def loadImages():
-    imageStrings = ("Background",
-              "Gold-Ball",
-              "Happy-Points",
-              "Tool-StandardBlock",
-              "Tool-Background")
+    imageStrings = ("Background", 
+              "Gold-Ball", 
+              "Happy-Points", 
+              "Tool-StandardBlock", 
+              "Tool-Background", 
+              "Tool-Selected", 
+              "Tool-GelBlock", 
+              "Tool-Delete", 
+              "Tool-GelBlock", 
+              "Tool-StandardBlock", 
+              "Tool-LeftRamp", 
+              "Tool-RightRamp", 
+              "Tool-Spring")
     for image in imageStrings:
         cacheImage(images, image)
     

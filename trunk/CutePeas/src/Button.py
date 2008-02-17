@@ -1,21 +1,24 @@
 class Button:
-    def __init__(self, buttonUpImage, buttonDownImage, x, y, width, height):
+    def __init__(self, buttonUpImage, buttonDownImage, selectedImage, x, y, width, height):
         self.listeners = []
         self.buttonDown = False
         self.mouseHover = False
+        self.selected = False
         self.upImage = buttonUpImage
         self.downImage = buttonDownImage
+        self.selectedImage = selectedImage
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         
     def render(self, screen):
-        screen.blit(self.downImage if self.buttonDown else self.upImage, (self.x, self.y))
+        screen.blit(self.downImage if self.buttonDown else self.upImage, (self.x+2, self.y+2))
+        if self.selected:
+            screen.blit(self.selectedImage, (self.x, self.y))
     
     def mouseDown(self, event):
         self.buttonDown = True if self.mouseHover else False
-        print "mouseDown="+str(self.buttonDown)
     
     def mouseUp(self, event):
         if self.mouseHover and self.buttonDown :
@@ -36,19 +39,20 @@ class Button:
     
     def mouseEnter(self):
         self.mouseHover = True
-        print "mouse entered"
     
     def mouseExit(self):
         self.mouseHover = False
-        print "mouse exited"
     
     def fireEvent(self):
-        print "firing event"
         for listener in self.listeners:
             listener.buttonFired(self)
             
     def addListener(self, listener):
         self.listeners.append(listener)
     
+    def deSelect(self):
+        self.selected = False
     
+    def select(self):
+        self.selected = True
     
