@@ -28,7 +28,8 @@ def loadImages():
               "Tool-LeftRamp", 
               "Tool-RightRamp", 
               "Tool-Spring",
-              "Pointer-Standard")
+              "Pointer-Standard",
+              "Plate")
     for image in imageStrings:
         cacheImage(images, image)
     

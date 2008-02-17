@@ -24,6 +24,7 @@ class Game:
     
     def render(self, screen):
         screen.blit(images["Background"], (0,0))
+        screen.blit(images["Plate"], (5, 520))
         self.userInterface.render(screen)
         pygame.display.flip()
         
