@@ -2,8 +2,8 @@ import pygame, sys
 
 from pygame.locals import *
 from Images import *
-from Button import Button
-from UserInterface import UserInterface
+from UserInterface.Button import Button
+from UserInterface.UserInterface import UserInterface
 
 class Game:
     def __init__(self):
