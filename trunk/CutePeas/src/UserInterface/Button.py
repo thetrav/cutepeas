@@ -1,5 +1,5 @@
 class Button:
-    def __init__(self, buttonUpImage, buttonDownImage, selectedImage, x, y, width, height):
+    def __init__(self, buttonUpImage, buttonDownImage, selectedImage, tool, x, y, width, height):
         self.listeners = []
         self.buttonDown = False
         self.mouseHover = False
@@ -11,6 +11,7 @@ class Button:
         self.y = y
         self.width = width
         self.height = height
+        self.tool = tool
         
     def render(self, screen):
         screen.blit(self.downImage if self.buttonDown else self.upImage, (self.x+2, self.y+2))
