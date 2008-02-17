@@ -2,14 +2,14 @@ import Vector
 import math
 
 class Surface:
-    def __init__(self, surfaceID, translation, angle, type, length):
+    def __init__(self, translation, angle, normal, type, length):
         
-        #Specifies the direction that the surface faces, with 0Deg vertical.
-        self.id = surfaceID
+        #Specifies the direction that the surface faces, with 0Deg vertical.        
+        #angle of the surface
         self.angle = angle
         self.translation = translation
         self.length = length;
-        self.normal = Vector(0, 0)    
+        self.normal = normal    
         self.type = type
                         
         #Setting up the render info
