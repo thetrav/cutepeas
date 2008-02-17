@@ -11,8 +11,11 @@ class Game:
         
         self.screen = pygame.display.get_surface()
         
-        self.background = pygame.Surface(self.screen.get_size()).convert()
-        self.background.fill((50,50,50))
+        self.images = {}
+        
+        cacheImage(self.images, "Background")
+        cacheImage(self.images, "Gold-Ball")
+        cacheImage(self.images, "Happy-Points")
     
     def handleInput(self, events):
         for event in events:
@@ -28,23 +31,18 @@ class Game:
             elif event.type == MOUSEBUTTONUP:
                 self.button.mouseUp(event)
     
-    def render(self, screen, background):
-        screen.blit(background, (0,0))
+    def render(self, screen):
+        screen.blit(self.images["Background"], (0,0))
         self.button.render(screen)
         screen.blit(self.images["Gold-Ball"], (400,500))
         
         pygame.display.flip()
         
     def main(self):
-        self.images = {}
-        
-        cacheImage(self.images, "Gold-Ball")
-        cacheImage(self.images, "Happy-Points")
-        
         self.button = Button(loadImage("up"), loadImage("down"), 50, 50, 200, 200)
         
         while True:
             self.handleInput(pygame.event.get())
-            self.render(self.screen, self.background)
+            self.render(self.screen)
         
 Game().main()
