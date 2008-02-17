@@ -8,9 +8,9 @@ class Cursor:
         self.tool = None
     
     def render(self, screen):
+        screen.blit(self.image, (self.x, self.y))
         if self.tool:
             screen.blit(self.tool.toolImage, (self.x, self.y))
-        screen.blit(self.image, (self.x, self.y))
     
     def toolChanged(self, tool):
         self.tool = tool
