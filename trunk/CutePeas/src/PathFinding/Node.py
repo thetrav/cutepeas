@@ -1,4 +1,4 @@
-from Physics import * 
+import Physics.Vector as Vec
 
 def nodeLink(nodeA, nodeB):
     nodeA.addLink(nodeB)
@@ -7,7 +7,7 @@ def nodeLink(nodeA, nodeB):
 class Node:
     "Pathfinding node"
     def __init__(self, x, y, surface):
-        self.position = Vector(x=x, y=y)
+        self.position = Vec.Vector(x=x, y=y)
         self.links = []
         self.surface = surface
         
