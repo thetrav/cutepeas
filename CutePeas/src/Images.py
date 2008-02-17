@@ -27,7 +27,8 @@ def loadImages():
               "Tool-StandardBlock", 
               "Tool-LeftRamp", 
               "Tool-RightRamp", 
-              "Tool-Spring")
+              "Tool-Spring",
+              "Pointer-Standard")
     for image in imageStrings:
         cacheImage(images, image)
     
