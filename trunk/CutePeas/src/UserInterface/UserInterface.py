@@ -5,6 +5,7 @@ from Button import Button
 from Images import images
 from Cursor import Cursor
 from Tool import *
+from Pea import *
 
 LEFT = 1
 RIGHT = 3
@@ -31,12 +32,14 @@ class UserInterface:
             button.addListener(self)
         
         self.cursor = Cursor(images["Pointer-Standard"])
+        self.pea = Pea(images["Pea-Standard"])
         
     def render(self, screen):
         screen.blit(images["Tool-Background"], (720, 10))
         for button in self.buttons:
             button.render(screen)
         self.cursor.render(screen)
+        self.pea.render(screen)
     
     def handleEvent(self, event):
         if event.type == MOUSEMOTION:
