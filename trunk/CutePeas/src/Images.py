@@ -17,7 +17,8 @@ def cacheImage(cache, name):
 def loadImages():
     imageStrings = ("Background", 
               "Gold-Ball", 
-              "Happy-Points", 
+              "Happy-Points",
+              "Pea-Standard", 
               "Tool-StandardBlock", 
               "Tool-Background", 
               "Tool-Selected", 
