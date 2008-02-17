@@ -11,3 +11,13 @@ def loadImage(name, colorkey=None):
 
 def cacheImage(cache, name):
     cache[name] = loadImage(name)
+    
+def loadImages(cache):
+    images = ("Background",
+              "Gold-Ball",
+              "Happy-Points",
+              "Tool-StandardBlock",
+              "Tool-Background")
+    for image in images:
+        cacheImage(cache, image)
+    
