@@ -100,6 +100,12 @@ class Slot:
             tool.setPos(self.x, self.y)
             tool.slot = self
     
-    def deleteBlock(self):
-        self.block = None
+    def addBlock(self, block):
+        self.block = block
+        block.ghostIn()
     
+    def deleteBlock(self):
+        self.block.ghostOut(self)
+    
+    def ghostedOut(self, block):
+        self.block = None

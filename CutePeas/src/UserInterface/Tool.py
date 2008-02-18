@@ -3,7 +3,6 @@ import Scenery
 from Block import Block
 
 
-
 class Tool:
     def __init__(self, cursorIcon):
         self.cursorIcon = cursorIcon
@@ -33,8 +32,8 @@ class BlockTool(Tool):
         self.block = self.newBlock()
     
     def invokeTool(self, target):
-        if self.slot:
-            self.slot.block = self.block
+        if self.slot and not self.slot.block:
+            self.slot.addBlock(self.block)
             self.block = self.newBlock()
     
     def render(self, screen):
@@ -46,37 +45,42 @@ class BlockTool(Tool):
         self.block.y = y
     
 class GelBlockTool(BlockTool):
-    def __init__(self):
+    def __init__(self, animations):
+        self.animations = animations
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-Gel")
+        return Block("Block-Place-Gel", "Block-Gel", self.animations)
     
 class NormalBlockTool(BlockTool):
-    def __init__(self):
+    def __init__(self, animations):
+        self.animations = animations
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-Normal")
+        return Block("Block-Place-Normal", "Block-Normal", self.animations)
         
 class LeftRampTool(BlockTool):
-    def __init__(self):
+    def __init__(self, animations):
+        self.animations = animations
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-LeftRamp")
+        return Block("Block-Place-LeftRamp", "Block-LeftRamp",  self.animations)
     
 class RightRampTool(BlockTool):
-    def __init__(self):
+    def __init__(self, animations):
+        self.animations = animations
         BlockTool.__init__(self)
 
     def newBlock(self):
-        return Block("Block-Place-RightRamp")
+        return Block("Block-Place-RightRamp", "Block-RightRamp",  self.animations)
     
 class SpringTool(BlockTool):
-    def __init__(self):
+    def __init__(self, animations):
+        self.animations = animations
         BlockTool.__init__(self)        
 
     def newBlock(self):
-        return Block("Block-Place-Spring")
+        return Block("Block-Place-Spring", "Block-Spring",  self.animations)
     
