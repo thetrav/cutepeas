@@ -6,4 +6,23 @@ Wherever possible in the UI use the listener/event model.  This allows frequent 
 
 For release 0.1 the UI can be pretty static.  All tools displayed on the right, a fixed tool application area, implement dropping and deleting blocks.
 
-Once that is done, 
+== Ghosting ==
+Ghosting is a reasonably complex UI interaction.  Here's some notes on how I want it to work.
+
+When the user drops a block on the scene, that block gets added to the animation list.  That will ensure it gets updated on the timer, the update will let it count down a number of seconds (possibly rendered on top of the block) until it changes graphic and behavior to a standard block.
+
+
+== ghosting interactions ==
+Ghosting out should do the same thing, except when its count down finishes it should clear the block and associated nodes & surfaces.
+
+== nodes ==
+*Node Ghosting in:* peas cannot enter node, peas on node try to exit to the nearest non ghosted node
+
+*Node Ghosting out:* peas cannot enter node, peas on node try to exit to the nearest non ghosted node
+
+== finished ghosting ==
+When a block ghosts in completely there's potential for a pea to be squashed (if it couldn't get out in time) this doesn't seem to be something that should be figured out by path finding, but I can't figure out where it should really be calculated
+
+When a block ghosts out completely there's potential for a pea to fall.  I would suggest this be handled by the physics engine but without allowing the pea to score.
+
+
