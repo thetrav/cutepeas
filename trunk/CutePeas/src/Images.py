@@ -33,7 +33,10 @@ def loadImages():
               "Pointer-Delete",
               "Plate",
               "Block-Place-Normal",
-              "Block-Place-Gel")
+              "Block-Place-Gel",
+              "Block-Place-LeftRamp",
+              "Block-Place-RightRamp",
+              "Block-Place-Spring")
     for image in imageStrings:
         cacheImage(images, image)
     
