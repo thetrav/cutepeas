@@ -1,0 +1,13 @@
+#summary Pea Movement Design notes
+
+
+Pea movement will need to work fairly closely with the pathfinding implementation, specifically the node objects.
+
+= Challenges within Pea Movement =
+
+  * Peas must be rotated and placed in the right place so it looks like they are following the blocks along.  
+  * Care must be taken not to overlap the pea image and the surface image
+  * Pea shadow placement may be tricky, haven't thought about it much yet
+  * Peas jumping between blocks (separate to the scored jumps) will need to look like the pea is actually jumping, not just moving accross thin air
+
+While the initial implementation is relatively straight forward, the peas are the star of the show, so all of their movements should be aesthetically pleasing, and ideally the animations should give character to an otherwise very static character.  This gives a lot of scope to doing extra work above and beyond what's required for functionality in terms of whole sprite animations or even animated features within the character like blinking eyes, emitting particles, or morphing the pea shape itself.  Designing and then implementing all of these extra bits should be a non trivial challenge.
