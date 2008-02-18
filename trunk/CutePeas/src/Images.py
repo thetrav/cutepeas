@@ -36,7 +36,15 @@ def loadImages():
               "Block-Place-Gel",
               "Block-Place-LeftRamp",
               "Block-Place-RightRamp",
-              "Block-Place-Spring")
+              "Block-Place-Spring",
+              "Block-Normal",
+              "Block-Gel",
+              "Block-LeftRamp",
+              "Block-RightRamp",
+              "Block-Spring",
+              "1",
+              "2",
+              "3")
     for image in imageStrings:
         cacheImage(images, image)
     
