@@ -1,0 +1,9 @@
+#summary User Interface Design Notes.
+
+= Notes =
+
+Wherever possible in the UI use the listener/event model.  This allows frequent changes to be relatively easy, and allows hooking in new components a lot easier than large coupled methods.
+
+For release 0.1 the UI can be pretty static.  All tools displayed on the right, a fixed tool application area, implement dropping and deleting blocks.
+
+Once that is done, 
