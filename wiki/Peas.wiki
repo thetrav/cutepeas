@@ -18,4 +18,4 @@ danc suggests breaking the movement patterns into different segments.
 This could be a pretty easy way to do it, because in reality we know how much time we want it to take for each pea to traverse each node segment, and we can work out which sort of traversal is occurring, so maybe a separate bit of code for each of the identified movement modes and then just use a timer rather than collisions to work out that nodes have been reached?
 
 
-<img src="http://lostgarden.com/uploaded_images/ExamplesOfPeaMovement-771062.jpg" />
+http://lostgarden.com/uploaded_images/ExamplesOfPeaMovement-771062.jpg
