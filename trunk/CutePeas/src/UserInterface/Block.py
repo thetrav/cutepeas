@@ -1,10 +1,11 @@
 from Images import images
 import math
+import Animation
 
 GHOST_TIMER_INIT = 3000
 
 class Block:
-    def __init__(self, ghostingImage, displayImage, animations):
+    def __init__(self, ghostingImage, displayImage):
         self.ghostingImage = images[ghostingImage]
         self.image = images[displayImage]
         self.x = 0
@@ -14,7 +15,6 @@ class Block:
         self.resetTimer()
         self.ghostingInListeners = []
         self.ghostingOutListeners = []
-        self.animations = animations
         
     def resetTimer(self):
         self.ghostTimer = GHOST_TIMER_INIT
@@ -23,13 +23,13 @@ class Block:
         self.resetTimer()
         self.ghostingOut = False
         self.ghostingIn = True
-        self.animations.append(self)
+        Animation.animations.append(self)
         
     def ghostOut(self, listener):
         self.resetTimer()
         self.ghostingIn = False
         self.ghostingOut = True
-        self.animations.append(self)
+        Animation.animations.append(self)
         self.ghostingOutListeners.append(listener)
     
     def render(self, screen):
@@ -53,14 +53,14 @@ class Block:
                     self.doneGhostingOut()
     
     def doneGhostingIn(self):
-        self.animations.remove(self)
+        Animation.animations.remove(self)
         self.ghostingIn = False
         for listener in self.ghostingInListeners:
             listener.ghostedIn(self)
     
     def doneGhostingOut(self):
         self.ghostingOut = False
-        self.animations.remove(self)
+        Animation.animations.remove(self)
         for listener in self.ghostingOutListeners:
             listener.ghostedOut(self)
     

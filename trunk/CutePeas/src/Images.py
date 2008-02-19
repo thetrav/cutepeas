@@ -14,37 +14,33 @@ def loadImage(name, colorkey=None):
 def cacheImage(cache, name):
     cache[name] = loadImage(name)
     
+def blockImageSet(blockName, list):
+    list.append("Tool-"+blockName)
+    list.append("Block-Place-"+blockName)
+    list.append("Block-"+blockName) 
+    
 def loadImages():
-    imageStrings = ("Background", 
+    imageStrings = ["Background", 
               "Gold-Ball", 
               "Happy-Points",
-              "Pea-Standard", 
-              "Tool-StandardBlock", 
+              "Pea-Standard",
               "Tool-Background", 
               "Tool-Selected", 
-              "Tool-GelBlock", 
               "Tool-Delete", 
-              "Tool-GelBlock", 
-              "Tool-StandardBlock", 
-              "Tool-LeftRamp", 
-              "Tool-RightRamp", 
-              "Tool-Spring",
               "Pointer-Standard",
               "Pointer-Delete",
               "Plate",
-              "Block-Place-Normal",
-              "Block-Place-Gel",
-              "Block-Place-LeftRamp",
-              "Block-Place-RightRamp",
-              "Block-Place-Spring",
-              "Block-Normal",
-              "Block-Gel",
-              "Block-LeftRamp",
-              "Block-RightRamp",
-              "Block-Spring",
+              "Cloud1",
+              "Cloud2",
+              "Cloud3",
               "1",
               "2",
-              "3")
+              "3"]
+    blockImageSet("Normal",imageStrings) 
+    blockImageSet("Gel",imageStrings)
+    blockImageSet("RightRamp",imageStrings)
+    blockImageSet("LeftRamp",imageStrings)
+    blockImageSet("Spring",imageStrings) 
     for image in imageStrings:
         cacheImage(images, image)
     

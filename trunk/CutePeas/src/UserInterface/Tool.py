@@ -43,44 +43,39 @@ class BlockTool(Tool):
     def setPos(self, x, y):
         self.block.x = x
         self.block.y = y
-    
+
 class GelBlockTool(BlockTool):
-    def __init__(self, animations):
-        self.animations = animations
+    def __init__(self):
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-Gel", "Block-Gel", self.animations)
+        return Block("Block-Place-Gel", "Block-Gel")
     
 class NormalBlockTool(BlockTool):
-    def __init__(self, animations):
-        self.animations = animations
+    def __init__(self):
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-Normal", "Block-Normal", self.animations)
+        return Block("Block-Place-Normal", "Block-Normal")
         
 class LeftRampTool(BlockTool):
-    def __init__(self, animations):
-        self.animations = animations
+    def __init__(self):
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-LeftRamp", "Block-LeftRamp",  self.animations)
+        return Block("Block-Place-LeftRamp", "Block-LeftRamp")
     
 class RightRampTool(BlockTool):
-    def __init__(self, animations):
-        self.animations = animations
+    def __init__(self):
         BlockTool.__init__(self)
 
     def newBlock(self):
-        return Block("Block-Place-RightRamp", "Block-RightRamp",  self.animations)
+        return Block("Block-Place-RightRamp", "Block-RightRamp")
     
 class SpringTool(BlockTool):
-    def __init__(self, animations):
-        self.animations = animations
+    def __init__(self):
         BlockTool.__init__(self)        
 
     def newBlock(self):
-        return Block("Block-Place-Spring", "Block-Spring",  self.animations)
+        return Block("Block-Place-Spring", "Block-Spring")
     
