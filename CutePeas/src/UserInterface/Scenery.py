@@ -1,10 +1,11 @@
 from Images import images
 import math
+from Animation import animations
 
 BLOCK_WIDTH = 71
-BLOCK_HEIGHT = 61
+BLOCK_HEIGHT = 50
 
-NUM_BLOCKS = 9
+NUM_BLOCKS = 10
 
 X_OFFSET = 15
 X_BORDER = X_OFFSET + NUM_BLOCKS * BLOCK_WIDTH
@@ -20,6 +21,12 @@ class Scenery:
         self.hoveredSlot = None
         self.slots = []
         self.mouseHover = False
+        
+        self.clouds = [Cloud("Cloud1", 10, 20), Cloud("Cloud2", 100, 400), Cloud("Cloud3", 600, 200)]
+        
+        for cloud in self.clouds:
+            animations.append(cloud)
+        
         for x in xrange(NUM_BLOCKS):
             self.slots.append([])
             for y in xrange(NUM_BLOCKS):
@@ -67,8 +74,11 @@ class Scenery:
         self.mouseHover = True
     
     def render(self, screen):
+        for cloud in self.clouds:
+            cloud.render(screen)
         for x in xrange(NUM_BLOCKS):
-            for y in xrange(NUM_BLOCKS):
+            for yMin in xrange(NUM_BLOCKS):
+                y = NUM_BLOCKS - yMin -1
                 if self.slots[x][y]:
                     self.slots[x][y].render(screen) 
 
@@ -105,7 +115,37 @@ class Slot:
         block.ghostIn()
     
     def deleteBlock(self):
-        self.block.ghostOut(self)
+        if self.block:
+            self.block.ghostOut(self)
     
     def ghostedOut(self, block):
         self.block = None
+
+class Cloud:
+    def __init__(self, image, x, y):
+        self.image = images[image]
+        self.x = x
+        self.y = y
+        self.maxX = 800
+        self.minX = -200
+        self.speed = 0
+        self.maxSpeed = 0.01
+        self.timer = 0
+        
+    def update(self, timeD):
+        self.timer = self.timer - timeD
+        if self.timer <= 0 :
+            self.timerReached()
+        self.x = self.x + timeD * self.speed
+        if self.x < self.minX:
+            self.x = self.minX
+        elif self.x > self.maxX:
+            self.x = self.maxX
+    
+    def timerReached(self):
+        #decide whether to pause or to move
+        #set new timer and speed 
+        pass
+    
+    def render(self, screen):
+        screen.blit(self.image, (self.x, self.y))

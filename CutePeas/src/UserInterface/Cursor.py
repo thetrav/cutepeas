@@ -1,3 +1,5 @@
+import pygame.mouse
+
 from Images import images
 
 class Cursor:
@@ -7,6 +9,7 @@ class Cursor:
         self.y = 0
         self.tool = None
         self.scene = scene
+        pygame.mouse.set_visible(False)
     
     def render(self, screen):
         if self.tool:

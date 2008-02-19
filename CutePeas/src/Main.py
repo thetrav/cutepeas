@@ -1,9 +1,11 @@
 import pygame, sys
+import Animation
 
 from pygame.locals import *
 from Images import *
 from UserInterface.Button import Button
 from UserInterface.UserInterface import UserInterface
+
 
 MAX_FPS = 72
 
@@ -15,7 +17,6 @@ class Game:
         pygame.display.set_caption('Cute Peas - UI Prototype')
         
         self.screen = pygame.display.get_surface()
-        self.animations = []
         loadImages()
     
     def handleInput(self, events):
@@ -33,12 +34,12 @@ class Game:
         pygame.display.flip()
         
     def main(self):
-        self.userInterface = UserInterface(self.animations)
+        self.userInterface = UserInterface()
         clock = pygame.time.Clock()
         clock.tick() #initialise timer
         while True:
             self.handleInput(pygame.event.get())
-            for animation in self.animations:
+            for animation in Animation.animations:
                 animation.update(clock.get_time())
             self.render(self.screen)
             clock.tick(MAX_FPS)
