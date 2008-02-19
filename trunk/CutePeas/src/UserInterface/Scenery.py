@@ -1,6 +1,7 @@
 from Images import images
 import math
 from Animation import animations
+import random
 
 BLOCK_WIDTH = 71
 BLOCK_HEIGHT = 50
@@ -121,6 +122,9 @@ class Slot:
     def ghostedOut(self, block):
         self.block = None
 
+MIN_TIME = 100
+MAX_TIME = 4000
+
 class Cloud:
     def __init__(self, image, x, y):
         self.image = images[image]
@@ -143,9 +147,11 @@ class Cloud:
             self.x = self.maxX
     
     def timerReached(self):
-        #decide whether to pause or to move
-        #set new timer and speed 
-        pass
+        rand = random.random()
+        self.speed = rand % self.maxSpeed
+        if rand >0.5:
+            self.speed = self.speed * -1
+        self.timer = random.randint(MIN_TIME, MAX_TIME)
     
     def render(self, screen):
         screen.blit(self.image, (self.x, self.y))
