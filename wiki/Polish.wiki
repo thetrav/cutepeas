@@ -13,3 +13,6 @@ Even though it's a pretty simple game, a large part of the potential audience wo
   * watch what happens when a pea jumps too far
   * here's a few different blocks and how they work
 The tutorials don't even have to be interactive if we're feeling lazy
+
+= Sound =
+Games instantly become a million times better with sound.  Keep an eye out for a good set of matching free (as in freedom) sound files that we can use.  I've tried making my own before and found it incredibly difficult to get the sound I'm after.
