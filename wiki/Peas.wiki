@@ -11,3 +11,11 @@ Pea movement will need to work fairly closely with the pathfinding implementatio
   * Peas jumping between blocks (separate to the scored jumps) will need to look like the pea is actually jumping, not just moving accross thin air
 
 While the initial implementation is relatively straight forward, the peas are the star of the show, so all of their movements should be aesthetically pleasing, and ideally the animations should give character to an otherwise very static character.  This gives a lot of scope to doing extra work above and beyond what's required for functionality in terms of whole sprite animations or even animated features within the character like blinking eyes, emitting particles, or morphing the pea shape itself.  Designing and then implementing all of these extra bits should be a non trivial challenge.
+
+
+== Implementation idea ==
+danc suggests breaking the movement patterns into different segments.  
+This could be a pretty easy way to do it, because in reality we know how much time we want it to take for each pea to traverse each node segment, and we can work out which sort of traversal is occurring, so maybe a separate bit of code for each of the identified movement modes and then just use a timer rather than collisions to work out that nodes have been reached?
+
+
+<img src="http://lostgarden.com/uploaded_images/ExamplesOfPeaMovement-771062.jpg" />
