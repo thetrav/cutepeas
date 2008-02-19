@@ -122,8 +122,9 @@ class Slot:
     def ghostedOut(self, block):
         self.block = None
 
-MIN_TIME = 100
+MIN_TIME = 1000
 MAX_TIME = 4000
+WIND_SPEED = 0.00001
 
 class Cloud:
     def __init__(self, image, x, y):
@@ -131,26 +132,38 @@ class Cloud:
         self.x = x
         self.y = y
         self.maxX = 800
-        self.minX = -200
-        self.speed = 0
+        self.minX = -300
+        self.xVel = 0
         self.maxSpeed = 0.01
         self.timer = 0
+        self.windForce = 0
         
     def update(self, timeD):
         self.timer = self.timer - timeD
         if self.timer <= 0 :
             self.timerReached()
-        self.x = self.x + timeD * self.speed
+        
+        self.xVel = self.xVel + self.windForce
+        if self.xVel > self.maxSpeed:
+            self.xVel = self.maxSpeed
+        elif self.xVel < -self.maxSpeed:
+            self.xVel = -self.maxSpeed
+        
+        self.x = self.x + timeD * self.xVel
         if self.x < self.minX:
-            self.x = self.minX
-        elif self.x > self.maxX:
             self.x = self.maxX
+        elif self.x > self.maxX:
+            self.x = self.minX
     
     def timerReached(self):
         rand = random.random()
-        self.speed = rand % self.maxSpeed
-        if rand >0.5:
-            self.speed = self.speed * -1
+        if rand >0.66:
+            self.windForce = WIND_SPEED
+        elif rand < 0.33:
+            self.windForce = -WIND_SPEED
+        else :
+            self.windForce = 0
+        
         self.timer = random.randint(MIN_TIME, MAX_TIME)
     
     def render(self, screen):
