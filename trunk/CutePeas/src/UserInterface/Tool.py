@@ -7,12 +7,11 @@ class Tool:
     def __init__(self, cursorIcon):
         self.cursorIcon = cursorIcon
         self.listeners = []
-        self.slot = None
     
     def invokeTool(self, target):
         pass
     
-    def render(self, screen):
+    def render(self, screen, slot):
         pass
     
     def setPos(self, x, y):
@@ -23,8 +22,8 @@ class DeleteTool(Tool):
         self.cursorIcon = images["Pointer-Delete"]
     
     def invokeTool(self, target):
-        if self.slot:
-            self.slot.deleteBlock()
+        if target:
+            target.deleteBlock()
         
 class BlockTool(Tool):
     def __init__(self):
@@ -32,12 +31,13 @@ class BlockTool(Tool):
         self.block = self.newBlock()
     
     def invokeTool(self, target):
-        if self.slot and not self.slot.block:
-            self.slot.addBlock(self.block)
+        if target and not target.block:
+            target.addBlock(self.block)
             self.block = self.newBlock()
     
-    def render(self, screen):
+    def render(self, screen, slot):
         if self.block:
+            self.setPos(slot.x, slot.y)
             self.block.render(screen)
     
     def setPos(self, x, y):

@@ -7,9 +7,12 @@ from Cursor import Cursor
 from Tool import *
 from Scenery import *
 from Pea import *
+import Text.Text
 
 LEFT = 1
 RIGHT = 3
+WHEEL_UP=4
+WHEEL_DOWN=5
 
 def newButton(image, yPos, tool):
     return Button(images["Tool-"+image], images["Tool-"+image], images["Tool-Selected"], tool, 725, yPos, 47, 47)
@@ -50,6 +53,7 @@ class UserInterface:
     
     def renderScore(self, screen):
         screen.blit(images["Happy-Points"], (300, 10))
+        Text.Text.renderText("123,333", (330, 10), screen)
     
     def handleEvent(self, event):
         if event.type == MOUSEMOTION:
@@ -60,9 +64,13 @@ class UserInterface:
             if event.button == LEFT:
                 for button in self.buttons:
                     button.mouseDown(event)
-                self.cursor.toolUsed(self.scene)
+                self.cursor.toolUsed()
             elif event.button == RIGHT and self.selectedButton:
                 self.deSelectEvent()
+            elif event.button == WHEEL_UP:
+                self.scrollButton(-1)
+            elif event.button == WHEEL_DOWN:
+                self.scrollButton(+1)
         elif event.type == MOUSEBUTTONUP:
             for button in self.buttons:
                 button.mouseUp(event)
@@ -78,5 +86,17 @@ class UserInterface:
             self.selectedButton.deSelect()
             self.selectedButton = None
             self.cursor.toolCleared()
-            self.scene.toolCleared()
-            
+    
+    def scrollButton(self, direction):
+        buttons = self.buttons
+        buttonCount = len(buttons)
+        for x in xrange(buttonCount):
+            if self.selectedButton == None or buttons[x] == self.selectedButton:
+                self.deSelectEvent()
+                buttonInd = x + direction
+                if buttonInd < 0:
+                    buttonInd = buttonCount-1
+                elif buttonInd == buttonCount:
+                    buttonInd = 0
+                buttons[buttonInd].fireEvent()
+                return
