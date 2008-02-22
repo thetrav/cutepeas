@@ -7,7 +7,8 @@ from Cursor import Cursor
 from Tool import *
 from Scenery import *
 from Pea import *
-import Text.Text
+import Text, Score, Animation, Timer, Particles.Particles
+
 
 LEFT = 1
 RIGHT = 3
@@ -40,10 +41,23 @@ class UserInterface:
         self.cursor = Cursor(images["Pointer-Standard"], self.scene)
         self.pea = Pea(images["Pea-Standard"])
         
+        self.score = Score.Score()
+        self.score.addScore(100000)
+        Animation.animations.append(self.score)
+        
+        self.timer = Timer.Timer()
+        Animation.animations.append(self.timer)
+        
+        self.particleSystem = Particles.Particles.ParticleSystem()
+        Animation.animations.append(self.particleSystem)
+        
     def render(self, screen):
         self.scene.render(screen)
-        self.renderScore(screen)
         self.renderTools(screen)
+        self.score.render(screen, (300,10))
+        self.timer.render(screen, (600,10))
+        self.particleSystem.render(screen)
+        
     
     def renderTools(self, screen):
         screen.blit(images["Tool-Background"], (720, 10))
@@ -51,9 +65,6 @@ class UserInterface:
             button.render(screen)
         self.cursor.render(screen)
     
-    def renderScore(self, screen):
-        screen.blit(images["Happy-Points"], (300, 10))
-        Text.Text.renderText("123,333", (330, 10), screen)
     
     def handleEvent(self, event):
         if event.type == MOUSEMOTION:
@@ -65,6 +76,7 @@ class UserInterface:
                 for button in self.buttons:
                     button.mouseDown(event)
                 self.cursor.toolUsed()
+                self.particleSystem.addEmitter(Particles.Particles.ExplodeEmitter(event.pos))
             elif event.button == RIGHT and self.selectedButton:
                 self.deSelectEvent()
             elif event.button == WHEEL_UP:
@@ -74,6 +86,11 @@ class UserInterface:
         elif event.type == MOUSEBUTTONUP:
             for button in self.buttons:
                 button.mouseUp(event)
+        elif event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                raise "quit"
+            elif event.key == K_SPACE:
+                self.score.addScore(10000)
                 
     def buttonFired(self, button):
         self.deSelectEvent()
