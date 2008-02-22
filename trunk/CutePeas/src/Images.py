@@ -23,6 +23,7 @@ def loadImages():
     imageStrings = ["Background", 
               "Gold-Ball", 
               "Happy-Points",
+              "Icon-Time",
               "Pea-Standard",
               "Tool-Background", 
               "Tool-Selected", 

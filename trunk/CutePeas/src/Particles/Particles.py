@@ -1,10 +1,13 @@
+from Images import images
 
+GRAVITY = 0.008
+FRICTION = 1
 
-class Particles:
+class ParticleSystem:
     def __init__(self):
         self.emitters = []
     
-    def addEmitter(self, pos, emitter):
+    def addEmitter(self, emitter):
         self.emitters.append(emitter)
         emitter.addEndListener(self)
     
@@ -16,31 +19,52 @@ class Particles:
         for emitter in self.emitters:
             emitter.render(screen)
     
+    def emitterEnded(self, emitter):
+        self.emitters.remove(emitter)
+    
 class Particle:
-    def __init__(self, image):
-        pass
+    def __init__(self, image, pos, vel):
+        self.image = image
+        self.pos = [pos[0],pos[1]]
+        self.vel = [vel[0], vel[1]]
     
     def update(self, timeD):
-        pass
+        self.pos[0] = self.pos[0] + self.vel[0]
+        self.pos[1] = self.pos[1] + self.vel[1]
     
     def render(self, screen):
-        pass
+        screen.blit(self.image, self.pos)
+
+        
+class ExpireParticle(Particle):
+    def __init__(self, image, pos, vel, timeToLive, listener):
+        Particle.__init__(self, image, pos, vel)
+        self.timeToLive = timeToLive
+        self.listener = listener
     
+    def update(self, timeD):
+        Particle.update(self, timeD)
+        self.timeToLive = self.timeToLive - timeD
+        if self.timeToLive <= 0:
+            self.listener.particleExpired(self)
+            
+class GravityParticle(ExpireParticle):
+    def __init__(self, image, pos, vel, timeToLive, listener):
+        ExpireParticle.__init__(self, image, pos, vel, timeToLive, listener)
+        
+    def update(self, timeD):
+        self.vel[1] = self.vel[1] + timeD * GRAVITY
+        self.vel[0] = self.vel[0] * FRICTION
+        ExpireParticle.update(self, timeD)
+        
 class Emitter:
-    def __init__(self, maxParticles=5, maxEmitTime = 5, minEmitTime = 0, runTime=0):
-        self.listeners = []
+    def __init__(self):
         self.particles = []
-        self.runTime = runTime
-        self.maxParticles = maxParticles
-        self.maxEmitTime = maxEmitTime
-        self.minEmitTime = minEmitTime
+        self.listeners = []
     
     def update(self, timeD):
         for particle in self.particles:
             particle.update(timeD)
-        #spawn more?
-        #time to die?
-            #notify listeners
             
     def render(self, screen):
         for particle in self.particles:
@@ -48,3 +72,44 @@ class Emitter:
     
     def addEndListener(self, listener):
         self.listeners.append(listener)
+        
+class ExplodeEmitter(Emitter):
+    def __init__(self, pos, timeToLive = 5000):
+        Emitter.__init__(self)
+        self.timeToLive = timeToLive
+        self.pos = [pos[0],pos[1]]
+        self.emitExplosion()
+    
+    def emitExplosion(self):
+        self.explodeTimer = 1500
+        pos = self.pos
+        pos[0] = pos[0] + 20
+        pos[1] = pos[1] - 20
+        img = images["Gold-Ball"]
+        for vel in (
+                    (-1,-3),
+                    ( 0,-3),
+                    ( 1,-2),
+                    (-1, 0),
+                    ( 1, 0),
+                    (-1, -1),
+                    ( 0, -1),
+                    ( 1, -1),
+                    ):
+            self.particles.append(GravityParticle(img, pos, vel, 500, self))
+    
+    def update(self, timeD):
+        Emitter.update(self, timeD)
+        
+        self.explodeTimer = self.explodeTimer - timeD
+        
+        if self.explodeTimer <= 0:
+            self.emitExplosion()
+        
+        self.timeToLive = self.timeToLive - timeD
+        if self.timeToLive <= 0:
+            for listener in self.listeners:
+                listener.emitterEnded(self)
+                
+    def particleExpired(self, particle):
+        self.particles.remove(particle)
