@@ -23,3 +23,9 @@ This will be called by the render loop or a pea which is jumping.  The expectati
     # The pea's score manager
     # The surfaces bounce reaction handler
   * If the pea has finished its fall, the pea will need to know to change its movement mode, and the score will need to be updated with the peas score.  The pea might also have been killed and the death handler will need to be notified, preferably through a listener/event model).
+
+= Issues =
+
+== Unscored Jump ==
+The game will at some stage require some physics simulated jumps to go unscored (eg, level load, peas getting trapped, peas falling off removed blocks).  
+How does this impact the physics system interface, how should it be implemented?
