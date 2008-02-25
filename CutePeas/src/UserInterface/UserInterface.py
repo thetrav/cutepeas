@@ -21,50 +21,58 @@ def newButton(image, yPos, tool):
 class UserInterface:
     def __init__(self):
         self.selectedButton = None
-        yStart = 15
-        spacing = 50
+#        yStart = 15
+#        spacing = 50
         
-        self.buttons = (
-                        newButton("Delete", yStart, DeleteTool()),
-                        newButton("Gel", yStart + spacing, GelBlockTool()),
-                        newButton("Normal", yStart + spacing*2, NormalBlockTool()),
-                        newButton("LeftRamp", yStart + spacing*3, LeftRampTool()),
-                        newButton("RightRamp", yStart + spacing*4, RightRampTool()),
-                        newButton("Spring", yStart + spacing*5, SpringTool())
-                        )
+#        self.buttons = (
+#                        newButton("Delete", yStart, DeleteTool()),
+#                        newButton("Gel", yStart + spacing, GelBlockTool()),
+#                        newButton("Normal", yStart + spacing*2, NormalBlockTool()),
+#                        newButton("LeftRamp", yStart + spacing*3, LeftRampTool()),
+#                        newButton("RightRamp", yStart + spacing*4, RightRampTool()),
+#                        newButton("Spring", yStart + spacing*5, SpringTool())
+#                        )
         
-        for button in self.buttons:
-            button.addListener(self)
+#        for button in self.buttons:
+#            button.addListener(self)
         
-        self.scene = Scenery()
+#        self.scene = Scenery()
         
-        self.cursor = Cursor(images["Pointer-Standard"], self.scene)
-        self.pea = Pea(images["Pea-Standard"])
+        self.buttons = []
         
-        self.score = Score.Score()
-        self.score.addScore(100000)
-        Animation.animations.append(self.score)
+        self.activeWidgets = []
+        self.passiveWidgets = []
+        self.scene = None
+        self.cursor = Cursor(images["Pointer-Standard"])
         
-        self.timer = Timer.Timer()
-        Animation.animations.append(self.timer)
         
-        self.particleSystem = Particles.Particles.ParticleSystem()
-        Animation.animations.append(self.particleSystem)
+        #self.score = Score.Score()
+        #Animation.animations.append(self.score)
+        
+        #self.timer = Timer.Timer()
+        #Animation.animations.append(self.timer)
+
+    def addButton(self, button):
+        self.buttons.append(button)
+        button.addListener(self)
+        
+    def setScene(self, scene):
+        self.scene = scene
+        self.cursor.setScene(scene)
         
     def render(self, screen):
-        self.scene.render(screen)
+        if self.scene:
+            self.scene.render(screen)
         self.renderTools(screen)
-        self.score.render(screen, (300,10))
-        self.timer.render(screen, (600,10))
-        self.particleSystem.render(screen)
+        self.passiveWidget
+        #self.score.render(screen, (300,10))
+        #self.timer.render(screen, (600,10))
+        self.cursor.render(screen)
         
-    
     def renderTools(self, screen):
         screen.blit(images["Tool-Background"], (720, 10))
         for button in self.buttons:
             button.render(screen)
-        self.cursor.render(screen)
-    
     
     def handleEvent(self, event):
         if event.type == MOUSEMOTION:
@@ -76,7 +84,6 @@ class UserInterface:
                 for button in self.buttons:
                     button.mouseDown(event)
                 self.cursor.toolUsed()
-                self.particleSystem.addEmitter(Particles.Particles.ExplodeEmitter(event.pos))
             elif event.button == RIGHT and self.selectedButton:
                 self.deSelectEvent()
             elif event.button == WHEEL_UP:
@@ -89,8 +96,6 @@ class UserInterface:
         elif event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 raise "quit"
-            elif event.key == K_SPACE:
-                self.score.addScore(10000)
                 
     def buttonFired(self, button):
         self.deSelectEvent()

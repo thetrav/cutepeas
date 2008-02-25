@@ -1,5 +1,5 @@
 import pygame, sys
-import Animation
+import Animation, TitleScreen
 
 from pygame.locals import *
 from Images import *
@@ -14,10 +14,11 @@ MAX_FPS = 72
 class Game:
     def __init__(self):
         self.window = pygame.display.set_mode((800,600))
-        pygame.display.set_caption('Cute Peas - UI Prototype')
+        pygame.display.set_caption('Cute Peas')
         
         self.screen = pygame.display.get_surface()
         loadImages()
+        
     
     def handleInput(self, events):
         for event in events:
@@ -28,13 +29,13 @@ class Game:
                 self.userInterface.handleEvent(event)
     
     def render(self, screen):
-        screen.blit(images["Background"], (0,0))
-        screen.blit(images["Plate"], (5, 520))
+        self.level.render(screen)
         self.userInterface.render(screen)
         pygame.display.flip()
         
     def main(self):
         self.userInterface = UserInterface()
+        self.level = TitleScreen.TitleScreen(self.userInterface)
         clock = pygame.time.Clock()
         clock.tick() #initialise timer
         while True:

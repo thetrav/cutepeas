@@ -20,23 +20,24 @@ def blockImageSet(blockName, list):
     list.append("Block-"+blockName) 
     
 def loadImages():
-    imageStrings = ["Background", 
-              "Gold-Ball", 
-              "Happy-Points",
-              "Icon-Time",
-              "Pea-Standard",
-              "Tool-Background", 
-              "Tool-Selected", 
-              "Tool-Delete", 
-              "Pointer-Standard",
-              "Pointer-Delete",
-              "Plate",
-              "Cloud1",
-              "Cloud2",
-              "Cloud3",
-              "1",
-              "2",
-              "3"]
+    imageStrings = ["Background",
+                    "Logo",
+                    "Gold-Ball", 
+                    "Happy-Points",
+                    "Icon-Time",
+                    "Pea-Standard",
+                    "Tool-Background", 
+                    "Tool-Selected", 
+                    "Tool-Delete", 
+                    "Pointer-Standard",
+                    "Pointer-Delete",
+                    "Plate",
+                    "Cloud1",
+                    "Cloud2",
+                    "Cloud3",
+                    "1",
+                    "2",
+                    "3"]
     blockImageSet("Normal",imageStrings) 
     blockImageSet("Gel",imageStrings)
     blockImageSet("RightRamp",imageStrings)
