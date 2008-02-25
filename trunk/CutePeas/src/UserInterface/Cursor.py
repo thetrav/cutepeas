@@ -3,14 +3,17 @@ import pygame.mouse
 from Images import images
 
 class Cursor:
-    def __init__(self, image, scene):
+    def __init__(self, image):
         self.image = image
         self.x = 0
         self.y = 0
         self.tool = None
         self.slot = None
-        self.scene = scene
+        self.scene = None
         pygame.mouse.set_visible(False)
+    
+    def setScene(self, scene):
+        self.scene = scene
     
     def render(self, screen):
         if self.tool:
@@ -33,6 +36,6 @@ class Cursor:
     def mouseMotion(self, event):
         self.x = event.pos[0]
         self.y = event.pos[1]
-        if self.tool:
+        if self.tool and self.scene:
             self.slot = self.scene.pickSlot(event.pos)
             

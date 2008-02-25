@@ -5,17 +5,36 @@ import random
 
 BLOCK_WIDTH = 71
 BLOCK_HEIGHT = 50
+BLOCK_HEIGHT_REAL = 61
+BLOCK_Y_OVERLAP = BLOCK_HEIGHT_REAL - BLOCK_HEIGHT
 
-NUM_BLOCKS = 10
+NUM_BLOCKS = 9
 
-X_OFFSET = 15
+X_OFFSET = 50
 X_BORDER = X_OFFSET + NUM_BLOCKS * BLOCK_WIDTH
 
-Y_OFFSET = 15
+Y_OFFSET = 90
 Y_BORDER = Y_OFFSET + NUM_BLOCKS * BLOCK_HEIGHT
 
-def snap(x, y):
-    return (math.floor(x-X_OFFSET/BLOCK_WIDTH)*BLOCK_WIDTH + X_OFFSET, math.floor(y-Y_OFFSET/BLOCK_HEIGHT)*BLOCK_HEIGHT + Y_OFFSET)
+def posToIndex(x, y, slots):
+    i = singlePosToIndex(x, X_OFFSET, BLOCK_WIDTH)
+    j = singlePosToIndex(y, Y_OFFSET, BLOCK_HEIGHT)
+    # check for overlap
+    distanceFromTop = y - singleIndexToPos(j, Y_OFFSET, BLOCK_HEIGHT)
+    if distanceFromTop < BLOCK_Y_OVERLAP  and j > 0 and slots[i][j-1].block:
+        j = j-1
+    return (i,j)
+
+def singlePosToIndex(pos, offset, gap):
+    return int((pos - offset)/gap)
+
+def indexToPos(x, y):
+    i = singleIndexToPos(x, X_OFFSET, BLOCK_WIDTH)
+    j = singleIndexToPos(y, Y_OFFSET, BLOCK_HEIGHT)
+    return (i,j)
+
+def singleIndexToPos(pos, offset, gap):
+    return pos * gap + offset
 
 class Scenery:
     def __init__(self):
@@ -31,7 +50,7 @@ class Scenery:
         for x in xrange(NUM_BLOCKS):
             self.slots.append([])
             for y in xrange(NUM_BLOCKS):
-                self.slots[x].append(Slot(snap(x,y)))
+                self.slots[x].append(Slot(indexToPos(x,y)))
     
     def pickSlot(self, pos):
         x = pos[0]
@@ -39,16 +58,8 @@ class Scenery:
         if not self.mouseIsInArea(x,y):
             return None
         else:
-            return self.slots[self.xToSlotIndex(x)][self.yToSlotIndex(y)]
-    
-    def xToSlotIndex(self, x):
-        return self.toSlotIndex(x, X_OFFSET, BLOCK_WIDTH)
-    
-    def yToSlotIndex(self, y):
-        return self.toSlotIndex(y, Y_OFFSET, BLOCK_HEIGHT)
-        
-    def toSlotIndex(self, pos, offset, blockSize):
-        return int(math.floor((pos-offset)/blockSize))
+            index = posToIndex(x, y, self.slots)
+            return self.slots[index[0]][index[1]]
     
     def mouseIsInArea(self, x, y):
         return x > X_OFFSET and x < X_BORDER and y > Y_OFFSET and y < Y_BORDER
@@ -77,7 +88,7 @@ class Slot:
         block.ghostIn()
     
     def deleteBlock(self):
-        if self.block:
+        if self.block and not self.block.isGhosting():
             self.block.ghostOut(self)
     
     def ghostedOut(self, block):
