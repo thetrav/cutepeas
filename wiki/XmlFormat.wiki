@@ -20,3 +20,13 @@ example:
 
 </Level>
 }}}
+
+I like the idea of declaring tools, so we can restrict/add new tools per level, however I'd also say we should ignore these elements for release 0.1
+
+Note also that there is no mention of nodes or surfaces in the file format.
+
+This lends itself to the following load process:
+  # Create level with width x height slots
+  # Create tool widgets
+  # Add blocks as per standard mechanism, either without ghost, or listen for ghost finishing
+  # Add peas at given locations, put them in the PhysicsSystem performing an unscored jump.
