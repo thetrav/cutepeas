@@ -1,86 +1,59 @@
-import Vector
-import Surface
-import BlockRef
+from Vector import Vector
+from Surface import Surface
+from PhysPea import PhysPea
 import math
+
+GRAVITY = -9.8
 
 class PhysicsManager:
     def __init__(self):
         self.surfaces = []
+        self.frameTime = 0
+        self.gravity = 9.8
         
-        self.blocks = []
-        self.nextBlockID = 0
-    
-    def getNextBlockID(self):
-        if self.nextBlockID != 0:
-            self.nextBlockID += 1
-        return self.nextBlockID           
         
+    def update(self, pea):
+        self.frameTime = pygame.time.Clock.get_time
+        if pea.state == 'jumping':
+            pea.physPea = PhysPea(pea.translation)
+            calculateTrajectory(pea)
+            pea.state = 'falling'
+        elif pea.state == 'falling':
+            checkForIntersection(pea)
         
     def render(self, screen):
-        for block in self.blocks:
-            block.render(screen)
+        #Debug surface rendering
+        for surface in self.surfaces:
+            surface.render(screen)
             
     def addSurface(self, newSurface):
         surfaces.append(newSurface)
         
+    def addSurfaces(self, newSurfaces):
+        for surface in newSurfaces:
+            surfaces.append(surface)
+        
     def removeSurface(self, delSurface):
         surfaces.remove(delSurface)
-            
-    def addBlock(self, position, type ):
         
-        newBlock = BlockRef(getNextBlockID)
+    def removeSurfaces(self, delSurfaces):
+        for surface in delSurfaces:
+            surfaces.remove(surface)
+            
+    #Physics Calculations
+    def calculateTrajectory(self, pea):
+        #Calculate new Pea position
+        phPea = pea.physPea 
+        currPos = phPea.currentCoord
         
-        if BlockType[type] == BlockType['standard'] or \
-           BlockType[type] == BlockType['spring'] or \
-           BlockType[type] == BlockType['gel'] :
-                       
-            #Top
-            newSurface = createTopSurface(position, type)
-            newBlock.surfaces.append(newSurface)
-            
-            #Bottom
-            newSurface = createBottomSurface(position, type)
-            newBlock.surfaces.append(newSurface)
-            
-            #Left
-            newSurface = createLeftSurface(position, type)
-            newBlock.surfaces.append(newSurface)
-            
-            #Right
-            newSurface = createRightSurface(position, type)
-            newBlock.surfaces.append(newSurface)
+        newX = phPea.xvelocity + currPos.x
+        newY = (1/2) * GRAVITY * self.frameTime + phPea.yvelocity + currPos.y
         
-        elif BlockType[type] == BlockType['leftramp'] :
-            
-            #LeftRamp
-            newSurface = createLeftRamp(position, type)
-            newBlock.surfaces.append(newSurface)
-                        
-            #Right
-            newSurface = createRightSurface(position, type)
-            newBlock.surfaces.append(newSurface)
-            
-            #Bottom
-            newSurface = createBottomSurface(position, type)
-            newBlock.surfaces.append(newSurface)
-            
-            
-        elif BlockType[type] == BlockType['rightramp'] :
-            #RightRamp
-            newSurface = createRightRamp(position, type)
-            newBlock.surfaces.append(newSurface)
-                        
-            #Right
-            newSurface = createRightSurface(position, type)
-            newBlock.surfaces.append(newSurface)
-            
-            #Bottom
-            newSurface = createBottomSurface(position, type)
-            newBlock.surfaces.append(newSurface)
+        phPea.currentCoord = Vector(newX, newY)
         
-        self.blocks.append(newBlock)
-        
-        #End of addBlock
+    def checkForIntersection(self, pea):
+        for surface in self._surfaces:
+            surface.checkForIntersection(pea)
         
     def removeBlock(self, deleteBlockID):
         print('removing Block')
