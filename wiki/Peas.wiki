@@ -1,7 +1,7 @@
 #summary Pea Movement Design notes
 
 
-Pea movement will need to work fairly closely with the pathfinding implementation, specifically the node objects.
+Pea movement will need to work fairly closely with the PathFinding implementation, specifically the node objects.
 
 = Challenges within Pea Movement =
 
@@ -21,6 +21,6 @@ This could be a pretty easy way to do it, because in reality we know how much ti
 http://lostgarden.com/uploaded_images/ExamplesOfPeaMovement-771062.jpg
 
 == Integration with Physics ==
-Remeber also that there must be a mechanism for transferring between the PhysicsSimulation  and the regular movement systems.  This will involve:
+Remeber also that there must be a mechanism for transferring between the PhysicsSimulation  and PathFinding systems.  This will involve:
   # ensuring that the update happens on the correct system
   # detaching and re-associating peas from nodes when they jump & land.
