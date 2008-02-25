@@ -1,0 +1,21 @@
+#summary Design notes on Level persistence.
+
+= Xml Format =
+
+example:
+{{{
+<Level name="Example Level" width="9" height="9">
+<Tool id="DeleteTool"/>
+<Tool id="StandardBlock"/>
+<Tool id="GelBlock"/>
+
+<Block type="Standard" xIndex="4" yIndex="2"/>
+<Block type="Standard" xIndex="4" yIndex="1"/>
+<Block type="Standard" xIndex="4" yIndex="0"/>
+<Block type="Spring" xIndex="5" yIndex="0"/>
+
+<Pea left="300" top="600"/>
+<Pea left="200" top="600"/>
+
+</Level>
+}}}
