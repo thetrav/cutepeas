@@ -11,6 +11,8 @@ class PhysPea:
         self.radius = 17
         self.currentCoord = startVec
         
-        self.numBounces = 0
+        self.numNormalBounces = 0
+        self.numSpringBounces = 0
+        self.numGelBounces = 0
         
         self.hitSurfaces = {}
