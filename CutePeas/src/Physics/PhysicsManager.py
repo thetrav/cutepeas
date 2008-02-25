@@ -14,12 +14,16 @@ class PhysicsManager:
         
     def update(self, pea):
         self.frameTime = pygame.time.Clock.get_time
-        if pea.state == 'jumping':
-            pea.physPea = PhysPea(pea.translation)
-            calculateTrajectory(pea)
-            pea.state = 'falling'
-        elif pea.state == 'falling':
-            checkForIntersection(pea)
+        if pea.physPea != None:
+            if pea.physPea.state == 'falling':
+                calculateTrajectory(pea)
+                checkForIntersection(pea)
+                
+    def jumpFired(self, pea):
+        # Respond to jump event.
+        pea.physPea = PhysPea(pea.translation)
+        calculateTrajectory(pea)
+        pea.physPea.state = 'falling'            
         
     def render(self, screen):
         #Debug surface rendering
@@ -50,14 +54,11 @@ class PhysicsManager:
         newY = (1/2) * GRAVITY * self.frameTime + phPea.yvelocity + currPos.y
         
         phPea.currentCoord = Vector(newX, newY)
+        # Need to possibly pass this coordinate back into the rendered parts of the Pea?
         
     def checkForIntersection(self, pea):
         for surface in self._surfaces:
-            surface.checkForIntersection(pea)
-        
-    def removeBlock(self, deleteBlockID):
-        print('removing Block')
-        
+            surface.checkForIntersection(pea)        
     
     def createTopSurface(self, position, blockType):
         xPos =  position.x;
