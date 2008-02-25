@@ -66,6 +66,13 @@ class Surface:
             # Invert the x axis velocity component
             phPea.xvelocity *= -1
             
+            if self.type == BlockType['spring']:
+                pea.physPea.numSpringBounces += 1;
+            elif self.type == BlockType['gel']:
+                pea.physPea.numGelBounces += 1;
+            elif self.type == BlockType['standard']:
+                pea.physPea.numNormalBounces += 1;
+            
         # If bottom
         elif self.angle == 180:
             # Invert the y axis velocity 
@@ -77,6 +84,7 @@ class Surface:
             if self.type == BlockType['spring']:
                 phPea.yvelocity *= -SPRING_MOMENTUM
                 phPea.xvelocity *= SPRING_MOMENTUM
+                pea.physPea.numSpringBounces += 1;
             #If gelatin block then land.
             elif self.type == BlockType['gel']:
                 pea.fireLanded()
