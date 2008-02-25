@@ -8,6 +8,8 @@ class Pea:
         self.rotateIncrement = 20
         #self.node = initNode
         #self.prevNode = None
+        
+        self.listeners = []
     
     def switchNode(self, newNode):
         self.node = newNode
@@ -41,5 +43,24 @@ class Pea:
         screen.blit(self.image, self.rect)
         # Restoring is needed for rotations (animate)
         self.__restoreImage()
+    
+    def fireDeath(self):
+        for listener in self.listeners:
+            listener.deathFired(self)
+    
+    def fireTrap(self):
+        for listener in self.listeners:
+            listener.trapFired(self)
+        
+    def fireJump(self):
+        for listener in self.listeners:
+            listener.jumpFired(self)
+        
+    def fireLanded(self):
+        for listener in self.listeners:
+            listener.landedFired(self)
+            
+    def addListener(self, listener):
+        self.listeners.append(listener)
         
         
