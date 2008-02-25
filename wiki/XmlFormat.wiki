@@ -5,6 +5,7 @@
 example:
 {{{
 <Level name="Example Level" width="9" height="9">
+
 <Tool id="DeleteTool"/>
 <Tool id="StandardBlock"/>
 <Tool id="GelBlock"/>
