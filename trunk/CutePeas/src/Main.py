@@ -33,9 +33,13 @@ class Game:
         self.userInterface.render(screen)
         pygame.display.flip()
         
+    def transition(self, newLevel):
+        self.level.dispose()
+        self.level = newLevel
+        
     def main(self):
         self.userInterface = UserInterface()
-        self.level = TitleScreen.TitleScreen(self.userInterface)
+        self.level = TitleScreen.TitleScreen(self.userInterface, self)
         clock = pygame.time.Clock()
         clock.tick() #initialise timer
         while True:

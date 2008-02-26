@@ -19,6 +19,11 @@ def blockImageSet(blockName, list):
     list.append("Block-Place-"+blockName)
     list.append("Block-"+blockName) 
     
+def buttonImageSet(name, list):
+    list.append("Button-"+name)
+    list.append("Button-"+name+"-Hover")
+    list.append("Button-"+name+"-Down")
+    
 def loadImages():
     imageStrings = ["Background",
                     "Logo",
@@ -43,6 +48,8 @@ def loadImages():
     blockImageSet("RightRamp",imageStrings)
     blockImageSet("LeftRamp",imageStrings)
     blockImageSet("Spring",imageStrings) 
+    buttonImageSet("New-Game", imageStrings)
+    buttonImageSet("Exit-Game", imageStrings)
     for image in imageStrings:
         cacheImage(images, image)
     

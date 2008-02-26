@@ -1,22 +1,54 @@
+from Images import images
+
+class ButtonPanel:
+    def __init__(self, pos):
+        self.pos = pos
+        self.buttons = []
+        self.listeners = []
+        
+    def addButton(self, button):
+        self.buttons.append(button)
+        button.addListener(self)
+        
+    def addListener(self, listener):
+        self.listeners.append(listener)
+        
+    def buttonFired(self, button):
+        for listener in self.listeners:
+            listener.buttonFired(button)
+    
+    def render(self, screen):
+        screen.blit(images["Tool-Background"], self.pos)
+        for button in self.buttons:
+            button.render(screen)
+        
+    def mouseMotion(self, event):
+        for button in self.buttons:
+            button.mouseMotion(event)
+    
+    def mouseDown(self, event):
+        for button in self.buttons:
+            button.mouseDown(event)
+    
+    def mouseUp(self, event):
+        for button in self.buttons:
+            button.mouseUp(event)
+
 class Button:
-    def __init__(self, buttonUpImage, buttonDownImage, selectedImage, tool, x, y, width, height):
+    def __init__(self, buttonUpImage, buttonDownImage, buttonHoverImage, pos, width, height):
         self.listeners = []
         self.buttonDown = False
         self.mouseHover = False
-        self.selected = False
         self.upImage = buttonUpImage
         self.downImage = buttonDownImage
-        self.selectedImage = selectedImage
-        self.x = x
-        self.y = y
+        self.hoverImage = buttonHoverImage
+        self.x = pos[0]
+        self.y = pos[1]
         self.width = width
         self.height = height
-        self.tool = tool
         
     def render(self, screen):
-        screen.blit(self.downImage if self.buttonDown else self.upImage, (self.x+2, self.y+2))
-        if self.selected:
-            screen.blit(self.selectedImage, (self.x, self.y))
+        screen.blit(self.downImage if self.buttonDown else self.hoverImage if self.mouseHover else self.upImage, (self.x+2, self.y+2))
     
     def mouseDown(self, event):
         self.buttonDown = True if self.mouseHover else False
@@ -51,9 +83,26 @@ class Button:
     def addListener(self, listener):
         self.listeners.append(listener)
     
+        
+class ToolButton (Button):
+    def __init__(self, image, tool, pos, width, height):
+        Button.__init__(self, images["Tool-"+image], images["Tool-"+image], images["Tool-"+image], pos, width, height)
+        self.selectedImage = images["Tool-Selected"]
+        self.tool = tool
+        self.selected = False
+    
+    def render(self, screen):
+        Button.render(self, screen)
+        if self.selected:
+            screen.blit(self.selectedImage, (self.x, self.y))
+            
     def deSelect(self):
         self.selected = False
     
     def select(self):
         self.selected = True
+    
+class TitleScreenButton (Button):
+    def __init__(self, imageSetName, pos, width, height):
+        Button.__init__(self, images["Button-"+imageSetName], images["Button-"+imageSetName+"-Down"], images["Button-"+imageSetName+"-Hover"], pos, width, height)
     
