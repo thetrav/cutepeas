@@ -15,36 +15,17 @@ RIGHT = 3
 WHEEL_UP=4
 WHEEL_DOWN=5
 
-def newButton(image, yPos, tool):
-    return Button(images["Tool-"+image], images["Tool-"+image], images["Tool-Selected"], tool, 725, yPos, 47, 47)
 
 class UserInterface:
     def __init__(self):
         self.selectedButton = None
-#        yStart = 15
-#        spacing = 50
-        
-#        self.buttons = (
-#                        newButton("Delete", yStart, DeleteTool()),
-#                        newButton("Gel", yStart + spacing, GelBlockTool()),
-#                        newButton("Normal", yStart + spacing*2, NormalBlockTool()),
-#                        newButton("LeftRamp", yStart + spacing*3, LeftRampTool()),
-#                        newButton("RightRamp", yStart + spacing*4, RightRampTool()),
-#                        newButton("Spring", yStart + spacing*5, SpringTool())
-#                        )
-        
-#        for button in self.buttons:
-#            button.addListener(self)
         
 #        self.scene = Scenery()
-        
-        self.buttons = []
         
         self.activeWidgets = []
         self.passiveWidgets = []
         self.scene = None
         self.cursor = Cursor(images["Pointer-Standard"])
-        
         
         #self.score = Score.Score()
         #Animation.animations.append(self.score)
@@ -56,6 +37,12 @@ class UserInterface:
         self.buttons.append(button)
         button.addListener(self)
         
+    def addActiveWidget(self, widget):
+        self.activeWidgets.append(widget)
+        
+    def removeActiveWidget(self, widget):
+        self.activeWidgets.remove(widget)
+        
     def setScene(self, scene):
         self.scene = scene
         self.cursor.setScene(scene)
@@ -63,26 +50,22 @@ class UserInterface:
     def render(self, screen):
         if self.scene:
             self.scene.render(screen)
-        self.renderTools(screen)
-        self.passiveWidget
+        for widget in self.activeWidgets:
+            widget.render(screen)
+        #self.renderTools(screen)
         #self.score.render(screen, (300,10))
         #self.timer.render(screen, (600,10))
         self.cursor.render(screen)
-        
-    def renderTools(self, screen):
-        screen.blit(images["Tool-Background"], (720, 10))
-        for button in self.buttons:
-            button.render(screen)
     
     def handleEvent(self, event):
         if event.type == MOUSEMOTION:
-            for button in self.buttons:
-                button.mouseMotion(event)
+            for widget in self.activeWidgets:
+                widget.mouseMotion(event)
             self.cursor.mouseMotion(event)
         elif event.type == MOUSEBUTTONDOWN:
             if event.button == LEFT:
-                for button in self.buttons:
-                    button.mouseDown(event)
+                for widget in self.activeWidgets:
+                    widget.mouseDown(event)
                 self.cursor.toolUsed()
             elif event.button == RIGHT and self.selectedButton:
                 self.deSelectEvent()
@@ -91,8 +74,8 @@ class UserInterface:
             elif event.button == WHEEL_DOWN:
                 self.scrollButton(+1)
         elif event.type == MOUSEBUTTONUP:
-            for button in self.buttons:
-                button.mouseUp(event)
+            for widget in self.activeWidgets:
+                widget.mouseUp(event)
         elif event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 raise "quit"

@@ -1,16 +1,40 @@
 from Images import images
 from UserInterface import Text
+from UserInterface.Button import TitleScreenButton
+from Level import BasicLevel
 
 class TitleScreen:
-    def __init__(self, userInterface):
+    def __init__(self, userInterface, transitionListener):
         self.userInterface = userInterface
         self.highScoreList = HighScoreList((100,100))
+        self.exitButton = self.addButton("Exit-Game", (600, 150), 200, 50)
+        self.newGameButton = self.addButton("New-Game", (580, 100), 200, 50)
+        self.transitionListener = transitionListener
+    
+    def addButton(self, name, pos, width, height):
+        button = TitleScreenButton(name, pos, width, height)
+        button.addListener(self)
+        self.userInterface.addActiveWidget(button)
+        return button
+    
+    def buttonFired(self, button):
+        if button == self.exitButton:
+            raise "quit"
+        if button == self.newGameButton:
+            self.transition()
     
     def render(self, screen):
         screen.blit(images["Background"], (0,0))
         screen.blit(images["Logo"], (10,10))
         screen.blit(images["Plate"], (5, 520))
         self.highScoreList.render(screen)
+        
+    def transition(self):
+        self.transitionListener.transition(BasicLevel(self.userInterface))
+        
+    def dispose(self):
+        self.userInterface.removeActiveWidget(self.exitButton)
+        self.userInterface.removeActiveWidget(self.newGameButton)
 
 LINE_WIDTH = 30
 LINE_SPACING = 20
