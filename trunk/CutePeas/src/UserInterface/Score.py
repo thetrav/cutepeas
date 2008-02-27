@@ -2,10 +2,11 @@ from Images import images
 import Text
 
 class Score:
-    def __init__(self):
+    def __init__(self, pos):
         self.score = 0
         self.toAdd = 0
         self.addRate = 1
+        self.pos = pos
         
     def addScore(self, newPoints):
         self.toAdd = self.toAdd + newPoints
@@ -18,6 +19,6 @@ class Score:
         self.toAdd = self.toAdd - add
         self.score = self.score + add
         
-    def render(self, screen, pos):
-        screen.blit(images["Happy-Points"], pos)
-        Text.renderText(str(self.score), (pos[0]+30, pos[1]), screen)
+    def render(self, screen):
+        screen.blit(images["Happy-Points"], self.pos)
+        Text.renderText(str(self.score), (self.pos[0]+30, self.pos[1]), screen)

@@ -5,6 +5,7 @@ class ButtonPanel:
         self.pos = pos
         self.buttons = []
         self.listeners = []
+        self.selectedButton = None
         
     def addButton(self, button):
         self.buttons.append(button)
@@ -33,6 +34,29 @@ class ButtonPanel:
     def mouseUp(self, event):
         for button in self.buttons:
             button.mouseUp(event)
+            
+    def scrollButton(self, direction):
+        buttons = self.buttons
+        buttonCount = len(buttons)
+        for x in xrange(buttonCount):
+            if self.selectedButton == None or buttons[x] == self.selectedButton:
+                self.deSelectEvent()
+                buttonInd = x + direction
+                if buttonInd < 0:
+                    buttonInd = buttonCount-1
+                elif buttonInd == buttonCount:
+                    buttonInd = 0
+                buttons[buttonInd].fireEvent()
+                return
+    
+    def deSelectEvent(self):
+        if self.selectedButton:
+            self.selectedButton.deSelect()
+            self.selectedButton = None
+            
+    def selectEvent(self, button):
+        self.selectedButton = button
+            
 
 class Button:
     def __init__(self, buttonUpImage, buttonDownImage, buttonHoverImage, pos, width, height):
@@ -82,7 +106,12 @@ class Button:
             
     def addListener(self, listener):
         self.listeners.append(listener)
+        
+    def scrollButton(self, direction):
+        pass
     
+    def deSelectEvent(self):
+        pass
         
 class ToolButton (Button):
     def __init__(self, image, tool, pos, width, height):
@@ -101,6 +130,8 @@ class ToolButton (Button):
     
     def select(self):
         self.selected = True
+        for listener in self.listeners:
+            listener.selectEvent(self)
     
 class TitleScreenButton (Button):
     def __init__(self, imageSetName, pos, width, height):

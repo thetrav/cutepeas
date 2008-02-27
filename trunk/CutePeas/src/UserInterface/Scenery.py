@@ -42,7 +42,7 @@ class Scenery:
         self.slots = []
         self.mouseHover = False
         
-        self.clouds = [Cloud("Cloud1", 10, 20), Cloud("Cloud2", 100, 400), Cloud("Cloud3", 600, 200)]
+        self.clouds = [Cloud("Cloud1", 10, 20), Cloud("Cloud2", 100, 350), Cloud("Cloud3", 600, 200)]
         
         for cloud in self.clouds:
             animations.append(cloud)
@@ -84,6 +84,8 @@ class Slot:
             self.block.render(screen)
         
     def addBlock(self, block):
+        block.x = self.x
+        block.y = self.y
         self.block = block
         block.ghostIn()
     

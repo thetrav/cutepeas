@@ -30,7 +30,6 @@ class Game:
     
     def render(self, screen):
         self.level.render(screen)
-        self.userInterface.render(screen)
         pygame.display.flip()
         
     def transition(self, newLevel):

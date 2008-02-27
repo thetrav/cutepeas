@@ -1,13 +1,14 @@
 import pygame.transform as xform
 
 class Pea:
-    def __init__(self, img):
+    def __init__(self, img, pos):
         self.image = img
         self.rect = self.__getRect()
         self.rotateAngle = 0
         self.rotateIncrement = 20
         #self.node = initNode
         #self.prevNode = None
+        self.pos = pos
         
         self.listeners = []
     
@@ -39,10 +40,13 @@ class Pea:
         return self.rotateIncrement
         
     def render(self, screen):
-        self.__animate()
-        screen.blit(self.image, self.rect)
+        screen.blit(self.image, self.pos)
         # Restoring is needed for rotations (animate)
-        self.__restoreImage()
+        #self.__restoreImage()
+        
+    def update(self, timeD):
+        self.__animate()
+        
     
     def fireDeath(self):
         for listener in self.listeners:

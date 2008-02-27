@@ -18,20 +18,10 @@ WHEEL_DOWN=5
 
 class UserInterface:
     def __init__(self):
-        self.selectedButton = None
-        
-#        self.scene = Scenery()
-        
         self.activeWidgets = []
         self.passiveWidgets = []
         self.scene = None
         self.cursor = Cursor(images["Pointer-Standard"])
-        
-        #self.score = Score.Score()
-        #Animation.animations.append(self.score)
-        
-        #self.timer = Timer.Timer()
-        #Animation.animations.append(self.timer)
 
     def addButton(self, button):
         self.buttons.append(button)
@@ -43,6 +33,12 @@ class UserInterface:
     def removeActiveWidget(self, widget):
         self.activeWidgets.remove(widget)
         
+    def addPassiveWidget(self, widget):
+        self.passiveWidgets.append(widget)
+        
+    def removePassiveWidget(self, widget):
+        self.passiveWidgets.remove(widget)
+        
     def setScene(self, scene):
         self.scene = scene
         self.cursor.setScene(scene)
@@ -52,9 +48,8 @@ class UserInterface:
             self.scene.render(screen)
         for widget in self.activeWidgets:
             widget.render(screen)
-        #self.renderTools(screen)
-        #self.score.render(screen, (300,10))
-        #self.timer.render(screen, (600,10))
+        for widget in self.passiveWidgets:
+            widget.render(screen)
         self.cursor.render(screen)
     
     def handleEvent(self, event):
@@ -67,8 +62,9 @@ class UserInterface:
                 for widget in self.activeWidgets:
                     widget.mouseDown(event)
                 self.cursor.toolUsed()
-            elif event.button == RIGHT and self.selectedButton:
+            elif event.button == RIGHT:
                 self.deSelectEvent()
+                self.cursor.toolCleared()
             elif event.button == WHEEL_UP:
                 self.scrollButton(-1)
             elif event.button == WHEEL_DOWN:
@@ -83,25 +79,13 @@ class UserInterface:
     def buttonFired(self, button):
         self.deSelectEvent()
         button.select()
-        self.selectedButton = button
         self.cursor.toolChanged(button.tool)
         
     def deSelectEvent(self):
-        if self.selectedButton:
-            self.selectedButton.deSelect()
-            self.selectedButton = None
-            self.cursor.toolCleared()
-    
+        for widget in self.activeWidgets:
+            widget.deSelectEvent()
+        self.cursor.toolCleared()
+        
     def scrollButton(self, direction):
-        buttons = self.buttons
-        buttonCount = len(buttons)
-        for x in xrange(buttonCount):
-            if self.selectedButton == None or buttons[x] == self.selectedButton:
-                self.deSelectEvent()
-                buttonInd = x + direction
-                if buttonInd < 0:
-                    buttonInd = buttonCount-1
-                elif buttonInd == buttonCount:
-                    buttonInd = 0
-                buttons[buttonInd].fireEvent()
-                return
+        for widget in self.activeWidgets:
+            widget.scrollButton(direction)
