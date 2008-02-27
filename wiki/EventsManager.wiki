@@ -3,7 +3,7 @@
 
 I have been considering writing a generic event handling structure.
 
-Basically there's a module called which handles notifications and listeners, here's the interface
+Basically there's a module which handles notifications and listeners, here's the interface
 
 {{{
 EventMgr.addListener(id, listener)
