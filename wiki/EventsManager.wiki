@@ -1,0 +1,27 @@
+#summary Event Manager notes
+= Notes =
+
+I have been considering writing a generic event handling structure.
+
+Basically there's a module called EventMgr which handles notifications and listeners, here's the interface
+
+
+EventMgr.addListener(id, listener)
+EventMgr.removeListener(listener)
+EventMgr.fireEvent(objectId, event)
+EventMgr.getId(object) id
+
+
+objectId will be unique to an object and event will be an object containing whatever is relevant to the event.
+
+
+Example use:
+{{{
+class ButtonListener:
+  def __init__(self):
+    button = Button()
+    button.id = EventMgr.getId()
+    EventMgr.addListener(button.id, self)
+}}}
+button is then put into play, and within button's code:
+EventMgr.fireEvent(self.id, ButtonClickedEvent(self))
