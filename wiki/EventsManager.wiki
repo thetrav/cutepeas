@@ -24,4 +24,8 @@ class ButtonListener:
     EventMgr.addListener(button.id, self)
 }}}
 button is then put into play, and within button's code:
+{{{
 EventMgr.fireEvent(self.id, ButtonClickedEvent(self))
+}}}
+
+Event manager then checks through its map of listeners for any listeners listening to the button's id, and calls eventFired(event) on them
