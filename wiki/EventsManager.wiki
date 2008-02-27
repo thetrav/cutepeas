@@ -29,3 +29,8 @@ EventMgr.fireEvent(self.id, ButtonClickedEvent(self))
 }}}
 
 Event manager then checks through its map of listeners for any listeners listening to the button's id, and calls eventFired(event) on them
+
+== things worth considering ==
+It's important that EventMgr maintains the id's to ensure they are unique.  They don't have to be numbers, and could even be references themselves.
+
+cleanup between levels could be a little annoying with this, as everything that listens is referenced (and therefore not garbage collected) until it is removed
