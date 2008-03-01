@@ -49,7 +49,8 @@ def loadImages():
                     "Cloud3",
                     "1",
                     "2",
-                    "3"]
+                    "3",
+                    "nodeview"]
     blockImageSet("Normal",imageStrings) 
     blockImageSet("Gel",imageStrings)
     blockImageSet("RightRamp",imageStrings)

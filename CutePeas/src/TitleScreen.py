@@ -23,8 +23,8 @@ class TitleScreen:
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 4, 8)
         self.addBlock(Block("Block-Place-Spring", "Block-Spring"), scene, 6, 8)
         self.addBlock(Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
-        
-        self.pea = Pea(images["Pea-Standard"], (170, 515))
+        from PathFinding import Node
+        self.pea = Pea(images["Pea-Standard"], Node.Node(170, 515, None))
         
 
     def addBlock(self, block, scene, x, y):
