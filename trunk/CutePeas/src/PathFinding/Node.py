@@ -74,12 +74,31 @@ class Node:
         node - node to traverse using it's nextNode() method to move forward, prevNode() is NOT used.
         func - func to execute on each node encountered, must be of the form: myfunc(node, data)
         data - whatever data is suitable for the func
+    Will loop till we're out of stack space on a circular ref!!
     """
     def __traverse(self, node, func, data):
         if node is None:
             return
         func(node, data)
         self.__traverse(node.nextNode(), func, data)
+
+    """
+    Generic inorder traversal method:
+        node - node to traverse using it's nextNode() method to move forward, prevNode() is NOT used.
+        func - func to execute on each node encountered, must be of the form: myfunc(node, data)
+        data - whatever data is suitable for the func
+    This method detects a circular reference, and stops at that point.
+    """
+    def __circularTraverse(self, node, func, data):
+        firstnode = currnode = node
+        if firstnode is not None:
+            func(firstnode, data)
+            currnode = firstnode.nextNode()
+        while currnode is not None:
+            if currnode is firstnode:
+                return # already handled, circular ref.
+            func(currnode, data)
+            currnode = currnode.nextNode()
 
     def __renderNode(self, node, screen):
         if node.image is None:
@@ -88,7 +107,9 @@ class Node:
         screen.blit(node.image, node.getPos())
         
     def render(self, screen):
-        self.__traverse(self, self.__renderNode, screen)
+        #self.__traverse(self, self.__renderNode, screen)
+        self.__circularTraverse(self, self.__renderNode, screen)
+        
 
         
 """
@@ -98,4 +119,24 @@ def nodeDoublyLink(prevNode, nextNode):
     prevNode.setNextNode(nextNode)
     assert prevNode.nextNode() is nextNode
     nextNode.setPrevNode(prevNode)
-    assert nextNode.prevNode() is prevNode 
+    assert nextNode.prevNode() is prevNode
+
+"""
+Swaps the direction of the nodes, i.e. for each node, it swaps the prev and next pointer, 
+it assumes that the first node is supplied i.e. node.prevNode() is none, or an assertion
+error is thrown.
+"""
+def swapDirection(node):
+    assert node.prevNode() is None
+    __swapDirection(node)
+    
+def __swapDirection(node):    
+    if node is None:
+        return
+    next = node.nextNode()
+    prev = node.prevNode()
+    node.setNextNode(prev)
+    node.setPrevNode(next)
+    # work on the original next traversal so we visit all nodes
+    __swapDirection(next)
+    

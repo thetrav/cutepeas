@@ -35,6 +35,7 @@ class Pea:
         prev, next = self.__getPrevAndNextNodes()
         if next is None and prev is None:
             self.pos = self.currentNode.getPos() # nowhere new to move, poor claustrophobic pea :(
+            return
         elif next is None:
             self.currentNode = prev
             self.__toggleReverse() # swap reversal altering next/prev semantics

@@ -22,15 +22,43 @@ class Screen:
     def __createSquareNodeStructure(self):
         import NodeListGenerator as ng
         hnode1, hnodelist1 = ng.createHorizontalNodeList(None, 25, 30, 50, 7, self.nodeImage)
+        lasthnode1 = hnodelist1[len(hnodelist1)-1]
         pos1 = hnode1.getPos()
         vnode1, vnodelist1 = ng.createVerticalNodeList(None, 25, pos1[0], pos1[1], 7, self.nodeImage)
         hnode1 = hnode1.nextNode()
         hnode1.setPrevNode(vnode1)
-#        pos2 = vnodelist1[len(vnodelist1)-1].getPos()
-#        hnode2, hnodelist2 = ng.createHorizontalNodeList(None, 25, pos2[0], pos2[1], 7)
-#        pos3 = hnodelist2[len(hnodelist2)-1].getPos()
-#        vnode2, vnodelist2 = ng.createVerticalNodeList(None, 25, pos3[0], pos3[1], 7)
-        return hnode1
+        # need to swap direction of links so that traversal is consistent.. I've never had to worry
+        # about direction on a regular list before wow... - this stuff only makes sense when you draw it.
+        # need to optimise this if possible...
+        # Alternatively drawing it in a different order may work w/o swapDirection.. too sleepy to think..
+        Node.swapDirection(vnode1) 
+        vnode1.setNextNode(hnode1)
+        lastvnode1 = vnodelist1[len(vnodelist1)-1]
+        pos2 = lastvnode1.getPos()
+        hnode2, hnodelist2 = ng.createHorizontalNodeList(None, 25, pos2[0], pos2[1], 7, self.nodeImage)
+        lastvnode1 = lastvnode1.nextNode()
+        lastvnode1.setPrevNode(hnode2)
+        Node.swapDirection(hnode2) 
+        hnode2.setNextNode(lastvnode1)
+        lasthnode2 = hnodelist2[len(hnodelist2)-1]
+        #return lasthnode2
+        pos3 = lasthnode2.getPos()
+        vnode2, vnodelist2 = ng.createVerticalNodeList(None, 25, pos3[0], pos3[1], -7, self.nodeImage)
+        lasthnode2 = lasthnode2.nextNode()
+        lasthnode2.setPrevNode(vnode2)
+        Node.swapDirection(vnode2)
+        vnode2.setNextNode(lasthnode2)
+        lastvnode2 = vnodelist2[len(vnodelist2)-1]
+        # Complete the circle
+        print lasthnode1
+        print lastvnode2
+        lasthnode1 = lasthnode1.prevNode()
+        lasthnode1.setNextNode(lastvnode2)
+        lastvnode2.setPrevNode(lasthnode1)
+        print lasthnode1
+        print lastvnode2
+        return lastvnode2
+        #return vnodelist1[len(vnodelist1)-1]
     
     def addBlock(self, block, scene, x, y):
         scene.slots[x][y].addBlock(block)
