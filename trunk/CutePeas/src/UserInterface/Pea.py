@@ -16,7 +16,7 @@ class Pea:
         self.node = newNode
     
     def __getRect(self):
-        return self.image.get_rect().move((60, 60))
+        return self.image.get_rect().move(self.pos) #.move((60, 60))
         
     def __restoreImage(self):
         self.image = self.originalImage
@@ -32,21 +32,25 @@ class Pea:
         self.rect = self.image.get_rect(center=center)
         
     def __getRotateIncrement(self):
+        return self.rotateIncrement
         # based on node return either positive or negative increment
         # for now just randomise direction
-        import random
-        if random.randint(-2,2) < 0:
-            return -(self.rotateIncrement)
-        return self.rotateIncrement
+        #import random
+        #if random.randint(-2,2) < 0:
+        #    return -(self.rotateIncrement)
+        #return self.rotateIncrement
         
     def render(self, screen):
+        self.__animate()
         screen.blit(self.image, self.pos)
+        self.__restoreImage()
         # Restoring is needed for rotations (animate)
         #self.__restoreImage()
         
     def update(self, timeD):
-        self.__animate()
-        
+        #self.__animate()
+        #self.__restoreImage()
+        pass
     
     def fireDeath(self):
         for listener in self.listeners:
