@@ -1,9 +1,13 @@
 import pygame
+import os.path
 
 images = {}
 
+# Not private, to allow [test] clients to modify the base dir relative to where they're at.
+IMAGE_BASE_DIR = os.path.join(os.pardir, 'data', 'images')
+
 def loadImage(name, colorkey=None):
-    fullname = '../data/images/' + name + '.png'
+    fullname = os.path.join(IMAGE_BASE_DIR, name + '.png')
     try:
         image = pygame.image.load(fullname)
     except pygame.error, message:
