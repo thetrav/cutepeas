@@ -2,19 +2,7 @@ from Images import images
 import math
 from Animation import animations
 import random
-
-BLOCK_WIDTH = 71
-BLOCK_HEIGHT = 50
-BLOCK_HEIGHT_REAL = 61
-BLOCK_Y_OVERLAP = BLOCK_HEIGHT_REAL - BLOCK_HEIGHT
-
-NUM_BLOCKS = 9
-
-X_OFFSET = 50
-X_BORDER = X_OFFSET + NUM_BLOCKS * BLOCK_WIDTH
-
-Y_OFFSET = 90
-Y_BORDER = Y_OFFSET + NUM_BLOCKS * BLOCK_HEIGHT
+from Constants import *
 
 def posToIndex(x, y, slots):
     i = singlePosToIndex(x, X_OFFSET, BLOCK_WIDTH)
@@ -96,9 +84,6 @@ class Slot:
     def ghostedOut(self, block):
         self.block = None
 
-MIN_TIME = 1000
-MAX_TIME = 4000
-WIND_SPEED = 0.00001
 
 class Cloud:
     def __init__(self, image, x, y):
