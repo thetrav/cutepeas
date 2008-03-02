@@ -87,7 +87,8 @@ class Node:
         node - node to traverse using it's nextNode() method to move forward, prevNode() is NOT used.
         func - func to execute on each node encountered, must be of the form: myfunc(node, data)
         data - whatever data is suitable for the func
-    This method detects a circular reference, and stops at that point.
+    This method detects a circular reference, and stops at that point. Special case, assumes
+    a last node points to first node only circle - optimised for this.
     """
     def __circularTraverse(self, node, func, data):
         firstnode = currnode = node
@@ -100,6 +101,23 @@ class Node:
             func(currnode, data)
             currnode = currnode.nextNode()
 
+    """
+    Generic inorder traversal method:
+        node - node to traverse using it's nextNode() method to move forward, prevNode() is NOT used.
+        func - func to execute on each node encountered, must be of the form: myfunc(node, data)
+        data - whatever data is suitable for the func
+    This method detects a circular reference, and stops at that point. Will detect any circular
+    reference, but it's worst case mem usage (the ref check itself is more or less O(1) though) is when
+     it's a last node points to first node case.
+    """
+    def __circularTraverseGeneric(self, node, func, data):
+        processed = set()
+        currnode = node
+        while currnode is not None and currnode not in processed:
+            func(currnode, data)
+            processed.add(currnode)
+            currnode = currnode.nextNode()
+
     def __renderNode(self, node, screen):
         if node.image is None:
             return
@@ -108,7 +126,8 @@ class Node:
         
     def render(self, screen):
         #self.__traverse(self, self.__renderNode, screen)
-        self.__circularTraverse(self, self.__renderNode, screen)
+        #self.__circularTraverse(self, self.__renderNode, screen)
+        self.__circularTraverseGeneric(self, self.__renderNode, screen)
         
 
         
