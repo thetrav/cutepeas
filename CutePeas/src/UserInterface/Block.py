@@ -1,6 +1,8 @@
 from Images import images
 import math
 import Animation
+from PathFinding.AddNodes import *
+from Constants import *
 
 GHOST_TIMER_INIT = 3000
 
@@ -16,6 +18,21 @@ class Block:
         self.ghostingInListeners = []
         self.ghostingOutListeners = []
         
+    def createNodes(self):
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        nodes = [
+                 CornerNode((x, y)),
+                 FaceNode((x+BLOCK_WIDTH/2, y)),
+                 CornerNode((x+BLOCK_WIDTH, y)),
+                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2)),
+                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT)),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT)),
+                 CornerNode((x, y + BLOCK_HEIGHT)),
+                 FaceNode((x, y + BLOCK_HEIGHT/2))]
+        loopNodes(nodes)
+        return nodes
+    
     def resetTimer(self):
         self.ghostTimer = GHOST_TIMER_INIT
     

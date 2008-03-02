@@ -105,3 +105,12 @@ def createNode(x, y):
     else:
         return PlateNode((xPixelPos, y))
 
+def loopNodes(nodeList):
+    prev = None
+    for node in nodeList:
+        if prev:
+            prev.linkNode(node)
+            node.linkNode(prev)
+        prev = node
+    prev.linkNode(node)
+    node.linkNode(prev)
