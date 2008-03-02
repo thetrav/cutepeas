@@ -31,6 +31,19 @@ class NodeGraph:
                 self.nodes[str(node.pos)].merge(node)
             else:
                 self.storeNode(node)
+    
+def findPath(currentNode):
+    nodeCount = 0
+    nodes = []
+    traverseNode(nodes, currentNode)
+    return nodes
+        
+def traverseNode(currentPath, currentNode):
+    if len(currentPath) < 5:
+        for linked in currentNode.linkedNodes:
+            if linked not in currentPath:
+                currentPath.append(linked)
+                traverseNode(currentPath, linked)
                 
 class Node:
     def __init__(self, pos):
@@ -114,3 +127,9 @@ def loopNodes(nodeList):
         prev = node
     prev.linkNode(node)
     node.linkNode(prev)
+
+
+graph = NodeGraph(9,10)
+print str(graph.nodes)
+path = findPath(graph.nodes['(156, 10)'])
+print str(path)
