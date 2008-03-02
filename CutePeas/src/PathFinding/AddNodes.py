@@ -3,13 +3,13 @@ from Constants import *
 from UserInterface.Text import *
 
 class NodeGraph:
-    def __init__(self, numFloorBlocks, plateIndex):
+    def __init__(self, numFloorBlocks, yPos):
         self.nodes = {}
-        prev = PlateCornerNode((0,plateIndex))
+        prev = PlateCornerNode((X_OFFSET,yPos))
         self.storeNode(prev)
         
         for x in xrange(numFloorBlocks * 2):
-            node = createNode(x+1, plateIndex)
+            node = createNode(x+1, yPos)
             prev.linkNode(node)
             node.linkNode(prev)
             self.storeNode(node)
@@ -52,11 +52,11 @@ class Node:
         return validNodes
         
     def render(self, screen):
-        pos = toScreenCoords(self.pos)
+        pos = self.pos
         renderText(str(self.nodeCount), pos, screen, (0,0,200))
         pygame.draw.circle(screen, (0,200,0) if self.canTraverse() else (250,0,0) , pos, 8)
         for node in self.linkedNodes:
-            pygame.draw.line(screen, (0,0,200), pos, toScreenCoords(node.pos))
+            pygame.draw.line(screen, (0,0,200), pos, node.pos)
     
     def merge(self, node):
         print "merging"
@@ -95,12 +95,13 @@ class CornerNode(Node):
     def canTraverse(self):
         return self.nodeCount < 4
         
-def toScreenCoords(pos):
-    return (pos[0]*BLOCK_WIDTH/2 + X_OFFSET, pos[1] * BLOCK_HEIGHT/2 + Y_OFFSET)
+def toScreenCoords(x):
+    return x*BLOCK_WIDTH/2 + X_OFFSET
 
 def createNode(x, y):
+    xPixelPos = toScreenCoords(x)
     if x % 2 == 0:
-        return PlateCornerNode((x, y))
+        return PlateCornerNode((xPixelPos, y))
     else:
-        return PlateNode((x, y))
+        return PlateNode((xPixelPos, y))
 

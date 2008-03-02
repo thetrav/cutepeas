@@ -5,6 +5,7 @@ from Level import BasicLevel
 from UserInterface.Scenery import Scenery
 from UserInterface.Block import *
 from UserInterface.Pea import *
+from PathFinding.AddNodes import *
 
 class TitleScreen:
     def __init__(self, userInterface, transitionListener):
@@ -25,6 +26,7 @@ class TitleScreen:
         self.addBlock(Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
         from PathFinding import Node
         self.pea = Pea(images["Pea-Standard"], Node.Node(170, 515, None))
+        self.nodeGraph = NodeGraph(NUM_BLOCKS, NUM_BLOCKS * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
         
 
     def addBlock(self, block, scene, x, y):
@@ -52,6 +54,7 @@ class TitleScreen:
         screen.blit(images["Flag-Pole"], flagPos)
         screen.blit(images["Flag-Good"], (flagPos[0]+5, flagPos[1]+20))
         self.pea.render(screen)
+        self.nodeGraph.render(screen)
         
     def transition(self):
         self.transitionListener.transition(BasicLevel(self.userInterface))
