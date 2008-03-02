@@ -8,12 +8,9 @@ from Tool import *
 from Scenery import *
 from Pea import *
 import Text, Score, Animation, Timer, Particles.Particles
+from Constants import *
 
 
-LEFT = 1
-RIGHT = 3
-WHEEL_UP=4
-WHEEL_DOWN=5
 
 
 class UserInterface:
