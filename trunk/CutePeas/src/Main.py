@@ -25,7 +25,7 @@ class Game:
             if event.type == QUIT:
                 print 'Goodbye!'
                 sys.exit(0)
-            else :
+            else:
                 self.userInterface.handleEvent(event)
     
     def render(self, screen):
