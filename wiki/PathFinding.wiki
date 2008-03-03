@@ -6,34 +6,13 @@ Ok, so now we've got a basic implementation of the NodeGraph down, it's in the A
 
 Within the AddNodes module (please rename to NodeGraph) there's a basic path finding implementation that traverses the node graph without any real intelligence, it basically takes the first linked traversable node that hasn't already been added to the path and makes that the next node in the path and recurses from there.
 
-= Notes =
+The graph is currently always rendered as circles and lines.  Eventually this should be toggled on and off and start off by default.
 
+= Notes =
   * All peas inhabit the same traversable area, therefore sharing a single map is preferable
-  * A map of nodes with connections? or a map of Nodes with passable/non-passable states?
   * Keep path determination separate to movement & bounce
   * Whatever map is constructed it would be good to visualize it and be able to turn the visualization on and off while playing
 
-
-= Build Map & Connections as blocks are placed =
-
-Start off with nodes along the bottom of the plate, each connected to one another.
-
-Each block type has a pre-determined collection of nodes.  Eg, a normal block has 8 nodes (the 4 faces and the 4 corners) which are each connected to two adjacent nodes.
-
-When a block is placed, the following needs to happen
-
-  # determine if any of the new nodes overlap on existing nodes.  These nodes will need to    be joined
-  # determine if any previously passable nodes have now become impassable.   They will need to be destroyed and the connections to them severed.
-  # determine if any extra nodes need to be added (jump nodes).  They will need to be added and connected as needed.
-
-
-= Path Determination on connection map =
-
-Assume all nodes are connected.  If that is not the case, then create a list of all nodes connected to the peas current location.
-
-reduce nodes to a single node based on the following criteria
-  # highest completion% new flag (if flags exist)
-  # highest jumpable node within reach
-If no unjumped node is jumpable wander randomly
-
-Otherwise calculate the shortest path to the picked node using a culling tree search.  Try breadth first, then depth first, then try playing around with that algorithm to get good performance if necessary
+= Path Determination Ideas =
+A greedy way to determine using the current structure is to traverse EVERY node the pea is currently connected to, and keep track of the highest Y Node encountered.  
+Now you've got a start and end point so all you have to do is a depth first tree search to reach the highest node, keep track of the path along the way to avoid looping.
