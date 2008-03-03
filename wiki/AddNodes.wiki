@@ -1,0 +1,3 @@
+#summary The AddNodes module.
+
+The AddNodes module currently holds our important PathFinding stuff.  I'd like to rename it to Nodes or NodeGraph when possible.
