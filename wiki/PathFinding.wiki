@@ -1,5 +1,11 @@
 #summary Notes for path finding design.
 
+= Implementation =
+
+Ok, so now we've got a basic implementation of the NodeGraph down, it's in the AddNodes module for the moment but that needs to be re-named.  The current NodeGraph module is a crack I took at it before realizing that I was doing it entirely the wrong way.
+
+Within the AddNodes module (please rename to NodeGraph) there's a basic path finding implementation that traverses the node graph without any real intelligence, it basically takes the first linked traversable node that hasn't already been added to the path and makes that the next node in the path and recurses from there.
+
 = Notes =
 
   * All peas inhabit the same traversable area, therefore sharing a single map is preferable
