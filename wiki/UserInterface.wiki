@@ -1,28 +1,21 @@
-#summary User Interface Design Notes.
+#summary Description of the UserInterface Class.
 
-= Notes =
+= Description =
 
-Wherever possible in the UI use the listener/event model.  This allows frequent changes to be relatively easy, and allows hooking in new components a lot easier than large coupled methods.
+The UserInterface class is supposed to contain the widgets that the user uses to interact with the game.  This is supposed to be separate from the model of the Level (see LevelClass) itself, however currently that split is poorly implemented.
 
-For release 0.1 the UI can be pretty static.  All tools displayed on the right, a fixed tool application area, implement dropping and deleting blocks.
+The UserInterface class has a collection of active widgets and a collection of passive widgets.  Both are rendered, but only the active widget collection receives events.
 
-== Ghosting ==
-Ghosting is a reasonably complex UI interaction.  Here's some notes on how I want it to work.
+The UserInterface class also manages the Cursor class which means interacting with the tools, the buttons and the scene itself.
 
-When the user drops a block on the scene, that block gets added to the animation list.  That will ensure it gets updated on the timer, the update will let it count down a number of seconds (possibly rendered on top of the block) until it changes graphic and behavior to a standard block.
+Currently it all works reasonably well, but I'd really love to refactor this one quite a lot so that there's a good split between the view/control in UserInterface and the model in Level.  I think there is too much model currently in UserInterface
 
+== Active Widgets ==
+  * ToolBar
+    * ToolButton
+  * Button
 
-== ghosting interactions ==
-Ghosting out should do the same thing, except when its count down finishes it should clear the block and associated nodes & surfaces.
-
-== nodes ==
-*Node Ghosting in:* peas cannot enter node, peas on node try to exit to the nearest non ghosted node
-
-*Node Ghosting out:* peas cannot enter node, peas on node try to exit to the nearest non ghosted node
-
-== finished ghosting ==
-When a block ghosts in completely there's potential for a pea to be squashed (if it couldn't get out in time) this doesn't seem to be something that should be figured out by path finding, but I can't figure out where it should really be calculated
-
-When a block ghosts out completely there's potential for a pea to fall.  I would suggest this be handled by the physics engine but without allowing the pea to score.
-
-
+== Passive Widgets ==
+  * Score
+  * Timer
+  * Text
