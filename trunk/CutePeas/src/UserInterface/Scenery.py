@@ -3,6 +3,8 @@ import math
 from Animation import animations
 import random
 from Constants import *
+import Event
+import Block
 
 def posToIndex(x, y, slots):
     i = singlePosToIndex(x, X_OFFSET, BLOCK_WIDTH)
@@ -25,7 +27,7 @@ def singleIndexToPos(pos, offset, gap):
     return pos * gap + offset
 
 class Scenery:
-    def __init__(self):
+    def __init__(self, BLOCKS_WIDE, BLOCKS_HIGH):
         self.hoveredSlot = None
         self.slots = []
         self.mouseHover = False
@@ -35,9 +37,9 @@ class Scenery:
         for cloud in self.clouds:
             animations.append(cloud)
         
-        for x in xrange(NUM_BLOCKS):
+        for x in xrange(BLOCKS_WIDE):
             self.slots.append([])
-            for y in xrange(NUM_BLOCKS):
+            for y in xrange(BLOCKS_HIGH):
                 self.slots[x].append(Slot(indexToPos(x,y)))
     
     def pickSlot(self, pos):
@@ -55,9 +57,9 @@ class Scenery:
     def render(self, screen):
         for cloud in self.clouds:
             cloud.render(screen)
-        for x in xrange(NUM_BLOCKS):
-            for yMin in xrange(NUM_BLOCKS):
-                y = NUM_BLOCKS - yMin -1
+        for x in xrange(BLOCKS_WIDE):
+            for yMin in xrange(BLOCKS_HIGH):
+                y = BLOCKS_HIGH - yMin -1
                 if self.slots[x][y]:
                     self.slots[x][y].render(screen) 
 
@@ -79,10 +81,13 @@ class Slot:
     
     def deleteBlock(self):
         if self.block and not self.block.isGhosting():
-            self.block.ghostOut(self)
+            self.block.ghostOut()
+            Event.addListener(Block.DONE_GHOSTING_OUT_EVENT, self)
     
-    def ghostedOut(self, block):
-        self.block = None
+    def eventFired(self, id, block):
+        if self.block == block:
+            self.block = None
+            Event.removeListener(Block.DONE_GHOSTING_OUT_EVENT, self)
 
 
 class Cloud:

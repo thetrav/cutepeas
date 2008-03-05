@@ -1,17 +1,26 @@
 import pygame.transform as xform
-from PathFinding import Node
+import PathFinding.NodeGraph
+from Constants import *
+import Event
+
+NODE_TIMER = 1000
 
 class Pea:
     def __init__(self, img, initnode):
         self.image = img
         self.setNode(initnode)
-        self.pos = initnode.getPos()
+        self.pos = initnode.pos
         self.rect = self.__getRect()
         self.rotateAngle = 0
         self.rotateIncrement = 90
         self.rotated = False
         self.listeners = []
         self.reverse = False
+        self.path = PathFinding.NodeGraph.findPath(initnode)
+        Event.addListener(EVENT_NODE_GRAPH_UPDATED, self)
+    
+    def dispose(self):
+        Event.removeListener(EVENT_NODE_GRAPH_UPDATED, self)
 
     def getNode(self):
         return self.currentNode
@@ -19,7 +28,8 @@ class Pea:
     def setNode(self, node):
         self.reverse = False
         self.currentNode = node
-        self.pos = self.currentNode.getPos()
+        self.pos = self.currentNode.pos
+        self.timeUntilNextNode = NODE_TIMER
     
     def __getRect(self):
         return self.image.get_rect().move(self.pos)
@@ -61,7 +71,7 @@ class Pea:
         
     def __animate(self):
         self.__rotate()
-        self.__switchNode()
+        #self.__switchNode()
         self.rect = self.rect.move(self.pos)
     
     def __rotate(self):
@@ -80,20 +90,26 @@ class Pea:
         return -(self.rotateIncrement)
         
     def render(self, screen):
-        self.__animate()
         screen.blit(self.image, self.pos)
         # Restoring is needed for rotations
         self.__restoreImage()
+        for node in self.path:
+            node.render(screen, (255,255,0))
         
     def update(self, timeD):
-        #self.__animate()
-        #self.__restoreImage()
-        # to the.trav - if you're messing with events and what not, could you please also update
-        # PeaAnimateAndPathFindingScreen.Screen (which is basically a much simpler test harness
-        # version of the TitleScreen) so it works with the new update() mechanism, or let me 
-        # know the idea behind it - I reverted the pea's animation back (to render()) temporarily
-        # - was too lazy to understand the new mechanism :P.
-        pass
+        self.timeUntilNextNode -= timeD
+        if self.timeUntilNextNode < 0:
+            self.setNode(self.path.pop(0))
+            if len(self.path) == 0:
+                self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+        self.__animate()
+        #To Kamal.  In case I don't see you again the update function is called on every member of the Animation.animations list once per frame with the elapsed time since the previous frame.
+        # this allows for very smooth animations regardless of the users actual frame rate.  It is important to keep it all synched to the one timer for a number of reasons best not discussed here
+        # --Trav 
+        
+    def eventFired(self, eventId, source):
+        if eventId == EVENT_NODE_GRAPH_UPDATED:
+            self.path = PathFinding.NodeGraph.findPath(self.currentNode)
     
     def fireDeath(self):
         for listener in self.listeners:

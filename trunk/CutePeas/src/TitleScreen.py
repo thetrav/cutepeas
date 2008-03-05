@@ -5,7 +5,7 @@ from Level import BasicLevel
 from UserInterface.Scenery import Scenery
 from UserInterface.Block import *
 from UserInterface.Pea import *
-from PathFinding.AddNodes import *
+from PathFinding.NodeGraph import *
 
 class TitleScreen:
     def __init__(self, userInterface, transitionListener):
@@ -14,8 +14,8 @@ class TitleScreen:
         self.exitButton = self.addButton("Exit-Game", (600, 150), 200, 50)
         self.newGameButton = self.addButton("New-Game", (580, 100), 200, 50)
         self.transitionListener = transitionListener
-        scene = Scenery()
-        self.nodeGraph = NodeGraph(NUM_BLOCKS, NUM_BLOCKS * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
+        scene = Scenery(BLOCKS_WIDE, BLOCKS_HIGH)
+        self.nodeGraph = NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
         self.userInterface.setScene(scene)
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 8)
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 7)
@@ -25,8 +25,8 @@ class TitleScreen:
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 4, 8)
         self.addBlock(Block("Block-Place-Spring", "Block-Spring"), scene, 6, 8)
         self.addBlock(Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
-        from PathFinding import Node
-        self.pea = Pea(images["Pea-Standard"], Node.Node(170, 515, None))
+        self.pea = Pea(images["Pea-Standard"], self.nodeGraph.grabNode((121, 551)))
+        Animation.animations.append(self.pea)
         
 
     def addBlock(self, block, scene, x, y):
@@ -55,11 +55,13 @@ class TitleScreen:
         flagPos = (315, 280)
         screen.blit(images["Flag-Pole"], flagPos)
         screen.blit(images["Flag-Good"], (flagPos[0]+5, flagPos[1]+20))
-        self.pea.render(screen)
         self.nodeGraph.render(screen)
+        self.pea.render(screen)
         
     def transition(self):
         self.transitionListener.transition(BasicLevel(self.userInterface))
+        Animation.animations.remove(self.pea)
+        self.pea.dispose()
         
     def dispose(self):
         self.userInterface.removeActiveWidget(self.exitButton)
