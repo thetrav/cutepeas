@@ -1,18 +1,18 @@
 listenerMap = {}
 
 def addListener(id, listener):
-    if not listenerMap[id]:
-        listnerMap[id] = []
+    if not listenerMap.has_key(id):
+        listenerMap[id] = []
     listenerMap[id].append(listener)
     
 def removeListener(id, listener):
-    if listenerMap[id]:
+    if listenerMap.has_key(id):
         listenerMap[id].remove(listener)
     
 def fireEvent(id, event):
-    if listenerMap[id]:
+    if listenerMap.has_key(id):
         for listener in listenerMap[id]:
-            listener.eventFired(event)
+            listener.eventFired(id, event)
             
 def getId(object):
     return object

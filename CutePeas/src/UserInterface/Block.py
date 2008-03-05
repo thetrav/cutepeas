@@ -1,10 +1,12 @@
 from Images import images
 import math
 import Animation
-from PathFinding.AddNodes import *
+from PathFinding.NodeGraph import *
 from Constants import *
 
-GHOST_TIMER_INIT = 3000
+GHOST_TIMER_INIT = 2999
+DONE_GHOSTING_IN_EVENT = "Done Ghosting In Event"
+DONE_GHOSTING_OUT_EVENT = "Done Ghosting Out Event"
 
 class Block:
     def __init__(self, ghostingImage, displayImage):
@@ -15,8 +17,6 @@ class Block:
         self.ghostingIn = False
         self.ghostingOut = False
         self.resetTimer()
-        self.ghostingInListeners = []
-        self.ghostingOutListeners = []
         
     def createNodes(self):
         x = self.x
@@ -42,12 +42,11 @@ class Block:
         self.ghostingIn = True
         Animation.animations.append(self)
         
-    def ghostOut(self, listener):
+    def ghostOut(self):
         self.resetTimer()
         self.ghostingIn = False
         self.ghostingOut = True
         Animation.animations.append(self)
-        self.ghostingOutListeners.append(listener)
     
     def render(self, screen):
         if self.isGhosting():
@@ -72,12 +71,10 @@ class Block:
     def doneGhostingIn(self):
         Animation.animations.remove(self)
         self.ghostingIn = False
-        for listener in self.ghostingInListeners:
-            listener.ghostedIn(self)
+        Event.fireEvent(DONE_GHOSTING_IN_EVENT, self)
     
     def doneGhostingOut(self):
         self.ghostingOut = False
         Animation.animations.remove(self)
-        for listener in self.ghostingOutListeners:
-            listener.ghostedOut(self)
+        Event.fireEvent(DONE_GHOSTING_OUT_EVENT, self)
     
