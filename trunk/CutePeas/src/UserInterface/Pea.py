@@ -3,7 +3,7 @@ import PathFinding.NodeGraph
 from Constants import *
 import Event
 
-NODE_TIMER = 1000
+NODE_TIMER = 200
 
 class Pea:
     def __init__(self, img, initnode):

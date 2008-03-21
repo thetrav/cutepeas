@@ -88,19 +88,42 @@ class NodeGraph:
             self.removeNode(node.pos)
     
 def findPath(currentNode):
-    nodeCount = 0
-    nodes = []
-    traverseNode(nodes, currentNode)
-    return nodes
+    root = MinMaxNode(currentNode)
+    buildTree(root, [currentNode])
+    printTree(root, 0)
+    path = buildPath(root, [])
+    print str([node.pos for node in path])
+    return path
+
+def buildPath(minMaxNode, currentPath):
+    currentPath.append(minMaxNode.node)
+    for node in minMaxNode.linkedNodes:
+        if node.score == minMaxNode.score:
+            return buildPath(node, currentPath)
+    return currentPath
+
+def printTree(node, depth):
+    print " "*depth + str(node.node.pos) + " score:" + str(node.score)
+    for linked in node.linkedNodes:
+        printTree(linked, depth+1)
+
+def buildTree(minMaxNode, nodesInTree):
+    for linked in minMaxNode.node.linkedNodes:
+        if linked.canTraverse() and linked not in nodesInTree:
+            newNode = MinMaxNode(linked)
+            minMaxNode.linkedNodes.append(newNode)
+            nodesInTree.append(linked)
+            score = buildTree(newNode, nodesInTree)
+            if score < minMaxNode.score:
+                minMaxNode.score = score 
+    return minMaxNode.score
         
-def traverseNode(currentPath, currentNode):
-    if len(currentPath) < 5:
-        for linked in currentNode.linkedNodes:
-            if linked not in currentPath and linked.canTraverse() and len(currentPath) < 5:
-                currentPath.append(linked)
-                traverseNode(currentPath, linked)
-                return
-                
+class MinMaxNode:
+    def __init__(self, node):
+        self.node = node
+        self.score = node.pos[Y]
+        self.linkedNodes = []
+    
 class Node:
     def __init__(self, pos):
         self.pos = pos
@@ -185,11 +208,3 @@ def loopNodes(nodeList):
     prev.linkNode(nodeList[0])
     nodeList[0].linkNode(prev)
 
-
-graph = NodeGraph(9,10)
-for key in graph.nodes:
-    node = graph.nodes[key]
-    print "node at:"+key+" count="+str(len(node.linkedNodes)) + " nodes:"+str([linked.pos for linked in node.linkedNodes])
-
-path = findPath(graph.nodes['(156, 10)'])
-print str([node.pos for node in path])

@@ -19,6 +19,7 @@ class Block:
         self.resetTimer()
         
     def createNodes(self):
+        print "block xy="+str(self.x)+" " +str(self.y)
         x = self.x
         y = self.y + BLOCK_Y_OVERLAP
         nodes = [

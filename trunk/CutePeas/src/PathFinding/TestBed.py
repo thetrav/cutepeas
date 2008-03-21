@@ -1,27 +1,19 @@
-from Node import *
+from NodeGraph import *
+from UserInterface.Block import *
 from Images import *
 
-nodes = []
+graph = NodeGraph(9,10)
+images["test"] = "test"
+block = Block("test", "test")
+block.x = 263
+block.y = -1
+blockNodes = block.createNodes()
+graph.addNodes(blockNodes)
 
-def createNodes():
-    global nodes
-    one = Node(38, 20, None)
-    two = Node(74, 20, None)
-    three = Node(109, 20, None)
-    
-    four = Node(127, 38, None)
-    five = Node(127, 69, None)
-    six = Node(127, 99, None)
-    
-    one.addLink(two)
-    two.addLink(one)
-    two.addLink(three)
-    three.addLink(two)
 
-    nodes = [one, two, three, four, five, six]
-    
-    return;
-    
-def drawNodes(screen):
-    for i in nodes:
-        screen.blit(images["Gold-Ball"], (i.position.x, i.position.y))
+for key in graph.nodes:
+    node = graph.nodes[key]
+    print "node at:"+key+" count="+str(len(node.linkedNodes)) + " nodes:"+str([linked.pos for linked in node.linkedNodes])
+
+path = findPath(graph.nodes['(156, 10)'])
+
