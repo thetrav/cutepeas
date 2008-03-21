@@ -2,17 +2,12 @@
 
 = Implementation =
 
-Ok, so now we've got a basic implementation of the NodeGraph down, it's in the AddNodes module for the moment but that needs to be re-named.  The current NodeGraph module is a crack I took at it before realizing that I was doing it entirely the wrong way.
+Ok, so now we've got a basic implementation of the NodeGraph down.
 
-Within the AddNodes module (please rename to NodeGraph) there's a basic path finding implementation that traverses the node graph without any real intelligence, it basically takes the first linked traversable node that hasn't already been added to the path and makes that the next node in the path and recurses from there.
+The path finding has finally been implemented using a min max tree.  Every find path operation will traverse the connected node graph in its entirety to build the score graph, and then traverse the highest scoring branches to build the path.
 
-The graph is currently always rendered as circles and lines.  Eventually this should be toggled on and off and start off by default.
+The graph looks pretty basic when printed out at the moment because we're almost always dealing with a linear path of nodes, however this is likely to change when jump nodes are added.
 
-= Notes =
-  * All peas inhabit the same traversable area, therefore sharing a single map is preferable
-  * Keep path determination separate to movement & bounce
-  * Whatever map is constructed it would be good to visualize it and be able to turn the visualization on and off while playing
+The current structure should support the addition of jump nodes, however I've got a nasty feeling I implemented a depth first method of building the graph, when what we really want is breadth first, as that would model distance far more effectively and prevent big loopy paths.
 
-= Path Determination Ideas =
-A greedy way to determine using the current structure is to traverse EVERY node the pea is currently connected to, and keep track of the highest Y Node encountered.  
-Now you've got a start and end point so all you have to do is a depth first tree search to reach the highest node, keep track of the path along the way to avoid looping.
+The other thing worthy of note is that there's no attempt to ensure the pea attempts to get to the closest high point, so if there's a stack of two blocks next to it and a stack on the other side of the plate the pea could go for either of them.
