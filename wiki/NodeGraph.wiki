@@ -1,9 +1,7 @@
 #summary Description of the NodeGraph Class.
 
 = Purpose =
-The NodeGraph class can currently be found in the AddNodes module, but hopefully that will soon be re-named.
-
-The NodeGraph class is responsible for holding the graph of nodes and for adding and removing nodes from that structure.  It may also be responsible for firing events to notify peas of world updates.
+The NodeGraph class is responsible for holding the graph of nodes and for adding and removing nodes from that structure.  It is also be responsible for firing events to notify peas of world updates.
 
 
 = Implementation Notes =
@@ -23,7 +21,7 @@ Rather than cull non traversable nodes, we're instead implementing a canTraverse
 This should make the node removal function a lot easier, as you've just got to decrement the node count until it reaches 0 at which point the node can be unlinked from its neighbors and removed from the graph.
 
 == Ghosting ==
-Ghosting is not currently implemented, I'm expecting it to be a royal pain in the ass and involve a few more states and events
+Ghosting nodes are not currently implemented, I'm expecting it to be a royal pain in the ass and involve a few more states and events
 
 == Jump Nodes ==
 Jump nodes are not currently implemented.  I anticipate that they will be slightly easier than Ghosting.
