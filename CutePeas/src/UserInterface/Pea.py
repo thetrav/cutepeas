@@ -109,6 +109,8 @@ class Pea:
         
     def eventFired(self, eventId, source):
         if eventId == EVENT_NODE_GRAPH_UPDATED:
+            if not source.hasNodeAt(self.currentNode.pos):
+                self.currentNode = source.findNearestNode(self.currentNode.pos)
             self.path = PathFinding.NodeGraph.findPath(self.currentNode)
     
     def fireDeath(self):
