@@ -12,7 +12,7 @@ def snapToPos(pos):
     return [snap(pos[0], X_OFFSET, NODE_X_GAP), snap(pos[1], Y_OFFSET, NODE_Y_GAP)]
 
 def snap(pos, offset, gap):
-    return math.round((pos - offset) / gap) * gap + offset
+    return math.floor((pos - offset) / gap) * gap + offset
 
 class NodeGraph:
     def __init__(self, numFloorBlocks, yPos):
@@ -29,15 +29,14 @@ class NodeGraph:
             
     def findNearestNode(self, pos):
         snapped = snapToPos(pos)
-        if self.hasNodeAt(snapped):
-            return self.grabNode(snapped)
-        else:
-            radius = 1
-            while radius < NUM_BLOCKS * 2 + 1:
-                node = self.checkCircle(snapped, radius)
-                if node:
-                    return node
-        raise "pea could not find node nearest to:  " + str(pos) + " which translated to snapped position of: " + str(snapped)
+        best = None
+        for key in self.nodes.keys():
+            current = self.nodes.get(key)
+            if best == None or current.pos[X] == snapped[X] and current.pos[Y] < best.pos[Y]:
+                best = current
+        if best == None:
+            raise "pea could not find node nearest to:  " + str(pos) + " which translated to snapped position of: " + str(snapped)
+        return best
     
     def checkCircle(self, center, radius):
         #radius is in block nodes, and by circle I mean square
