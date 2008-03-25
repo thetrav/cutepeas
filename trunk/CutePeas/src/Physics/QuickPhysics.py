@@ -7,19 +7,21 @@ HORIZONTAL_SURFACE_WIDTH = BLOCK_WIDTH
 DIAGONAL_SURFACE_WIDTH = BLOCK_WIDTH
 DIAGONAL_SURFACE_HEIGHT = BLOCK_HEIGHT
 
+X_FRICTION = 0.98
+Y_FRICTION = 0.95
+
 GRAVITY = 0.0008
 WIND_FRICTION = 0.005
 MIN_Y_VELOCITY = 0.02
 
-PHYSICS_RESOLUTION = 5
-
+PHYSICS_RESOLUTION = 2
 
 def positive(number):
     return number if number > 0 else -number
-
+    
 def underDistance(first, second, distance):
     return positive(positive(first) - positive(second)) < distance
-        
+    
 def inRange(point, surface, index):
     return point[index] > surface.start[index] - PEA_RADIUS and point[index] < surface.end[index] + PEA_RADIUS
 
@@ -57,30 +59,10 @@ class PhysicsManager:
         self.timeBuffer -= timeD
         newVelocity = calculateNewVelocity(pea.velocity, timeD)
         newPos = calculateNewPos(pea.pos, newVelocity, timeD)
-        debug(["newPos:", newPos])
         for surface in self.surfaces:
             if surface.isCollide(newPos):
-                elapsed = 0
-                lastPos = [pea.pos[X], pea.pos[Y]]
-                lastVelocity = [pea.velocity[X], pea.velocity[Y]]
-                timeSliceSize = timeD / COLLISION_RESOLUTION
-                for n in xrange(COLLISION_RESOLUTION):
-                    velocity = calculateNewVelocity(lastVelocity, timeSliceSize)
-                    pos = calculateNewPos(lastPos, velocity, timeSliceSize)
-                    if surface.isCollide(pos):
-                        pea.velocity = surface.applyCollision(lastVelocity)
-                        pea.pos = lastPos
-                        #recurse to animate pea for remaining time
-                        if elapsed == 0:
-                            error(["Pea began frame already collided at pos:", lastPos, " vel:", lastVelocity, " n=", n])
-                            return
-                        debug(["found collision after:", n, " steps ", surface])
-                        return self.play(pea, timeD - elapsed)
-                    else:
-                        elapsed += timeSliceSize
-                        lastPos = pos
-                        lastVelocity = velocity
-                error(["Failed to locate high res collision at:", newPos, "n=", n])
+                newVelocity = surface.applyCollision(newVelocity)
+                newPos = calculateNewPos(pea.pos, newVelocity, timeD)
         pea.velocity = newVelocity
         pea.pos = newPos
 
@@ -100,6 +82,9 @@ class Surface:
     def render(self, screen):
         pygame.draw.line(screen, self.color, self.start, self.end, 1)
         
+    def applyCollision(self, velocity):
+        return [velocity[X] * X_FRICTION, velocity[Y] * Y_FRICTION]
+        
 class VerticalSurface(Surface):
     def __init__(self, topLeft):
         Surface.__init__(self, topLeft, [topLeft[X], topLeft[Y]+VERTICAL_SURFACE_HEIGHT], (255,255,255))
@@ -110,7 +95,7 @@ class VerticalSurface(Surface):
         return False
     
     def applyCollision(self, velocity):
-        return [-velocity[X], velocity[Y]]
+        return Surface.applyCollision(self, [-velocity[X], velocity[Y]])
 
 class HorizontalSurface(Surface):
     def __init__(self, topLeft):
@@ -122,7 +107,7 @@ class HorizontalSurface(Surface):
         return False
     
     def applyCollision(self, velocity):
-        return [velocity[X], -velocity[Y] if positive(velocity[Y]) > MIN_Y_VELOCITY else 0]
+        return Surface.applyCollision(self, [velocity[X], -velocity[Y] if positive(velocity[Y]) > MIN_Y_VELOCITY else 0])
 
 class DiagonalSurface(Surface):
     def __init__(self, leftPoint, rightPoint):
@@ -148,7 +133,7 @@ class DiagonalSurface(Surface):
             return underDistance(point[Y], self.start[Y], PEA_RADIUS)
     
     def applyCollision(self, velocity):
-        return [-velocity[X], -velocity[Y]]
+        return Surface.applyCollision(self, [-velocity[X], -velocity[Y]])
     
 class TestPea:
     def __init__(self, pos, vel, physics):
