@@ -1,6 +1,6 @@
 import pygame, sys
 import Animation, TitleScreen
-
+from Constants import *
 from pygame.locals import *
 from Images import *
 from UserInterface.Button import Button

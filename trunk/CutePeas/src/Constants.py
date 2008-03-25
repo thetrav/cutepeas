@@ -35,7 +35,10 @@ EVENT_NODE_GRAPH_UPDATED = "EVENT_NODE_GRAPH_UPDATED"
 X = 0
 Y = 1
 
-PEA_RADIUS = 15
+PEA_RADIUS = 37/2
+DRAW_HIT_BOXES = False
+DRAW_NODES = False
+DRAW_PATH = False
 
 def debug(words):
     output("DEBUG: ", words)

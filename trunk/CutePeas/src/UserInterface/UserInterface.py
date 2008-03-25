@@ -8,6 +8,7 @@ from Tool import *
 from Scenery import *
 from Pea import *
 import Text, Score, Animation, Timer, Particles.Particles
+import Constants
 from Constants import *
 
 
@@ -72,6 +73,12 @@ class UserInterface:
         elif event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 raise "quit"
+            elif event.key == K_p:
+                Constants.DRAW_PATH = not Constants.DRAW_PATH
+            elif event.key == K_n:
+                Constants.DRAW_NODES = not Constants.DRAW_NODES
+            elif event.key == K_h:
+                Constants.DRAW_HIT_BOXES = not Constants.DRAW_HIT_BOXES
                 
     def buttonFired(self, button):
         self.deSelectEvent()

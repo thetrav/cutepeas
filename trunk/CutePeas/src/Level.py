@@ -9,6 +9,7 @@ import PathFinding.NodeGraph
 from Constants import *
 import UserInterface.Block
 import UserInterface.Pea
+from Physics.PhysicsManager import * 
 
 def newButton(image, yPos, tool):
     return ToolButton(image, tool, (725, yPos), 47, 47)
@@ -47,7 +48,9 @@ class BasicLevel:
         Event.addListener(UserInterface.Block.DONE_GHOSTING_IN_EVENT, self.nodeGraph)
         Event.addListener(UserInterface.Block.DONE_GHOSTING_OUT_EVENT, self.nodeGraph)
         
-        self.pea = UserInterface.Pea.Pea(images["Pea-Standard"], self.nodeGraph.grabNode((121, 551)))
+        self.physicsManager = PhysicsManager()
+        
+        self.pea = UserInterface.Pea.Pea(images["Pea-Standard"], self.nodeGraph.grabNode((121, 551)), self.physicsManager)
         Animation.animations.append(self.pea)
         
     
