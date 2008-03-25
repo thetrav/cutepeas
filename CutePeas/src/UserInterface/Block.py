@@ -3,15 +3,18 @@ import math
 import Animation
 from PathFinding.NodeGraph import *
 from Constants import *
+import Physics.QuickPhysics
 
 GHOST_TIMER_INIT = 2999
 DONE_GHOSTING_IN_EVENT = "Done Ghosting In Event"
 DONE_GHOSTING_OUT_EVENT = "Done Ghosting Out Event"
 
 class Block:
-    def __init__(self, ghostingImage, displayImage):
-        self.ghostingImage = images[ghostingImage]
-        self.image = images[displayImage]
+    def __init__(self, ghostingImage= None, displayImage = None):
+        if ghostingImage != None:
+            self.ghostingImage = images[ghostingImage]
+        if displayImage != None:
+            self.image = images[displayImage]
         self.x = 0
         self.y = 0
         self.ghostingIn = False
@@ -33,6 +36,16 @@ class Block:
                  FaceNode((x, y + BLOCK_HEIGHT/2))]
         loopNodes(nodes)
         return nodes
+    
+    def createSurfaces(self):
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        return [verticalSurface([x,y]),
+                    verticalSurface(([x+BLOCK_WIDTH,y])),
+                    horizontalSurface((x,y)),
+                    horizontalSurface((x,y+BLOCK_HEIGHT))
+                    ]
+        
     
     def resetTimer(self):
         self.ghostTimer = GHOST_TIMER_INIT
@@ -78,4 +91,10 @@ class Block:
         self.ghostingOut = False
         Animation.animations.remove(self)
         Event.fireEvent(DONE_GHOSTING_OUT_EVENT, self)
-    
+
+def verticalSurface(pos):
+    return Physics.QuickPhysics.VerticalSurface(pos)
+
+def horizontalSurface(pos):
+    return Physics.QuickPhysics.HorizontalSurface(pos)
+

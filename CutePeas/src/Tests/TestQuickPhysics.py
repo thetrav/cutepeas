@@ -2,6 +2,7 @@ import pygame, sys
 from Physics.QuickPhysics import *
 from Constants import *
 from pygame.locals import *
+from UserInterface.Block import Block
 
 class Game:
     def __init__(self):
@@ -19,12 +20,17 @@ class Game:
                     VerticalSurface([10,10]),
                     VerticalSurface([790,10]),
                     HorizontalSurface([10,10]),
-                    HorizontalSurface([10,590])]
+                    HorizontalSurface([10,590])
+                    ]
         surfaces[0].end = [10 , 590]
         surfaces[1].end = [790, 590]
         surfaces[2].end = [790, 10]
         surfaces[3].end = [790, 590]
         self.physManager.addSurfaces(surfaces)
+        block = Block()
+        block.x = 400
+        block.y = 400
+        self.physManager.addSurfaces(block.createSurfaces())
         
         self.pea = TestPea([210,100], [0.5, 0], self.physManager)
     
