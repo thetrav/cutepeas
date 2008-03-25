@@ -2,7 +2,7 @@ import pygame, sys
 from Physics.QuickPhysics import *
 from Constants import *
 from pygame.locals import *
-from UserInterface.Block import Block
+from UserInterface.Block import Block, LeftRampBlock, RightRampBlock
 
 class Game:
     def __init__(self):
@@ -31,6 +31,16 @@ class Game:
         block.x = 400
         block.y = 400
         self.physManager.addSurfaces(block.createSurfaces())
+        
+        leftRamp = LeftRampBlock()
+        leftRamp.x = 100
+        leftRamp.y = 400
+        self.physManager.addSurfaces(leftRamp.createSurfaces())
+        
+        rightRamp = RightRampBlock()
+        rightRamp.x = 600
+        rightRamp.y = 400
+        self.physManager.addSurfaces(rightRamp.createSurfaces())
         
         self.pea = TestPea([210,100], [0.5, 0], self.physManager)
     

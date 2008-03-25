@@ -145,5 +145,4 @@ class TestPea:
         pygame.draw.circle(screen, (0,150,0) , self.pos, PEA_RADIUS, 1)
     
     def update(self, timeD):
-        debug(["new frame"])
         self.physics.update(self, timeD)
