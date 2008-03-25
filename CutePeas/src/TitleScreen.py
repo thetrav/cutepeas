@@ -6,6 +6,7 @@ from UserInterface.Scenery import Scenery
 from UserInterface.Block import *
 from UserInterface.Pea import *
 from PathFinding.NodeGraph import *
+from Physics.QuickPhysics import *
 
 class TitleScreen:
     def __init__(self, userInterface, transitionListener):
@@ -25,7 +26,8 @@ class TitleScreen:
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 4, 8)
         self.addBlock(Block("Block-Place-Spring", "Block-Spring"), scene, 6, 8)
         self.addBlock(Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
-        self.pea = Pea(images["Pea-Standard"], self.nodeGraph.grabNode((121, 551)))
+        self.physicsManager = PhysicsManager()
+        self.pea = Pea(images["Pea-Standard"], self.nodeGraph.grabNode((121, 551)), self.physicsManager)
         Animation.animations.append(self.pea)
         
 

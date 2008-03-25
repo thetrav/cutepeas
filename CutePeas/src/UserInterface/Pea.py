@@ -1,13 +1,17 @@
 import pygame.transform as xform
+import pygame.draw
 import PathFinding.NodeGraph
+import Constants
 from Constants import *
 import Event
+
 
 NODE_TIMER = 200
 
 class Pea:
     def __init__(self, img, initnode, physics):
         self.image = img
+        self.velocity=[0,0]
         self.physics = physics
         if initnode != None:
             self.path = PathFinding.NodeGraph.findPath(initnode)
@@ -94,25 +98,26 @@ class Pea:
         return -(self.rotateIncrement)
         
     def render(self, screen):
-        screen.blit(self.image, self.pos)
+        screen.blit(self.image, (self.pos[X] - PEA_RADIUS, self.pos[Y] - PEA_RADIUS))
         # Restoring is needed for rotations
         self.__restoreImage()
         
-        if DRAW_HIT_BOXES:
+        if Constants.DRAW_HIT_BOXES:
             pygame.draw.circle(screen, (0, 130, 0), self.pos, PEA_RADIUS)
         
-        for node in self.path:
-            node.render(screen, (255,255,0))
+        if Constants.DRAW_PATH:
+            for node in self.path:
+                node.render(screen, (255,255,0))
         
     def update(self, timeD):
-        self.physics.update(self, timeD)
+        #self.physics.update(self, timeD)
         
-        #self.timeUntilNextNode -= timeD
-        #if self.timeUntilNextNode < 0:
-        #    self.setNode(self.path.pop(0))
-        #    if len(self.path) == 0:
-        #        self.path = PathFinding.NodeGraph.findPath(self.currentNode)
-        #self.__animate()
+        self.timeUntilNextNode -= timeD
+        if self.timeUntilNextNode < 0:
+            self.setNode(self.path.pop(0))
+            if len(self.path) == 0:
+                self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+        self.__animate()
         #To Kamal.  In case I don't see you again the update function is called on every member of the Animation.animations list once per frame with the elapsed time since the previous frame.
         # this allows for very smooth animations regardless of the users actual frame rate.  It is important to keep it all synched to the one timer for a number of reasons best not discussed here
         # --Trav 

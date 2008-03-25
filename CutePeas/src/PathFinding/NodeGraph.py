@@ -1,4 +1,5 @@
 import pygame.draw
+import Constants
 from Constants import *
 from UserInterface.Text import *
 import Event
@@ -61,8 +62,9 @@ class NodeGraph:
         self.nodes.pop(str(pos))
     
     def render(self, screen):
-        for key in self.nodes:
-                self.nodes[key].render(screen)
+        if Constants.DRAW_NODES:
+            for key in self.nodes:
+                    self.nodes[key].render(screen)
     
     def addNodes(self, toAdd):
         for node in toAdd:
@@ -89,9 +91,8 @@ class NodeGraph:
 def findPath(currentNode):
     root = MinMaxNode(currentNode)
     buildTree(root, [currentNode])
-    printTree(root, 0)
+    #printTree(root, 0)
     path = buildPath(root, [])
-    print str([node.pos for node in path])
     return path
 
 def buildPath(minMaxNode, currentPath):
