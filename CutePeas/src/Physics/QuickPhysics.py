@@ -1,12 +1,13 @@
 import pygame.draw
 from Constants import *
 
-COLLISION_RESOLUTION = 10
+COLLISION_RESOLUTION = 5
 VERTICAL_SURFACE_HEIGHT = 40
 HORIZONTAL_SURFACE_WIDTH = 40
 
-GRAVITY = 0.008
+GRAVITY = 0.0008
 WIND_FRICTION = 0.005
+MIN_Y_VELOCITY = 0.02
 
 class PhysicsManager:
     def __init__(self):
@@ -30,27 +31,27 @@ class PhysicsManager:
         
         for surface in self.surfaces:
             if surface.isCollide(newPos):
-                print "collision"
                 elapsed = 0
                 lastPos = [pea.pos[X], pea.pos[Y]]
                 lastVelocity = [pea.velocity[X], pea.velocity[Y]]
                 timeSliceSize = timeD / COLLISION_RESOLUTION
                 for n in xrange(COLLISION_RESOLUTION):
-                    vel = calculateNewVelocity(lastVelocity, timeSliceSize)
-                    pos = calculateNewPos(lastPos, lastVelocity, timeD)
+                    velocity = calculateNewVelocity(lastVelocity, timeSliceSize)
+                    pos = calculateNewPos(lastPos, velocity, timeSliceSize)
                     if surface.isCollide(pos):
                         pea.velocity = surface.applyCollision(lastVelocity)
                         pea.pos = lastPos
                         #recurse to animate pea for remaining time
                         if elapsed == 0:
-                            raise "Pea began update already collided with surface at pos:" + str(pea.pos) + " vel:"+str(pea.velocity)
+                            #error(["Pea began frame already collided at pos:", lastPos, " vel:", lastVelocity])
+                            return
                         return self.update(pea, timeD - elapsed)
-                    elapsed += timeSliceSize
-                    lastPos = pos
-                    lastVelocity = velocity
+                    else:
+                        elapsed += timeSliceSize
+                        lastPos = pos
+                        lastVelocity = velocity
         pea.velocity = newVelocity
         pea.pos = newPos
-        print "time="+str(timeD)+" vel="+str(newVelocity)+" pos="+str(newPos)
 
 def calculateNewVelocity(oldVelocity, timeD):
     return [oldVelocity[X], oldVelocity[Y] + GRAVITY * timeD ]
@@ -72,7 +73,6 @@ def positive(number):
     return number if number > 0 else -number
 
 def underDistance(first, second, distance):
-    print "distance = "+ str(positive(first) - positive(second)) + " target="+str(distance)
     return positive(positive(first) - positive(second)) < distance
         
 class VerticalSurface(Surface):
@@ -85,7 +85,6 @@ class VerticalSurface(Surface):
         return False
     
     def applyCollision(self, velocity):
-        print "applying vertical collision"
         return [velocity[X] * -1, velocity[Y]]
 
 class HorizontalSurface(Surface):
@@ -94,13 +93,11 @@ class HorizontalSurface(Surface):
     
     def isCollide(self, point):
         if point[X] >= self.start[X] and point[X] <= self.end[X]:
-            print "in X zone"
             return underDistance(point[Y], self.start[Y], PEA_RADIUS)
         return False
     
     def applyCollision(self, velocity):
-        print "applying horizontal collision"
-        return [velocity[X], velocity[Y] * -1]
+        return [velocity[X], velocity[Y] * -1 if positive(velocity[Y]) > MIN_Y_VELOCITY else 0]
     
 class TestPea:
     def __init__(self, pos, vel, physics):
