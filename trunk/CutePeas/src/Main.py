@@ -6,11 +6,6 @@ from Images import *
 from UserInterface.Button import Button
 from UserInterface.UserInterface import UserInterface
 
-
-MAX_FPS = 72
-
-
-
 class Game:
     def __init__(self):
         self.window = pygame.display.set_mode((800,600))
