@@ -43,9 +43,7 @@ class Block:
         return [verticalSurface([x,y]),
                     verticalSurface(([x+BLOCK_WIDTH,y])),
                     horizontalSurface((x,y)),
-                    horizontalSurface((x,y+BLOCK_HEIGHT))
-                    ]
-        
+                    horizontalSurface((x,y+BLOCK_HEIGHT))]
     
     def resetTimer(self):
         self.ghostTimer = GHOST_TIMER_INIT
@@ -92,9 +90,59 @@ class Block:
         Animation.animations.remove(self)
         Event.fireEvent(DONE_GHOSTING_OUT_EVENT, self)
 
+class LeftRampBlock(Block):
+    def __init__(self, ghostingImage= None, displayImage = None):
+        Block.__init__(self, ghostingImage, displayImage)
+        
+    def createNodes(self):
+        print "block xy="+str(self.x)+" " +str(self.y)
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        nodes = [CornerNode((x, y + BLOCK_HEIGHT)),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2)),
+                 CornerNode((x+BLOCK_WIDTH, y)),
+                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2)),
+                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT)),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT))]
+        loopNodes(nodes)
+        return nodes
+    
+    def createSurfaces(self):
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        return [verticalSurface((x+BLOCK_WIDTH,y)),
+                horizontalSurface((x,y+BLOCK_HEIGHT)),
+                diagonalSurface((x,y+BLOCK_HEIGHT), (x+BLOCK_WIDTH,y))]
+
+class RightRampBlock(Block):
+    def __init__(self, ghostingImage= None, displayImage = None):
+        Block.__init__(self, ghostingImage, displayImage)
+        
+    def createNodes(self):
+        print "block xy="+str(self.x)+" " +str(self.y)
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        nodes = [CornerNode((x, y)),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2)),
+                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT)),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT)),
+                 CornerNode((x, y + BLOCK_HEIGHT)),
+                 FaceNode((x, y + BLOCK_HEIGHT/2))]
+        loopNodes(nodes)
+        return nodes
+    
+    def createSurfaces(self):
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        return [verticalSurface((x,y)),
+                horizontalSurface((x,y+BLOCK_HEIGHT)),
+                diagonalSurface((x,y), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT))]
+
 def verticalSurface(pos):
     return Physics.QuickPhysics.VerticalSurface(pos)
 
 def horizontalSurface(pos):
     return Physics.QuickPhysics.HorizontalSurface(pos)
 
+def diagonalSurface(left, right):
+    return Physics.QuickPhysics.DiagonalSurface(left, right)
