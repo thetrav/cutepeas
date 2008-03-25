@@ -1,7 +1,8 @@
-import Vector
+from Physics.Vector import Vector
 import math
 from Physics import BlockType
 from Physics import BlockHeight
+import pygame.draw
 
 # Physical Constants
 MAX_BOUNCES = 5          # determines bounces on same surface before trap is triggered.
@@ -30,13 +31,12 @@ class Surface:
         
         increment = Vector( ( ( self.start_pos.x - self.translation.x ) / 2 ), ( ( self.start_pos.y - self.translation.y ) / 2 ) )
         
-        self.collision_points = []
-        self.collision_points[0] = self.translation
-        self.collision_points[1] = self.translation + increment 
-        self.collision_points[2] = self.translation - increment 
+        self.collision_points = [self.translation,
+                                 self.translation + increment,
+                                 self.translation - increment] 
         
     def render(self, screen):
-        pygame.draw.line(screen, (1, 1 , 1), (self.start_pos.x, self.start_pos.y), (self.end_pos.x, self.end_pos.y), width=1)        
+        pygame.draw.line(screen, (1, 1 , 1), (self.start_pos.x, self.start_pos.y), (self.end_pos.x, self.end_pos.y), 1)        
     
     def checkForCollision(self, pea):
         for count in range(0, 3):

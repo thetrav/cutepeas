@@ -2,6 +2,7 @@ from Vector import Vector
 from Surface import Surface
 from PhysPea import PhysPea
 import math
+from Constants import *
 
 GRAVITY = -9.8
 
@@ -31,18 +32,18 @@ class PhysicsManager:
             surface.render(screen)
             
     def addSurface(self, newSurface):
-        surfaces.append(newSurface)
+        self.surfaces.append(newSurface)
         
     def addSurfaces(self, newSurfaces):
         for surface in newSurfaces:
-            surfaces.append(surface)
+            self.surfaces.append(surface)
         
     def removeSurface(self, delSurface):
-        surfaces.remove(delSurface)
+        self.surfaces.remove(delSurface)
         
     def removeSurfaces(self, delSurfaces):
         for surface in delSurfaces:
-            surfaces.remove(surface)
+            self.surfaces.remove(surface)
             
     #Physics Calculations
     def calculateTrajectory(self, pea):
@@ -57,54 +58,54 @@ class PhysicsManager:
         # Need to possibly pass this coordinate back into the rendered parts of the Pea?
         
     def checkForIntersection(self, pea):
-        for surface in self._surfaces:
+        for surface in self.surfaces:
             surface.checkForIntersection(pea)        
     
     def createTopSurface(self, position, blockType):
         xPos =  position.x;
-        yPos =  position.y + (BlockHeight / 2)
+        yPos =  position.y + (BLOCK_HEIGHT / 2)
         
         newSurface = Surface(Vector(xPos, yPos),
                              0,
                              Vector(0, 1),
                              blockType,
-                             BlockWidth
+                             BLOCK_WIDTH
                              )        
         return newSurface
     
     def createBottomSurface(self, position, blockType):
         xPos =  position.x;
-        yPos =  position.y - (BlockHeight / 2)
+        yPos =  position.y - (BLOCK_HEIGHT / 2)
         
         newSurface = Surface(Vector(xPos, yPos),
                              180,
                              Vector(0, -1),
                              blockType,
-                             BlockWidth
+                             BLOCK_WIDTH
                              )        
         return newSurface
         
     def createLeftSurface(self, position):
-        xPos =  position.x - (BlockWidth / 2) 
+        xPos =  position.x - (BLOCK_WIDTH / 2) 
         yPos =  position.y;
         
         newSurface = Surface(Vector(xPos, yPos),
                              270,
                              Vector(-1, 0),
                              blockType,
-                             BlockWidth
+                             BLOCK_WIDTH
                              )        
         return newSurface
             
     def createRightSurface(self, position):
-        xPos =  position.x + (BlockWidth / 2) 
+        xPos =  position.x + (BLOCK_WIDTH / 2) 
         yPos =  position.y;
         
         newSurface = Surface(Vector(xPos, yPos),
                              90,
                              Vector(1, 0),
                              blockType,
-                             BlockWidth
+                             BLOCK_WIDTH
                              )        
         return newSurface
         
@@ -113,10 +114,10 @@ class PhysicsManager:
         xPos =  position.x; 
         yPos =  position.y;
         
-        tlX = position.x - (BlockWidth/2)
-        brX = position.x + (BlockWidth/2)
-        tlY = position.y - (BlockHeight/2)
-        brY = position.y + (BlockHeight/2)
+        tlX = position.x - (BLOCK_WIDTH/2)
+        brX = position.x + (BLOCK_WIDTH/2)
+        tlY = position.y - (BLOCK_HEIGHT/2)
+        brY = position.y + (BLOCK_HEIGHT/2)
         
         length = math.sqrt( math.pow( (brX - tlX), 2), math.pow( (brY - tlY), 2) )
         
@@ -129,13 +130,13 @@ class PhysicsManager:
         return newSurface
         
     def createRightRamp(self, position):
-        xPos =  position.x + (BlockWidth / 2) 
+        xPos =  position.x + (BLOCK_WIDTH / 2) 
         yPos =  position.y; 
         
-        tlX = position.x - (BlockWidth/2)
-        brX = position.x + (BlockWidth/2)
-        tlY = position.y - (BlockHeight/2)
-        brY = position.y + (BlockHeight/2)
+        tlX = position.x - (BLOCK_WIDTH/2)
+        brX = position.x + (BLOCK_WIDTH/2)
+        tlY = position.y - (BLOCK_HEIGHT/2)
+        brY = position.y + (BLOCK_HEIGHT/2)
         
         length = math.sqrt( math.pow( (brX - tlX), 2), math.pow( (brY - tlY), 2) )       
         
@@ -143,7 +144,7 @@ class PhysicsManager:
                              45,
                              Vector(1, 1),
                              blockType,
-                             BlockWidth
+                             BLOCK_WIDTH
                              )        
         return newSurface
         
