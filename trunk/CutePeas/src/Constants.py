@@ -36,3 +36,14 @@ X = 0
 Y = 1
 
 PEA_RADIUS = 15
+
+def debug(words):
+    output("DEBUG: ", words)
+
+def error(words):
+    output("ERROR: ", words)
+    
+def output(start, words):
+    for word in words:
+        start += str(word)
+    print start

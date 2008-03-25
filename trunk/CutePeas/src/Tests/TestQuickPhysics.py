@@ -16,13 +16,17 @@ class Game:
 
         self.physManager = PhysicsManager()
         surfaces = [
-                    #VerticalSurface([200,200]),
-                    #VerticalSurface([240,200]),
-                    HorizontalSurface([160,280]),
-                    HorizontalSurface([200,200])]
+                    VerticalSurface([10,10]),
+                    VerticalSurface([790,10]),
+                    HorizontalSurface([10,10]),
+                    HorizontalSurface([10,590])]
+        surfaces[0].end = [10 , 590]
+        surfaces[1].end = [790, 590]
+        surfaces[2].end = [790, 10]
+        surfaces[3].end = [790, 590]
         self.physManager.addSurfaces(surfaces)
         
-        self.pea = TestPea([210,100], [0, 0], self.physManager)
+        self.pea = TestPea([210,100], [0.5, 0], self.physManager)
     
     def handleInput(self, events):
         for event in events:
@@ -31,9 +35,8 @@ class Game:
                 sys.exit(0)
     
     def render(self, screen):
-        
         screen.blit(self.background, (0,0))
-        self.physManager.render(screen)       
+        self.physManager.render(screen)
         self.pea.render(screen)
         pygame.display.flip()
         
