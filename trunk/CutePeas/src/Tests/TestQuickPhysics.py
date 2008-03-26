@@ -1,5 +1,6 @@
 import pygame, sys
 from Physics.QuickPhysics import *
+import Constants
 from Constants import *
 from pygame.locals import *
 from UserInterface.Block import Block, LeftRampBlock, RightRampBlock
@@ -15,18 +16,7 @@ class Game:
         
         pygame.display.set_caption('Cute Peas - Physics Prototype')
 
-        self.physManager = PhysicsManager()
-        surfaces = [
-                    VerticalSurface([10,10]),
-                    VerticalSurface([790,10]),
-                    HorizontalSurface([10,10]),
-                    HorizontalSurface([10,590])
-                    ]
-        surfaces[0].end = [10 , 590]
-        surfaces[1].end = [790, 590]
-        surfaces[2].end = [790, 10]
-        surfaces[3].end = [790, 590]
-        self.physManager.addSurfaces(surfaces)
+        self.physManager = physicsManagerWithBorders()
         block = Block()
         block.x = 400
         block.y = 400
@@ -43,6 +33,7 @@ class Game:
         self.physManager.addSurfaces(rightRamp.createSurfaces())
         
         self.pea = TestPea([210,100], [0.5, 0], self.physManager)
+        Constants.DRAW_HIT_BOXES = True
     
     def handleInput(self, events):
         for event in events:

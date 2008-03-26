@@ -1,5 +1,7 @@
 import pygame.draw
+import Constants
 from Constants import *
+from UserInterface.Block import *
 
 COLLISION_RESOLUTION = 5
 VERTICAL_SURFACE_HEIGHT = BLOCK_HEIGHT
@@ -39,8 +41,9 @@ class PhysicsManager:
         self.timeBuffer = 0
         
     def render(self, screen):
-        for surface in self.surfaces:
-            surface.render(screen)
+        if Constants.DRAW_HIT_BOXES:
+            for surface in self.surfaces:
+                surface.render(screen)
     
     def addSurfaces(self, surfaces):
         for surface in surfaces:
@@ -65,6 +68,12 @@ class PhysicsManager:
                 newPos = calculateNewPos(pea.pos, newVelocity, timeD)
         pea.velocity = newVelocity
         pea.pos = newPos
+    
+    def eventFired(self, id, block):
+        if id == UserInterface.Block.DONE_GHOSTING_IN_EVENT:
+            self.addSurfaces(block.createSurfaces())
+        elif id == UserInterface.Block.DONE_GHOSTING_OUT_EVENT:
+            self.removeSurfaces(block.surfaces)
 
 def calculateNewVelocity(oldVelocity, timeD):
     return [oldVelocity[X], oldVelocity[Y] + GRAVITY * timeD ]
@@ -87,7 +96,7 @@ class Surface:
         
 class VerticalSurface(Surface):
     def __init__(self, topLeft):
-        Surface.__init__(self, topLeft, [topLeft[X], topLeft[Y]+VERTICAL_SURFACE_HEIGHT], (255,255,255))
+        Surface.__init__(self, topLeft, [topLeft[X], topLeft[Y]+VERTICAL_SURFACE_HEIGHT], (0,0,180))
     
     def isCollide(self, point):
         if inRange(point, self, Y):
@@ -99,7 +108,7 @@ class VerticalSurface(Surface):
 
 class HorizontalSurface(Surface):
     def __init__(self, topLeft):
-        Surface.__init__(self, topLeft, [topLeft[X] + HORIZONTAL_SURFACE_WIDTH, topLeft[Y]], (255,255,255))
+        Surface.__init__(self, topLeft, [topLeft[X] + HORIZONTAL_SURFACE_WIDTH, topLeft[Y]], (0,0,180))
     
     def isCollide(self, point):
         if inRange(point, self, X):
@@ -114,7 +123,7 @@ class DiagonalSurface(Surface):
         Surface.__init__(self, 
                        leftPoint,
                        rightPoint, 
-                       (255,255,255))
+                       (0,0,180))
         self.gradient = (rightPoint[Y] - leftPoint[Y]) / (rightPoint[X] - leftPoint[X]) #rise over run
         self.yOffset = leftPoint[Y] - (self.gradient * leftPoint[X])
      
@@ -146,3 +155,17 @@ class TestPea:
     
     def update(self, timeD):
         self.physics.update(self, timeD)
+        
+def physicsManagerWithBorders():
+    physicsManager = PhysicsManager()
+    bottom = Y_BORDER + BLOCK_Y_OVERLAP
+    surfaces = [VerticalSurface([10,10]),
+                VerticalSurface([790,10]),
+                HorizontalSurface([10,10]),
+                HorizontalSurface([10, bottom])]
+    surfaces[0].end = [10 , bottom]
+    surfaces[1].end = [790, bottom]
+    surfaces[2].end = [790, 10]
+    surfaces[3].end = [790, bottom]
+    physicsManager.addSurfaces(surfaces)
+    return physicsManager

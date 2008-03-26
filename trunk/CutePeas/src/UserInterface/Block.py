@@ -40,10 +40,11 @@ class Block:
     def createSurfaces(self):
         x = self.x
         y = self.y + BLOCK_Y_OVERLAP
-        return [verticalSurface([x,y]),
+        self.surfaces = [verticalSurface([x,y]),
                     verticalSurface(([x+BLOCK_WIDTH,y])),
                     horizontalSurface((x,y)),
                     horizontalSurface((x,y+BLOCK_HEIGHT))]
+        return self.surfaces
     
     def resetTimer(self):
         self.ghostTimer = GHOST_TIMER_INIT
@@ -108,11 +109,12 @@ class LeftRampBlock(Block):
         return nodes
     
     def createSurfaces(self):
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
-        return [verticalSurface((x+BLOCK_WIDTH,y)),
+        x = self.x * 1.0
+        y = self.y + BLOCK_Y_OVERLAP * 1.0
+        self.surfaces = [verticalSurface((x+BLOCK_WIDTH,y)),
                 horizontalSurface((x,y+BLOCK_HEIGHT)),
                 diagonalSurface((x,y+BLOCK_HEIGHT), (x+BLOCK_WIDTH,y))]
+        return self.surfaces
 
 class RightRampBlock(Block):
     def __init__(self, ghostingImage= None, displayImage = None):
@@ -132,11 +134,12 @@ class RightRampBlock(Block):
         return nodes
     
     def createSurfaces(self):
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
-        return [verticalSurface((x,y)),
+        x = self.x * 1.0
+        y = self.y + BLOCK_Y_OVERLAP * 1.0
+        self.surfaces = [verticalSurface((x,y)),
                 horizontalSurface((x,y+BLOCK_HEIGHT)),
                 diagonalSurface((x,y), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT))]
+        return self.surfaces
 
 def verticalSurface(pos):
     return Physics.QuickPhysics.VerticalSurface(pos)
