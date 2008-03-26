@@ -1,6 +1,6 @@
 from Images import images
 import Scenery
-from Block import Block, LeftRampBlock
+from Block import Block, LeftRampBlock, RightRampBlock
 
 
 class Tool:
@@ -70,7 +70,7 @@ class RightRampTool(BlockTool):
         BlockTool.__init__(self)
 
     def newBlock(self):
-        return Block("Block-Place-RightRamp", "Block-RightRamp")
+        return RightRampBlock("Block-Place-RightRamp", "Block-RightRamp")
     
 class SpringTool(BlockTool):
     def __init__(self):

@@ -9,17 +9,15 @@ import Event
 NODE_TIMER = 200
 
 class Pea:
-    def __init__(self, img, initnode, physics):
+    def __init__(self, img, pos, physics, nodeGraph):
         self.image = img
         self.velocity=[0,0]
         self.physics = physics
-        if initnode != None:
-            self.path = PathFinding.NodeGraph.findPath(initnode)
-            self.setNode(initnode)
-            self.pos = initnode.pos
-            Event.addListener(EVENT_NODE_GRAPH_UPDATED, self)
-        else:
-            self.pos = (100,100)
+        self.pos = pos
+        self.nodeGraph = nodeGraph
+        self.setNode(self.nodeGraph.findNearestNode(self.pos))
+        self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+        Event.addListener(EVENT_NODE_GRAPH_UPDATED, self)
         self.rect = self.__getRect()
         self.rotateAngle = 0
         self.rotateIncrement = 90
@@ -36,7 +34,7 @@ class Pea:
     def setNode(self, node):
         self.reverse = False
         self.currentNode = node
-        self.pos = self.currentNode.pos
+        #self.pos = self.currentNode.pos
         self.timeUntilNextNode = NODE_TIMER
     
     def __getRect(self):
@@ -110,14 +108,14 @@ class Pea:
                 node.render(screen, (255,255,0))
         
     def update(self, timeD):
-        #self.physics.update(self, timeD)
+        self.physics.update(self, timeD)
         
-        self.timeUntilNextNode -= timeD
-        if self.timeUntilNextNode < 0:
-            self.setNode(self.path.pop(0))
-            if len(self.path) == 0:
-                self.path = PathFinding.NodeGraph.findPath(self.currentNode)
-        self.__animate()
+        #self.timeUntilNextNode -= timeD
+        #if self.timeUntilNextNode < 0:
+        #    self.setNode(self.path.pop(0))
+        #    if len(self.path) == 0:
+        #        self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+        #self.__animate()
         #To Kamal.  In case I don't see you again the update function is called on every member of the Animation.animations list once per frame with the elapsed time since the previous frame.
         # this allows for very smooth animations regardless of the users actual frame rate.  It is important to keep it all synched to the one timer for a number of reasons best not discussed here
         # --Trav 
