@@ -21,6 +21,19 @@ This could be a pretty easy way to do it, because in reality we know how much ti
 http://lostgarden.com/uploaded_images/ExamplesOfPeaMovement-771062.jpg
 
 == Integration with Physics ==
-Remeber also that there must be a mechanism for transferring between the PhysicsSimulation  and PathFinding systems.  This will involve:
+Remember also that there must be a mechanism for transferring between the PhysicsSimulation  and PathFinding systems.  This will involve:
   # ensuring that the update happens on the correct system
   # detaching and re-associating peas from nodes when they jump & land.
+
+Another idea I've had is to use the physics system to move the pea around in movement mode as well as in regular mode, here's how it works:
+  # The pea is transitioning between falling and moving modes (min Y velocity at a collision with a horizontal surface)
+  # The transition itself is done on a collision
+  # The peas velocity becomes a normalized vector of the surfaces direction
+  # If the next node is in the other direction the vector will be reversed
+  # When rendered the pea is rotated to face its vector
+
+This should get relatively smooth transitions as well as deal with the issue of which side the pea should be to avoid overlapping the block graphic.
+There are a few problems to this approach that I still need to solve
+
+  # What happens when the pea collides with multiple surfaces at corners?
+  # How do we handle a pea going around a corner?  in the current description it just hits the corner and rotate 90 degrees, something smoother would be preferable (this one isn't game breaking though)
