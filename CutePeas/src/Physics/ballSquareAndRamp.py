@@ -47,30 +47,29 @@ def placeLeftRamp(pos):
     h = pixelsToOde(RAMP_HEIGHT)
     odePos = getOdePos(pos)
     triMeshData = ode.TriMeshData()
-    verts = [#player facing face
-             (0,0,0),(w,0,0),(w,h,0),
-             #top facing face (2 triangles)
-             (0,0,0),(w,h,0),(w,h,1),
-             (0,0,0),(0,h,0),(w,h,1),
-             #bottom facing face (2 triangles)
-             (0,0,0),(w,0,0),(w,0,1),
-             (0,0,0),(0,0,1),(w,0,1),
-             #right facing face (2 triangles)
-             (w,0,0),(w,h,0),(w,h,1),
-             (w,0,0),(w,0,1),(w,h,1),
-             #back facing face
-             (0,0,1),(w,0,1),(w,h,1)]
-    indexes = [(0,0,-1),
-               (w,h,0),
-               (w,h,0),
-               (0,-h,0),
-               (0,-h,0),
-               (-w,0,0),
-               (-w,0,0),
-               (0,0,1)]
-    triMeshData.build(verts, indexes)
+    
+    verts = [(0.0,0.0,0.0),#0
+             (w,0.0,0.0),#1
+             (w,h,0.0),#2
+             (w,h,1),#3
+             (0.0,h,0.0),#4
+             (w,0.0,1),#5
+             (0.0,0.0,1)]#6
+    print "verts:",verts
+    faces = [(0,1,2),
+               (0,2,3),
+               (0,4,3),
+               (0,1,5),
+               (0,6,5),
+               (1,2,3),
+               (1,5,3),
+               (6,5,3)]
+    triMeshData.build(verts, faces)
+    print " built"
     geom = ode.GeomTriMesh(triMeshData, space)
+    print "geomed"
     geom.setPosition(odePos)
+    print "positioned"
     leftRamps.append(geom)
     
 def createBoxRect(pos):
@@ -113,9 +112,12 @@ def near_callback(args, geom1, geom2):
         
 def stepPhysics(timeD):
     #print "timeD=",timeD#/1000.0
+    print "colliding"
     space.collide((world,contactgroup), near_callback)
     #print balls[0].getPosition()
+    print "Stepping"
     world.step(timeD * 0.003)#/1000.0)
+    print "done"
     contactgroup.empty()
 
 def handleMouseMotion(event):
