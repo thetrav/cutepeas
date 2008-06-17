@@ -127,6 +127,8 @@ def handleMouseMotion(event):
 def handleMouseDown(event):
     if event.button == 1:
         dropSphere(pos)
+    if event.button == 2:
+        placeBox(pos)
     if event.button == 3:
         placeLeftRamp(pos)
 
