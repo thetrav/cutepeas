@@ -1,0 +1,9 @@
+#third party physics library.
+
+= Introduction =
+pyode is a set of python bindings for the Open Dynamics Engine ( http://www.ode.org )
+
+= Issues =
+so far the primary issue I've come across is in getting ramps happening.  The peas are conveniently modelled by the GeomSphere class, and other blocks are modelled by GeomBox, but ramps only seem to be possible using GeomTriMesh.
+
+Unfortunately my simple example of a GeomTriMesh with only a single triangle causes a seg fault when ode tests for collisions.  Unfortunately the seg fault has absolutely NO information in it, and I can't seem to debug which step it gets to either (it's happening somewhere under the c++ covers)
