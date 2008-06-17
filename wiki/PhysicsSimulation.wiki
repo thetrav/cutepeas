@@ -29,3 +29,6 @@ This will be called by the render loop or a pea which is jumping.  The expectati
 == Unscored Jump ==
 The game will at some stage require some physics simulated jumps to go unscored (eg, level load, peas getting trapped, peas falling off removed blocks).  
 How does this impact the physics system interface, how should it be implemented?
+
+= Third Party Physics =
+Lately I've been investigating third party physics libraries, and have had a crack at PyOde
