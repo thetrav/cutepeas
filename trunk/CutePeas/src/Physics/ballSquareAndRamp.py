@@ -8,6 +8,7 @@ world = None
 space = None
 balls = []
 boxes = []
+leftRamps = []
 contactGroup = None
 pos = (0,0)
 
@@ -20,31 +21,63 @@ BOX_WIDTH = 50
 BOX_HEIGHT = 50
 BOX_COLOR = (0,0,255)
 
+RAMP_WIDTH = 50
+RAMP_HEIGHT = 25
+RAMP_COLOR = (0,0,255)
+
 def odeToPixels(ode_units):
     return int(ode_units * pixels_in_an_ode_unit)
 
 def pixelsToOde(pixels):
     return float(pixels) / float(pixels_in_an_ode_unit)
 
+def getOdePos(pos):
+    return (pixelsToOde(pos[0]), pixelsToOde(pos[1]), 0)
+
 def placeBox(pos):
-    odePos = (pixelsToOde(pos[0]), pixelsToOde(pos[1]), 0)
+    odePos = getOdePos(pos)
     lx = pixelsToOde(BOX_WIDTH)
     ly = pixelsToOde(BOX_HEIGHT)
-    #body = ode.Body(world)
-
-    # Create a box geom for collision detection
     geom = ode.GeomBox(space, (lx,ly,1))
-    #geom.setBody(body)
-    
     geom.setPosition(odePos)
-    
     boxes.append(geom)
+
+def placeLeftRamp(pos):
+    w = pixelsToOde(RAMP_WIDTH)
+    h = pixelsToOde(RAMP_HEIGHT)
+    odePos = getOdePos(pos)
+    triMeshData = ode.TriMeshData()
+    verts = [#player facing face
+             (0,0,0),(w,0,0),(w,h,0),
+             #top facing face (2 triangles)
+             (0,0,0),(w,h,0),(w,h,1),
+             (0,0,0),(0,h,0),(w,h,1),
+             #bottom facing face (2 triangles)
+             (0,0,0),(w,0,0),(w,0,1),
+             (0,0,0),(0,0,1),(w,0,1),
+             #right facing face (2 triangles)
+             (w,0,0),(w,h,0),(w,h,1),
+             (w,0,0),(w,0,1),(w,h,1),
+             #back facing face
+             (0,0,1),(w,0,1),(w,h,1)]
+    indexes = [(0,0,-1),
+               (w,h,0),
+               (w,h,0),
+               (0,-h,0),
+               (0,-h,0),
+               (-w,0,0),
+               (-w,0,0),
+               (0,0,1)]
+    triMeshData.build(verts, indexes)
+    geom = ode.GeomTriMesh(triMeshData, space)
+    geom.setPosition(odePos)
+    leftRamps.append(geom)
     
 def createBoxRect(pos):
     return (pos[0] - BOX_WIDTH/2, pos[1] - BOX_HEIGHT/2, BOX_WIDTH, BOX_HEIGHT)
 
 def dropSphere(pos):
-    odePos = (pixelsToOde(pos[0]), pixelsToOde(pos[1]), 0)
+    odePos = getOdePos(pos)
     body = ode.Body(world)
     mass = ode.Mass()
     mass.setSphere(2500, pixelsToOde(BALL_RADIUS))
@@ -93,8 +126,7 @@ def handleMouseDown(event):
     if event.button == 1:
         dropSphere(pos)
     if event.button == 3:
-        placeBox(pos)
-        
+        placeLeftRamp(pos)
 
 eventHandlers[MOUSEMOTION] = handleMouseMotion
 eventHandlers[MOUSEBUTTONDOWN] = handleMouseDown
@@ -109,17 +141,31 @@ def events():
         else:
             print "key ", event.type, " not found"
 
+def getPixelPos(odePos):
+    return (odeToPixels(odePos[0]), odeToPixels(odePos[1]))
+
+def getRampPoints(pos):
+    x = pos[0]
+    y = pos[1]
+    return ((x,y),(x+1, y), (x+1, y+1))
+
 def render(screen):
     for ball in balls:
         odePos = ball.getPosition()
-        pos = (odeToPixels(odePos[0]), odeToPixels(odePos[1]))
+        pos = getPixelPos(odePos)
         #print "drawing ball at ",pos
         pygame.draw.circle(screen, BALL_COLOR, pos, BALL_RADIUS)
     
     for box in boxes:
         odePos = box.getPosition()
-        pos = (odeToPixels(odePos[0]), odeToPixels(odePos[1]))
+        pos = getPixelPos(odePos)
         pygame.draw.rect(screen, BOX_COLOR, createBoxRect(pos))
+        
+    for ramp in leftRamps:
+        odePos = ramp.getPosition()
+        pos = getPixelPos(odePos)
+        print "drawing ramp at:",pos
+        pygame.draw.polygon(screen, RAMP_COLOR, getRampPoints(pos))
 
 def animate(timeD):
     stepPhysics(timeD)
