@@ -12,7 +12,7 @@ leftRamps = []
 contactGroup = None
 pos = (0,0)
 
-pixels_in_an_ode_unit = 50
+pixels_in_an_ode_unit = 25
 BALL_RADIUS = 20
 BALL_COLOR = (255,0,0)
 MAX_FPS = 72
@@ -21,8 +21,8 @@ BOX_WIDTH = 50
 BOX_HEIGHT = 50
 BOX_COLOR = (0,0,255)
 
-RAMP_WIDTH = 50
-RAMP_HEIGHT = 25
+RAMP_WIDTH = 200
+RAMP_HEIGHT = 100
 RAMP_COLOR = (0,0,255)
 
 def odeToPixels(ode_units):
@@ -48,22 +48,14 @@ def placeLeftRamp(pos):
     odePos = getOdePos(pos)
     triMeshData = ode.TriMeshData()
     
-    verts = [(0.0,0.0,0.0),#0
-             (w,0.0,0.0),#1
-             (w,h,0.0),#2
-             (w,h,1),#3
-             (0.0,h,0.0),#4
-             (w,0.0,1),#5
-             (0.0,0.0,1)]#6
+    verts = [(0.0, 0.0, 0.0),#0
+             (w  , -h , 0.0),#1
+             (w  , -h , 1.0),#2
+             (0.0, 0.0, 1.0),#3
+             (w  , 0.0, 0.0),#4
+             (w  , 0.0, 1.0)]#5
     print "verts:",verts
-    faces = [(0,1,2),
-               (0,2,3),
-               (0,4,3),
-               (0,1,5),
-               (0,6,5),
-               (1,2,3),
-               (1,5,3),
-               (6,5,3)]
+    faces = [(0,1,2), (0,2,3), (4,5,1), (5,2,1)]
     triMeshData.build(verts, faces)
     print " built"
     geom = ode.GeomTriMesh(triMeshData, space)
@@ -111,14 +103,18 @@ def near_callback(args, geom1, geom2):
         j.attach(geom1.getBody(), geom2.getBody())
         
 def stepPhysics(timeD):
-    #print "timeD=",timeD#/1000.0
-    print "colliding"
-    space.collide((world,contactgroup), near_callback)
-    #print balls[0].getPosition()
-    print "Stepping"
-    world.step(timeD * 0.003)#/1000.0)
-    print "done"
-    contactgroup.empty()
+    if timeD > 0:
+        #print "timeD=",timeD#/1000.0
+        print "colliding"
+        space.collide((world,contactgroup), near_callback)
+        #print balls[0].getPosition()
+        print "Stepping"
+        world.step(timeD * 0.003)#/1000.0)
+        print "done"
+        contactgroup.empty()
+        for ball in balls:
+            ball_pos = ball.getPosition()
+            ball.setPosition((ball_pos[0], ball_pos[1], 0.0)) 
 
 def handleMouseMotion(event):
     global pos
@@ -151,7 +147,11 @@ def getPixelPos(odePos):
 def getRampPoints(pos):
     x = pos[0]
     y = pos[1]
-    return ((x,y),(x+1, y), (x+1, y+1))
+    return (
+            (x,y),
+            (x+RAMP_WIDTH, y-RAMP_HEIGHT),
+            (x+RAMP_WIDTH, y)
+            )
 
 def render(screen):
     for ball in balls:
