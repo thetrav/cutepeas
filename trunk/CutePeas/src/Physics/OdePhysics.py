@@ -1,17 +1,17 @@
 import ode
 from Constants import *
+import Constants
 import UserInterface.Block
 import pygame
-
 
 pixels_in_an_ode_unit = 25
 physics_step_size = 0.016
 GRAVITY = 9.81
-BOUNCE = 0.5
+BOUNCE = 0.8
 
 PEA_COLOR = (0,200,0)
 BLOCK_COLOR = (200,200,0)
-BLOCK_LINE_THICKNESS = 4
+SURFACE_LINE_THICKNESS = 4
 
 def odeToPixels(ode_units):
     return int(ode_units * pixels_in_an_ode_unit)
@@ -68,7 +68,9 @@ class OdePhysicsManager:
             self.removeBlock(block)
     
     def removeBlock(self, block):
-        raise "how do I do that?"
+        self.blocks.remove(block)
+        self.space.remove(block.geom)
+        block.geom = None
     
     def addBlock(self, block):
         #adjust pos from top left coord for center coord
@@ -108,16 +110,17 @@ class OdePhysicsManager:
         self.peas.append(pea)
         
     def render(self, screen):
-        for ball in self.peas:
-            odePos = ball.body.getPosition()
-            pos = getPixelPos(odePos)
-            #print "drawing ball at ",pos
-            pygame.draw.circle(screen, PEA_COLOR, pos, PEA_RADIUS)
-        
-        for block in self.blocks:
-            #odePos = box.getPosition()
-            #pos = getPixelPos(odePos)
-            pygame.draw.polygon(screen, BLOCK_COLOR, block.getPoints(), BLOCK_LINE_THICKNESS)
+        if Constants.DRAW_HIT_BOXES:
+            for ball in self.peas:
+                odePos = ball.body.getPosition()
+                pos = getPixelPos(odePos)
+                #print "drawing ball at ",pos
+                pygame.draw.circle(screen, PEA_COLOR, pos, PEA_RADIUS, SURFACE_LINE_THICKNESS)
+            
+            for block in self.blocks:
+                #odePos = box.getPosition()
+                #pos = getPixelPos(odePos)
+                pygame.draw.polygon(screen, BLOCK_COLOR, block.getPoints(), SURFACE_LINE_THICKNESS)
     
     def update(self, timeD):
         self.timeCounter += (timeD*0.001)#milliseconds to seconds
@@ -126,7 +129,11 @@ class OdePhysicsManager:
             self.space.collide((self.world,self.contactgroup), near_callback)
             self.world.step(physics_step_size)
             self.contactgroup.empty()
+            #nullify any z axis velocity and rotation
             for pea in self.peas:
                 pea_pos = pea.body.getPosition()
                 pea.body.setPosition((pea_pos[0], pea_pos[1], 0.0))
+                vel = pea.body.getLinearVel()
+                pea.body.setLinearVel((vel[0], vel[1], 0))
+                pea.body.setAngularVel((0, 0, 0))
     
