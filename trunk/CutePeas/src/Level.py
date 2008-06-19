@@ -54,7 +54,7 @@ class BasicLevel:
         Event.addListener(UserInterface.Block.DONE_GHOSTING_IN_EVENT, self.physicsManager)
         Event.addListener(UserInterface.Block.DONE_GHOSTING_OUT_EVENT, self.physicsManager)
         
-        self.pea = UserInterface.Pea.Pea(images["Pea-Standard"], (121, 50), self.nodeGraph)
+        self.pea = UserInterface.Pea.Pea(images["Pea-Standard"], (121, 50), self.nodeGraph, self.physicsManager)
         self.physicsManager.addPea(self.pea)
         Animation.animations.append(self.pea)
         Animation.animations.append(self.physicsManager)

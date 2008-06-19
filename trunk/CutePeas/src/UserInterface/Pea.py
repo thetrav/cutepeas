@@ -8,9 +8,14 @@ import Physics.OdePhysics
 
 
 NODE_TIMER = 200
+FALL_END_TIMER = 2000
+MIN_VEL = 0.001
+FALLING_MODE = "falling"
+JUMPING_MODE = "jumping"
+CLIMBING_MODE = "climbing"
 
 class Pea:
-    def __init__(self, img, pos, nodeGraph):
+    def __init__(self, img, pos, nodeGraph, physics):
         self.image = img
         self.body = None
         self.nodeGraph = nodeGraph
@@ -24,6 +29,10 @@ class Pea:
         self.rotated = False
         self.listeners = []
         self.reverse = False
+        self.timeStandingStill = FALL_END_TIMER
+        self.timeUntilNextNode = 0
+        self.mode = FALLING_MODE
+        self.physicsManager = physics
     
     def dispose(self):
         Event.removeListener(EVENT_NODE_GRAPH_UPDATED, self)
@@ -34,7 +43,7 @@ class Pea:
     def setNode(self, node):
         self.reverse = False
         self.currentNode = node
-        #self.pos = self.currentNode.pos
+        self.pos = self.currentNode.pos
         self.timeUntilNextNode = NODE_TIMER
     
     def __getRect(self):
@@ -96,7 +105,6 @@ class Pea:
         return -(self.rotateIncrement)
         
     def render(self, screen):
-        self.pos = Physics.OdePhysics.getPixelPos(self.body.getPosition())
         screen.blit(self.image, (self.pos[X] - PEA_RADIUS, self.pos[Y] - PEA_RADIUS))
         # Restoring is needed for rotations
         self.__restoreImage()
@@ -105,8 +113,34 @@ class Pea:
             for node in self.path:
                 node.render(screen, (255,255,0))
         
+    def jump(self):
+        self.pos = (self.pos[0], self.pos[1] - PEA_RADIUS+5)
+        self.physicsManager.addPea(self)
+        self.body.setLinearVel((1, -1, 0.0))
+        self.mode = JUMPING_MODE
+        self.timeStandingStill = FALL_END_TIMER
+        
     def update(self, timeD):
-        pass
+        if self.mode == CLIMBING_MODE :
+            self.timeUntilNextNode -= timeD
+            if self.timeUntilNextNode < 0:
+                self.setNode(self.path.pop(0))
+                if len(self.path) == 0:
+                    self.jump()
+        else:
+            self.pos = Physics.OdePhysics.getPixelPos(self.body.getPosition())
+            vel = self.body.getLinearVel()
+            if vel[0] + vel[1] > MIN_VEL:
+                self.timeStandingStill = FALL_END_TIMER
+            else:
+                self.timeStandingStill -= timeD
+            
+            if self.timeStandingStill <= 0:
+                self.mode = CLIMBING_MODE
+                self.physicsManager.removePea(self)
+                self.setNode(self.nodeGraph.findNearestNode(self.pos))
+                self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+                
         #physics updates are now handled by a third party library that does all entities at once
         #pea update still exists for non physics related animations
         #self.physics.update(self, timeD)

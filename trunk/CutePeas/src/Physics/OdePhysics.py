@@ -90,24 +90,31 @@ class OdePhysicsManager:
                 faces.append((i, getNext(getNext(i, numVerts), numVerts), getNext(i, numVerts)))
             else :
                 faces.append((i, getNext(i, numVerts), getNext(getNext(i, numVerts), numVerts)))
-        print "verts:",verts, " faces=", faces
         triMeshData.build(verts, faces)
         block.geom = ode.GeomTriMesh(triMeshData, self.space)
         self.blocks.append(block)
     
     def addPea(self, pea):
         odePos = getOdePos(pea.pos)
+        print "adding pea at ", odePos
         pea.body = ode.Body(self.world)
         mass = ode.Mass()
         mass.setSphere(2500, pixelsToOde(PEA_RADIUS))
         pea.body.setMass(mass)
     
         # Create a box geom for collision detection
-        geom = ode.GeomSphere(self.space, pixelsToOde(PEA_RADIUS))
-        geom.setBody(pea.body)
+        pea.geom = ode.GeomSphere(self.space, pixelsToOde(PEA_RADIUS))
+        pea.geom.setBody(pea.body)
         
         pea.body.setPosition(odePos)
         self.peas.append(pea)
+        
+    def removePea(self, pea):
+        self.peas.remove(pea)
+        #self.world.remove(pea.body)
+        self.space.remove(pea.geom)
+        pea.body = None
+        pea.geom = None
         
     def render(self, screen):
         if Constants.DRAW_HIT_BOXES:
