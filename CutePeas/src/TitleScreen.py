@@ -28,7 +28,7 @@ class TitleScreen:
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 4, 8)
         self.addBlock(Block("Block-Place-Spring", "Block-Spring"), scene, 6, 8)
         self.addBlock(Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
-        self.pea = Pea(images["Pea-Standard"], (221, 10), self.nodeGraph)
+        self.pea = Pea(images["Pea-Standard"], (221, 10), self.nodeGraph, self.physicsManager)
         self.physicsManager.addPea(self.pea)
         Animation.animations.append(self.pea)
         Animation.animations.append(self.physicsManager)
