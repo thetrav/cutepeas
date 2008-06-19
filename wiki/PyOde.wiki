@@ -5,11 +5,11 @@ pyode is a set of python bindings for the Open Dynamics Engine ( http://www.ode.
 
 = Implementation =
 I've added a physics manager that uses pyode, there have been some interface changes to accommodate this:
-* add and remove surfaces have been replaced with add and remove blocks
-* add and remove pea has been added
-* peas and blocks have body and geom object respectively, they are ode aware
-* collisions will need to be handled with call backs.
-* the physics manager is responsible for moving all peas at once and has its own update method.  The peas retain their update method for game logic and non-physics animations
+  * add and remove surfaces have been replaced with add and remove blocks
+  * add and remove pea has been added
+  * peas and blocks have body and geom object respectively, they are ode aware
+  * collisions will need to be handled with call backs.
+  * the physics manager is responsible for moving all peas at once and has its own update method.  The peas retain their update method for game logic and non-physics animations
 
 
 = Issues =
