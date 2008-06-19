@@ -4,17 +4,17 @@ import PathFinding.NodeGraph
 import Constants
 from Constants import *
 import Event
+import Physics.OdePhysics
 
 
 NODE_TIMER = 200
 
 class Pea:
-    def __init__(self, img, pos, physics, nodeGraph):
+    def __init__(self, img, pos, nodeGraph):
         self.image = img
-        self.velocity=[0,0]
-        self.physics = physics
-        self.pos = pos
+        self.body = None
         self.nodeGraph = nodeGraph
+        self.pos = pos
         self.setNode(self.nodeGraph.findNearestNode(self.pos))
         self.path = PathFinding.NodeGraph.findPath(self.currentNode)
         Event.addListener(EVENT_NODE_GRAPH_UPDATED, self)
@@ -96,6 +96,7 @@ class Pea:
         return -(self.rotateIncrement)
         
     def render(self, screen):
+        self.pos = Physics.OdePhysics.getPixelPos(self.body.getPosition())
         screen.blit(self.image, (self.pos[X] - PEA_RADIUS, self.pos[Y] - PEA_RADIUS))
         # Restoring is needed for rotations
         self.__restoreImage()
@@ -108,7 +109,10 @@ class Pea:
                 node.render(screen, (255,255,0))
         
     def update(self, timeD):
-        self.physics.update(self, timeD)
+        pass
+        #physics updates are now handled by a third party library that does all entities at once
+        #pea update still exists for non physics related animations
+        #self.physics.update(self, timeD)
         
         #self.timeUntilNextNode -= timeD
         #if self.timeUntilNextNode < 0:
