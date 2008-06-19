@@ -6,7 +6,7 @@ from UserInterface.Scenery import Scenery
 from UserInterface.Block import *
 from UserInterface.Pea import *
 from PathFinding.NodeGraph import *
-from Physics.QuickPhysics import *
+import Physics.OdePhysics
 
 class TitleScreen:
     def __init__(self, userInterface, transitionListener):
@@ -17,8 +17,9 @@ class TitleScreen:
         self.transitionListener = transitionListener
         scene = Scenery(BLOCKS_WIDE, BLOCKS_HIGH)
         self.nodeGraph = NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
-        self.physicsManager = physicsManagerWithBorders()
+        self.physicsManager = Physics.OdePhysics.OdePhysicsManager()
         self.userInterface.setScene(scene)
+        self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 2, 8)
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 8)
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 7)
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 6)
@@ -27,16 +28,17 @@ class TitleScreen:
         self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 4, 8)
         self.addBlock(Block("Block-Place-Spring", "Block-Spring"), scene, 6, 8)
         self.addBlock(Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
-        self.pea = Pea(images["Pea-Standard"], (121, 500), self.physicsManager, self.nodeGraph)
-        self.pea.velocity = [0.4, 0]
+        self.pea = Pea(images["Pea-Standard"], (221, 10), self.nodeGraph)
+        self.physicsManager.addPea(self.pea)
         Animation.animations.append(self.pea)
+        Animation.animations.append(self.physicsManager)
         
 
     def addBlock(self, block, scene, x, y):
         scene.slots[x][y].addBlock(block)
         block.doneGhostingIn()
         self.nodeGraph.addNodes(block.createNodes())
-        self.physicsManager.addSurfaces(block.createSurfaces())
+        self.physicsManager.addBlock(block)
         
     def addButton(self, name, pos, width, height):
         button = TitleScreenButton(name, pos, width, height)
@@ -66,6 +68,8 @@ class TitleScreen:
     def transition(self):
         self.transitionListener.transition(BasicLevel(self.userInterface))
         Animation.animations.remove(self.pea)
+        Animation.animations.remove(self.physicsManager)
+        self.physicsManager.dispose()
         self.pea.dispose()
         
     def dispose(self):

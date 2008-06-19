@@ -8,7 +8,7 @@ from UserInterface.UserInterface import UserInterface
 
 class Game:
     def __init__(self):
-        self.window = pygame.display.set_mode((800,600))
+        self.window = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
         pygame.display.set_caption('Cute Peas')
         
         self.screen = pygame.display.get_surface()
