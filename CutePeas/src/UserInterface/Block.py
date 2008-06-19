@@ -20,6 +20,7 @@ class Block:
         self.ghostingIn = False
         self.ghostingOut = False
         self.resetTimer()
+        self.geom = None
         
     def createNodes(self):
         print "block xy="+str(self.x)+" " +str(self.y)
@@ -37,14 +38,14 @@ class Block:
         loopNodes(nodes)
         return nodes
     
-    def createSurfaces(self):
+    def getPoints(self):
         x = self.x
         y = self.y + BLOCK_Y_OVERLAP
-        self.surfaces = [verticalSurface([x,y]),
-                    verticalSurface(([x+BLOCK_WIDTH,y])),
-                    horizontalSurface((x,y)),
-                    horizontalSurface((x,y+BLOCK_HEIGHT))]
-        return self.surfaces
+        points = [(x,y),
+                  (x+BLOCK_WIDTH, y), 
+                  (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), 
+                  (x, y+BLOCK_HEIGHT)]
+        return points
     
     def resetTimer(self):
         self.ghostTimer = GHOST_TIMER_INIT
@@ -108,13 +109,11 @@ class LeftRampBlock(Block):
         loopNodes(nodes)
         return nodes
     
-    def createSurfaces(self):
-        x = self.x * 1.0
-        y = self.y + BLOCK_Y_OVERLAP * 1.0
-        self.surfaces = [verticalSurface((x+BLOCK_WIDTH,y)),
-                horizontalSurface((x,y+BLOCK_HEIGHT)),
-                diagonalSurface((x,y+BLOCK_HEIGHT), (x+BLOCK_WIDTH,y))]
-        return self.surfaces
+    def getPoints(self):
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        points = [(x,y+BLOCK_HEIGHT), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), (x+BLOCK_WIDTH, y) ]
+        return points
 
 class RightRampBlock(Block):
     def __init__(self, ghostingImage= None, displayImage = None):
@@ -133,13 +132,11 @@ class RightRampBlock(Block):
         loopNodes(nodes)
         return nodes
     
-    def createSurfaces(self):
-        x = self.x * 1.0
-        y = self.y + BLOCK_Y_OVERLAP * 1.0
-        self.surfaces = [verticalSurface((x,y)),
-                horizontalSurface((x,y+BLOCK_HEIGHT)),
-                diagonalSurface((x,y), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT))]
-        return self.surfaces
+    def getPoints(self):
+        x = self.x
+        y = self.y + BLOCK_Y_OVERLAP
+        points = [(x,y), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), (x, y+BLOCK_HEIGHT) ]
+        return points
 
 def verticalSurface(pos):
     return Physics.QuickPhysics.VerticalSurface(pos)
