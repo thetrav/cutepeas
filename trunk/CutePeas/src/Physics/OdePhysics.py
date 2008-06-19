@@ -11,6 +11,7 @@ BOUNCE = 0.5
 
 PEA_COLOR = (0,200,0)
 BLOCK_COLOR = (200,200,0)
+BLOCK_LINE_THICKNESS = 4
 
 def odeToPixels(ode_units):
     return int(ode_units * pixels_in_an_ode_unit)
@@ -35,6 +36,12 @@ def near_callback(args, geom1, geom2):
         c.setMu(5000)
         j = ode.ContactJoint(world, contactgroup, c)
         j.attach(geom1.getBody(), geom2.getBody())
+        
+def getNext(ind, max):
+    if ind < max - 2:
+        return ind + 1
+    else:
+        return 0
 
 class OdePhysicsManager:
     def __init__(self):
@@ -65,14 +72,25 @@ class OdePhysicsManager:
     
     def addBlock(self, block):
         #adjust pos from top left coord for center coord
-        x = block.x + BLOCK_WIDTH/2
-        y = block.y + BLOCK_WIDTH/2
-        odePos = getOdePos((x, y))
-        lx = pixelsToOde(BLOCK_WIDTH)
-        ly = pixelsToOde(BLOCK_HEIGHT)
-        geom = ode.GeomBox(self.space, (lx,ly,1))
-        geom.setPosition(odePos)
-        block.geom = geom
+        triMeshData = ode.TriMeshData()
+        points = block.getPoints()
+        verts = []
+        faces = []
+        #create two vertices for each point
+        for point in points:
+            frontPoint = getOdePos(point)
+            verts.append(frontPoint)
+            verts.append((frontPoint[0], frontPoint[1], 1.0))
+        #create one triangle for each vertice
+        numVerts = len(verts)
+        for i in xrange(numVerts):
+            if i % 2 == 0:
+                faces.append((i, getNext(getNext(i, numVerts), numVerts), getNext(i, numVerts)))
+            else :
+                faces.append((i, getNext(i, numVerts), getNext(getNext(i, numVerts), numVerts)))
+        print "verts:",verts, " faces=", faces
+        triMeshData.build(verts, faces)
+        block.geom = ode.GeomTriMesh(triMeshData, self.space)
         self.blocks.append(block)
     
     def addPea(self, pea):
@@ -99,7 +117,7 @@ class OdePhysicsManager:
         for block in self.blocks:
             #odePos = box.getPosition()
             #pos = getPixelPos(odePos)
-            pygame.draw.polygon(screen, BLOCK_COLOR, block.getPoints())
+            pygame.draw.polygon(screen, BLOCK_COLOR, block.getPoints(), BLOCK_LINE_THICKNESS)
     
     def update(self, timeD):
         self.timeCounter += (timeD*0.001)#milliseconds to seconds
