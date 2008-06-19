@@ -101,9 +101,6 @@ class Pea:
         # Restoring is needed for rotations
         self.__restoreImage()
         
-        if Constants.DRAW_HIT_BOXES:
-            pygame.draw.circle(screen, (0, 130, 0), self.pos, PEA_RADIUS)
-        
         if Constants.DRAW_PATH:
             for node in self.path:
                 node.render(screen, (255,255,0))
