@@ -7,8 +7,8 @@ from UserInterface.Score import *
 from UserInterface.Timer import *
 import PathFinding.NodeGraph
 from Constants import *
-import UserInterface.Block
-import UserInterface.Pea
+import Objects.Block
+import Objects.Pea
 import Physics.OdePhysics
 
 def newButton(image, yPos, tool):
@@ -45,17 +45,16 @@ class BasicLevel:
         
         self.nodeGraph = PathFinding.NodeGraph.NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
         
-        Event.addListener(UserInterface.Block.DONE_GHOSTING_IN_EVENT, self.nodeGraph)
-        Event.addListener(UserInterface.Block.DONE_GHOSTING_OUT_EVENT, self.nodeGraph)
+        Event.addListener(Objects.Block.DONE_GHOSTING_IN_EVENT, self.nodeGraph)
+        Event.addListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self.nodeGraph)
         
         
         self.physicsManager = Physics.OdePhysics.OdePhysicsManager()
         
-        Event.addListener(UserInterface.Block.DONE_GHOSTING_IN_EVENT, self.physicsManager)
-        Event.addListener(UserInterface.Block.DONE_GHOSTING_OUT_EVENT, self.physicsManager)
+        Event.addListener(Objects.Block.DONE_GHOSTING_IN_EVENT, self.physicsManager)
+        Event.addListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self.physicsManager)
         
-        self.pea = UserInterface.Pea.Pea(images["Pea-Standard"], (121, 50), self.nodeGraph, self.physicsManager)
-        self.physicsManager.addPea(self.pea)
+        self.pea = Objects.Pea.Pea(images["Pea-Standard"], (121, 50), self.nodeGraph, self.physicsManager)
         Animation.animations.append(self.pea)
         Animation.animations.append(self.physicsManager)
         

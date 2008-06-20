@@ -3,10 +3,11 @@ from UserInterface import Text
 from UserInterface.Button import TitleScreenButton
 from Level import BasicLevel
 from UserInterface.Scenery import Scenery
-from UserInterface.Block import *
-from UserInterface.Pea import *
+import Objects.Block
+import Objects.Pea
 from PathFinding.NodeGraph import *
 import Physics.OdePhysics
+import Animation
 
 class TitleScreen:
     def __init__(self, userInterface, transitionListener):
@@ -19,17 +20,16 @@ class TitleScreen:
         self.nodeGraph = NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
         self.physicsManager = Physics.OdePhysics.OdePhysicsManager()
         self.userInterface.setScene(scene)
-        self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 2, 8)
-        self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 8)
-        self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 7)
-        self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 6)
-        self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 3, 5)
-        self.addBlock(RightRampBlock("Block-Place-RightRamp", "Block-RightRamp"), scene, 4, 7)
-        self.addBlock(Block("Block-Place-Normal", "Block-Normal"), scene, 4, 8)
-        self.addBlock(Block("Block-Place-Spring", "Block-Spring"), scene, 6, 8)
-        self.addBlock(Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
-        self.pea = Pea(images["Pea-Standard"], (221, 10), self.nodeGraph, self.physicsManager)
-        self.physicsManager.addPea(self.pea)
+        self.addBlock(Objects.Block.Block("Block-Place-Normal", "Block-Normal"), scene, 2, 8)
+        self.addBlock(Objects.Block.Block("Block-Place-Normal", "Block-Normal"), scene, 3, 8)
+        self.addBlock(Objects.Block.Block("Block-Place-Normal", "Block-Normal"), scene, 3, 7)
+        self.addBlock(Objects.Block.Block("Block-Place-Normal", "Block-Normal"), scene, 3, 6)
+        self.addBlock(Objects.Block.Block("Block-Place-Normal", "Block-Normal"), scene, 3, 5)
+        self.addBlock(Objects.Block.RightRampBlock("Block-Place-RightRamp", "Block-RightRamp"), scene, 4, 7)
+        self.addBlock(Objects.Block.Block("Block-Place-Normal", "Block-Normal"), scene, 4, 8)
+        self.addBlock(Objects.Block.Block("Block-Place-Spring", "Block-Spring"), scene, 6, 8)
+        self.addBlock(Objects.Block.Block("Block-Place-Gel", "Block-Gel"), scene, 8, 8)
+        self.pea = Objects.Pea.Pea(images["Pea-Standard"], (0, 600), self.nodeGraph, self.physicsManager)
         Animation.animations.append(self.pea)
         Animation.animations.append(self.physicsManager)
         
@@ -58,9 +58,9 @@ class TitleScreen:
         screen.blit(images["Plate"], (5, 520))
         self.userInterface.render(screen)
         self.highScoreList.render(screen)
-        flagPos = (315, 280)
-        screen.blit(images["Flag-Pole"], flagPos)
-        screen.blit(images["Flag-Good"], (flagPos[0]+5, flagPos[1]+20))
+        #flagPos = (315, 280)
+        #screen.blit(images["Flag-Pole"], flagPos)
+        #screen.blit(images["Flag-Good"], (flagPos[0]+5, flagPos[1]+20))
         self.nodeGraph.render(screen)
         self.pea.render(screen)
         self.physicsManager.render(screen)

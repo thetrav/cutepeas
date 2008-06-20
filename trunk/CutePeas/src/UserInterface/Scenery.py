@@ -4,7 +4,7 @@ from Animation import animations
 import random
 from Constants import *
 import Event
-import Block
+import Objects.Block
 
 def posToIndex(x, y, slots):
     i = singlePosToIndex(x, X_OFFSET, BLOCK_WIDTH)
@@ -82,12 +82,12 @@ class Slot:
     def deleteBlock(self):
         if self.block and not self.block.isGhosting():
             self.block.ghostOut()
-            Event.addListener(Block.DONE_GHOSTING_OUT_EVENT, self)
+            Event.addListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self)
     
     def eventFired(self, id, block):
         if self.block == block:
             self.block = None
-            Event.removeListener(Block.DONE_GHOSTING_OUT_EVENT, self)
+            Event.removeListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self)
 
 
 class Cloud:

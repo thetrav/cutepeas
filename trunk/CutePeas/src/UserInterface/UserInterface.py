@@ -6,7 +6,6 @@ from Images import images
 from Cursor import Cursor
 from Tool import *
 from Scenery import *
-from Pea import *
 import Text, Score, Animation, Timer, Particles.Particles
 import Constants
 from Constants import *
