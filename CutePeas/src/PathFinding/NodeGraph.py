@@ -3,23 +3,32 @@ import Constants
 from Constants import *
 from UserInterface.Text import *
 import Event
-import UserInterface.Block
+import Objects.Block
 import math
+import Images
 
 NODE_X_GAP = BLOCK_WIDTH/2
 NODE_Y_GAP = BLOCK_HEIGHT/2
+FLAG_MAX_HEIGHT = 40
+FLAG_HEIGHT = 68
 
 def snapToPos(pos):
-    return [snap(pos[0], X_OFFSET, NODE_X_GAP), snap(pos[1], Y_OFFSET, NODE_Y_GAP)]
+    return (snap(pos[0], X_OFFSET, NODE_X_GAP), snap(pos[1], Y_OFFSET, NODE_Y_GAP))
 
 def snap(pos, offset, gap):
-    return math.floor((pos - offset) / gap) * gap + offset
+    return int(math.floor((pos - offset) / gap) * gap + offset)
+
+def distance(pos, posStrings):
+    xDistance = pos[0] - int(posStrings[0])
+    yDistance = pos[1] - int(posStrings[1])
+    return xDistance * xDistance + yDistance * yDistance
 
 class NodeGraph:
     def __init__(self, numFloorBlocks, yPos):
         self.nodes = {}
         prev = PlateCornerNode((X_OFFSET,yPos))
         self.storeNode(prev)
+        self.flags = []
         
         for x in xrange(numFloorBlocks * 2):
             node = createNode(x+1, yPos)
@@ -28,25 +37,42 @@ class NodeGraph:
             self.storeNode(node)
             prev = node
             
+    def placeFlag(self, flag, node):
+        print "placing flag at ", flag.pos
+        self.flags.append(flag)
+        node.flag = flag
+            
     def findNearestNode(self, pos):
-        snapped = snapToPos(pos)
-        best = None
+        print "finding node at ", pos, " in ", self.nodes.keys()
+        bestNode = None
+        bestDistance = None
         for key in self.nodes.keys():
-            current = self.nodes.get(key)
-            if best == None or current.pos[X] == snapped[X] and current.pos[Y] < best.pos[Y]:
-                best = current
-        if best == None:
-            raise "pea could not find node nearest to:  " + str(pos) + " which translated to snapped position of: " + str(snapped)
-        return best
+            nodePos = key.strip('()').split(', ')
+            if bestNode == None or distance(pos, nodePos) < bestDistance:
+                bestNode = self.nodes.get(key)
+                bestDistance = distance(pos, nodePos)
+        if bestNode == None:
+            raise(" could not find a node")
+        return bestNode
+        #snapped = str(snapToPos(pos))
+        #haven't gotten this working yet.  Is theoretically more efficient
+        #best = None
+        #for key in self.nodes.keys():
+        #    current = self.nodes.get(key)
+        #    if best == None or current.pos[X] == snapped[X] and current.pos[Y] < best.pos[Y]:
+        #        best = current
+        #if best == None:
+        #    raise "pea could not find node nearest to:  " + str(pos) + " which translated to snapped position of: " + str(snapped)
+        #return best
     
     def checkCircle(self, center, radius):
         #radius is in block nodes, and by circle I mean square
         pass
     
     def eventFired(self, id, block):
-        if id == UserInterface.Block.DONE_GHOSTING_IN_EVENT:
+        if id == Objects.Block.DONE_GHOSTING_IN_EVENT:
             self.addNodes(block.createNodes())
-        elif id == UserInterface.Block.DONE_GHOSTING_OUT_EVENT:
+        elif id == Objects.Block.DONE_GHOSTING_OUT_EVENT:
             self.removeNodes(block.createNodes())
     
     def storeNode(self, node):
@@ -62,6 +88,8 @@ class NodeGraph:
         self.nodes.pop(str(pos))
     
     def render(self, screen):
+        for flag in self.flags:
+            flag.render(screen)
         if Constants.DRAW_NODES:
             for key in self.nodes:
                     self.nodes[key].render(screen)
@@ -129,6 +157,7 @@ class Node:
         self.pos = pos
         self.linkedNodes = set()
         self.nodeCount = 1
+        self.flag = None
     
     def linkNode(self, node):
         assert node is not self
@@ -207,4 +236,19 @@ def loopNodes(nodeList):
         prev = node
     prev.linkNode(nodeList[0])
     nodeList[0].linkNode(prev)
-
+    
+class Flag:
+    def __init__(self, pos, maxJumps):
+        self.pos = (pos[0]-10, pos[1]-FLAG_HEIGHT)
+        self.jumps = 0
+        self.maxJumps = maxJumps
+        self.flagPos = [pos[0]+5, pos[1]]
+    
+    def render(self, surface):
+        surface.blit(Images.images["Flag-Pole"], self.pos)
+        if self.jumps > 0:
+            surface.blit(Images.images["Flag-Good"], self.flagPos)
+    
+    def jumpDone(self):
+        self.jumps += 1
+        self.flagPos[1] -= FLAG_MAX_HEIGHT / self.maxJumps

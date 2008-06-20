@@ -1,7 +1,7 @@
 import ode
 from Constants import *
 import Constants
-import UserInterface.Block
+import Objects.Block
 import pygame
 
 pixels_in_an_ode_unit = 25
@@ -62,9 +62,9 @@ class OdePhysicsManager:
         pass
     
     def eventFired(self, id, block):
-        if id == UserInterface.Block.DONE_GHOSTING_IN_EVENT:
+        if id == Objects.Block.DONE_GHOSTING_IN_EVENT:
             self.addBlock(block)
-        elif id == UserInterface.Block.DONE_GHOSTING_OUT_EVENT:
+        elif id == Objects.Block.DONE_GHOSTING_OUT_EVENT:
             self.removeBlock(block)
     
     def removeBlock(self, block):
@@ -111,6 +111,7 @@ class OdePhysicsManager:
         
     def removePea(self, pea):
         self.peas.remove(pea)
+        print self.peas
         #self.world.remove(pea.body)
         self.space.remove(pea.geom)
         pea.body = None

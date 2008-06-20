@@ -1,7 +1,7 @@
 import pygame.draw
 import Constants
 from Constants import *
-from UserInterface.Block import *
+import Objects.Block
 
 COLLISION_RESOLUTION = 5
 VERTICAL_SURFACE_HEIGHT = BLOCK_HEIGHT
@@ -70,9 +70,9 @@ class PhysicsManager:
         pea.pos = newPos
     
     def eventFired(self, id, block):
-        if id == UserInterface.Block.DONE_GHOSTING_IN_EVENT:
+        if id == Objects.Block.Block.DONE_GHOSTING_IN_EVENT:
             self.addSurfaces(block.createSurfaces())
-        elif id == UserInterface.Block.DONE_GHOSTING_OUT_EVENT:
+        elif id == Objects.Block.Block.DONE_GHOSTING_OUT_EVENT:
             self.removeSurfaces(block.surfaces)
 
 def calculateNewVelocity(oldVelocity, timeD):

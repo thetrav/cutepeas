@@ -1,6 +1,6 @@
 from Images import images
 import Scenery
-from Block import Block, LeftRampBlock, RightRampBlock
+import Objects.Block
 
 
 class Tool:
@@ -49,33 +49,33 @@ class GelBlockTool(BlockTool):
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-Gel", "Block-Gel")
+        return Objects.Block.Block("Block-Place-Gel", "Block-Gel")
     
 class NormalBlockTool(BlockTool):
     def __init__(self):
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return Block("Block-Place-Normal", "Block-Normal")
+        return Objects.Block.Block("Block-Place-Normal", "Block-Normal")
         
 class LeftRampTool(BlockTool):
     def __init__(self):
         BlockTool.__init__(self)
     
     def newBlock(self):
-        return LeftRampBlock("Block-Place-LeftRamp", "Block-LeftRamp")
+        return Objects.Block.LeftRampBlock("Block-Place-LeftRamp", "Block-LeftRamp")
     
 class RightRampTool(BlockTool):
     def __init__(self):
         BlockTool.__init__(self)
 
     def newBlock(self):
-        return RightRampBlock("Block-Place-RightRamp", "Block-RightRamp")
+        return Objects.Block.RightRampBlock("Block-Place-RightRamp", "Block-RightRamp")
     
 class SpringTool(BlockTool):
     def __init__(self):
         BlockTool.__init__(self)        
 
     def newBlock(self):
-        return Block("Block-Place-Spring", "Block-Spring")
+        return Objects.Block.Block("Block-Place-Spring", "Block-Spring")
     
