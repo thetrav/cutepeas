@@ -5,26 +5,7 @@ import random
 from Constants import *
 import Event
 import Objects.Block
-
-def posToIndex(x, y, slots):
-    i = singlePosToIndex(x, X_OFFSET, BLOCK_WIDTH)
-    j = singlePosToIndex(y, Y_OFFSET, BLOCK_HEIGHT)
-    # check for overlap
-    distanceFromTop = y - singleIndexToPos(j, Y_OFFSET, BLOCK_HEIGHT)
-    if distanceFromTop < BLOCK_Y_OVERLAP  and j > 0 and slots[i][j-1].block:
-        j = j-1
-    return (i,j)
-
-def singlePosToIndex(pos, offset, gap):
-    return int((pos - offset)/gap)
-
-def indexToPos(x, y):
-    i = singleIndexToPos(x, X_OFFSET, BLOCK_WIDTH)
-    j = singleIndexToPos(y, Y_OFFSET, BLOCK_HEIGHT)
-    return (i,j)
-
-def singleIndexToPos(pos, offset, gap):
-    return pos * gap + offset
+import Coordinates
 
 class Scenery:
     def __init__(self, BLOCKS_WIDE, BLOCKS_HIGH):
@@ -40,7 +21,7 @@ class Scenery:
         for x in xrange(BLOCKS_WIDE):
             self.slots.append([])
             for y in xrange(BLOCKS_HIGH):
-                self.slots[x].append(Slot(indexToPos(x,y)))
+                self.slots[x].append(Slot(Coordinates.boxIndexToPixelPos(x,y)))
     
     def pickSlot(self, pos):
         x = pos[0]
@@ -48,7 +29,7 @@ class Scenery:
         if not self.mouseIsInArea(x,y):
             return None
         else:
-            index = posToIndex(x, y, self.slots)
+            index = Coordinates.pixelPosToBoxIndex(pos, self.slots)
             return self.slots[index[0]][index[1]]
     
     def mouseIsInArea(self, x, y):

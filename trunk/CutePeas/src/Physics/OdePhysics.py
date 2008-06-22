@@ -3,8 +3,8 @@ from Constants import *
 import Constants
 import Objects.Block
 import pygame
+import Coordinates
 
-pixels_in_an_ode_unit = 25
 physics_step_size = 0.016
 GRAVITY = 9.81
 BOUNCE = 0.8
@@ -12,18 +12,6 @@ BOUNCE = 0.8
 PEA_COLOR = (0,200,0)
 BLOCK_COLOR = (200,200,0)
 SURFACE_LINE_THICKNESS = 4
-
-def odeToPixels(ode_units):
-    return int(ode_units * pixels_in_an_ode_unit)
-
-def pixelsToOde(pixels):
-    return float(pixels) / float(pixels_in_an_ode_unit)
-
-def getOdePos(pos):
-    return (pixelsToOde(pos[0]), pixelsToOde(pos[1]), 0)
-
-def getPixelPos(odePos):
-    return (odeToPixels(odePos[0]), odeToPixels(odePos[1]))
 
 def createBoxRect(pos):
     return (pos[0] - BLOCK_WIDTH/2, pos[1] - BLOCK_HEIGHT/2, BLOCK_WIDTH, BLOCK_HEIGHT)
@@ -50,9 +38,9 @@ class OdePhysicsManager:
         self.world.setERP(0.8)
         self.world.setCFM(1E-5)
         self.space = ode.Space()
-        floor = ode.GeomPlane(self.space, (0,-1,0), pixelsToOde(-FLOOR_POS))
-        leftWall = ode.GeomPlane(self.space, (1,0,0), pixelsToOde(0))
-        rightWall = ode.GeomPlane(self.space, (-1,0,0), pixelsToOde(-SCREEN_WIDTH))
+        floor = ode.GeomPlane(self.space, (0,-1,0), Coordinates.pixelsToOde(-FLOOR_POS))
+        leftWall = ode.GeomPlane(self.space, (1,0,0), Coordinates.pixelsToOde(0))
+        rightWall = ode.GeomPlane(self.space, (-1,0,0), Coordinates.pixelsToOde(-SCREEN_WIDTH))
         self.contactgroup = ode.JointGroup()
         self.blocks = []
         self.peas = []
@@ -80,7 +68,7 @@ class OdePhysicsManager:
         faces = []
         #create two vertices for each point
         for point in points:
-            frontPoint = getOdePos(point)
+            frontPoint = Coordinates.pixelPosToOdePos(point)
             verts.append(frontPoint)
             verts.append((frontPoint[0], frontPoint[1], 1.0))
         #create one triangle for each vertice
@@ -95,15 +83,15 @@ class OdePhysicsManager:
         self.blocks.append(block)
     
     def addPea(self, pea):
-        odePos = getOdePos(pea.pos)
+        odePos = Coordinates.pixelPosToOdePos(pea.pos)
         print "adding pea at ", odePos
         pea.body = ode.Body(self.world)
         mass = ode.Mass()
-        mass.setSphere(2500, pixelsToOde(PEA_RADIUS))
+        mass.setSphere(2500, Coordinates.pixelsToOde(PEA_RADIUS))
         pea.body.setMass(mass)
     
         # Create a box geom for collision detection
-        pea.geom = ode.GeomSphere(self.space, pixelsToOde(PEA_RADIUS))
+        pea.geom = ode.GeomSphere(self.space, Coordinates.pixelsToOde(PEA_RADIUS))
         pea.geom.setBody(pea.body)
         
         pea.body.setPosition(odePos)
@@ -121,13 +109,13 @@ class OdePhysicsManager:
         if Constants.DRAW_HIT_BOXES:
             for ball in self.peas:
                 odePos = ball.body.getPosition()
-                pos = getPixelPos(odePos)
+                pos = Coordinates.odePosToPixelPos(odePos)
                 #print "drawing ball at ",pos
                 pygame.draw.circle(screen, PEA_COLOR, pos, PEA_RADIUS, SURFACE_LINE_THICKNESS)
             
             for block in self.blocks:
                 #odePos = box.getPosition()
-                #pos = getPixelPos(odePos)
+                #pos = Coordinates.odePosToPixelPos(odePos)
                 pygame.draw.polygon(screen, BLOCK_COLOR, block.getPoints(), SURFACE_LINE_THICKNESS)
     
     def update(self, timeD):

@@ -6,17 +6,14 @@ import Event
 import Objects.Block
 import math
 import Images
+import Coordinates
 
 NODE_X_GAP = BLOCK_WIDTH/2
 NODE_Y_GAP = BLOCK_HEIGHT/2
 FLAG_MAX_HEIGHT = 40
 FLAG_HEIGHT = 68
 
-def snapToPos(pos):
-    return (snap(pos[0], X_OFFSET, NODE_X_GAP), snap(pos[1], Y_OFFSET, NODE_Y_GAP))
 
-def snap(pos, offset, gap):
-    return int(math.floor((pos - offset) / gap) * gap + offset)
 
 def distance(pos, posStrings):
     xDistance = pos[0] - int(posStrings[0])
@@ -54,7 +51,7 @@ class NodeGraph:
         if bestNode == None:
             raise(" could not find a node")
         return bestNode
-        #snapped = str(snapToPos(pos))
+        #snapped = str(Coordinates.pixelPosToNearestNode(pos))
         #haven't gotten this working yet.  Is theoretically more efficient
         #best = None
         #for key in self.nodes.keys():
