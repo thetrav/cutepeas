@@ -80,7 +80,7 @@ class Slot:
         block.ghostIn()
     
     def deleteBlock(self):
-        if self.block and not self.block.isGhosting():
+        if self.block and not self.block.isGhosting() and self.block.isDeletable():
             self.block.ghostOut()
             Event.addListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self)
     

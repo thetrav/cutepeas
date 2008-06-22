@@ -21,20 +21,21 @@ class Block:
         self.ghostingOut = False
         self.resetTimer()
         self.geom = None
+        self.flagPlaced = False
         
     def createNodes(self):
         print "block xy="+str(self.x)+" " +str(self.y)
         x = self.x
         y = self.y + BLOCK_Y_OVERLAP
         nodes = [
-                 CornerNode((x, y)),
-                 FaceNode((x+BLOCK_WIDTH/2, y)),
-                 CornerNode((x+BLOCK_WIDTH, y)),
-                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2)),
-                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT)),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT)),
-                 CornerNode((x, y + BLOCK_HEIGHT)),
-                 FaceNode((x, y + BLOCK_HEIGHT/2))]
+                 CornerNode((x, y), self),
+                 FaceNode((x+BLOCK_WIDTH/2, y), self),
+                 CornerNode((x+BLOCK_WIDTH, y), self),
+                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2), self),
+                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT), self),
+                 CornerNode((x, y + BLOCK_HEIGHT), self),
+                 FaceNode((x, y + BLOCK_HEIGHT/2), self)]
         loopNodes(nodes)
         return nodes
     
@@ -91,6 +92,9 @@ class Block:
         self.ghostingOut = False
         Animation.animations.remove(self)
         Event.fireEvent(DONE_GHOSTING_OUT_EVENT, self)
+    
+    def isDeletable(self):
+        return self.flagPlaced
 
 class LeftRampBlock(Block):
     def __init__(self, ghostingImage= None, displayImage = None):
@@ -100,12 +104,12 @@ class LeftRampBlock(Block):
         print "block xy="+str(self.x)+" " +str(self.y)
         x = self.x
         y = self.y + BLOCK_Y_OVERLAP
-        nodes = [CornerNode((x, y + BLOCK_HEIGHT)),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2)),
-                 CornerNode((x+BLOCK_WIDTH, y)),
-                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2)),
-                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT)),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT))]
+        nodes = [CornerNode((x, y + BLOCK_HEIGHT), self),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2), self),
+                 CornerNode((x+BLOCK_WIDTH, y), self),
+                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2), self),
+                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT), self)]
         loopNodes(nodes)
         return nodes
     
@@ -123,12 +127,12 @@ class RightRampBlock(Block):
         print "block xy="+str(self.x)+" " +str(self.y)
         x = self.x
         y = self.y + BLOCK_Y_OVERLAP
-        nodes = [CornerNode((x, y)),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2)),
-                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT)),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT)),
-                 CornerNode((x, y + BLOCK_HEIGHT)),
-                 FaceNode((x, y + BLOCK_HEIGHT/2))]
+        nodes = [CornerNode((x, y), self),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2), self),
+                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
+                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT), self),
+                 CornerNode((x, y + BLOCK_HEIGHT), self),
+                 FaceNode((x, y + BLOCK_HEIGHT/2), self)]
         loopNodes(nodes)
         return nodes
     
