@@ -1,10 +1,10 @@
+from Constants import *
 import pygame.transform as xform
 import pygame.draw
 import PathFinding.NodeGraph
 import Constants
-from Constants import *
 import Event
-import Physics.OdePhysics
+import Coordinates
 
 
 NODE_TIMER = 200
@@ -28,7 +28,7 @@ def climbAnimation(pea, timeD):
                 pea.path = PathFinding.NodeGraph.findPath(pea.currentNode)
             
 def jumpAnimation(pea, timeD):
-    pea.pos = Physics.OdePhysics.getPixelPos(pea.body.getPosition())
+    pea.pos = Coordinates.odePosToPixelPos(pea.body.getPosition())
     vel = pea.body.getLinearVel()
     if vel[0] + vel[1] > MIN_VEL:
         pea.timeStandingStill = FALL_END_TIMER
