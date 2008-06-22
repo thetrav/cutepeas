@@ -22,7 +22,10 @@ def climbAnimation(pea, timeD):
         pea.previousNode = pea.currentNode
         pea.setNode(pea.path.pop(0))
         if len(pea.path) == 0:
-            pea.jump()
+            if pea.currentNode.isJumpable():
+                pea.jump()
+            else:
+                pea.path = PathFinding.NodeGraph.findPath(pea.currentNode)
             
 def jumpAnimation(pea, timeD):
     pea.pos = Physics.OdePhysics.getPixelPos(pea.body.getPosition())

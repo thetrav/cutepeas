@@ -40,7 +40,7 @@ class NodeGraph:
     def placeFlag(self, flag, node):
         print "placing flag at ", flag.pos
         self.flags.append(flag)
-        node.flag = flag
+        node.placeFlag(flag)
             
     def findNearestNode(self, pos):
         print "finding node at ", pos, " in ", self.nodes.keys()
@@ -153,11 +153,18 @@ class MinMaxNode:
         self.linkedNodes = []
     
 class Node:
-    def __init__(self, pos):
+    def __init__(self, pos, block):
         self.pos = pos
         self.linkedNodes = set()
         self.nodeCount = 1
         self.flag = None
+        self.block = block
+        
+    def isJumpable(self):
+        if self.flag == None:
+            return True
+        else:
+            return not self.flag.isComplete()
     
     def linkNode(self, node):
         assert node is not self
@@ -188,31 +195,41 @@ class Node:
             self.linkNode(linked)
         self.nodeCount += 1
         node.linkedNodes.clear()
+        
+    def placeFlag(self, flag):
+        self.flag = flag
+        self.block.flagPlaced = True
 
 class PlateNode(Node):
     def __init__(self, pos):
-        Node.__init__(self, pos)
+        Node.__init__(self, pos, None)
         
     def canTraverse(self):
         return self.nodeCount == 1
     
+    def isJumpable(self):
+        return False
+    
 class PlateCornerNode(Node):
     def __init__(self, pos):
-        Node.__init__(self, pos)
+        Node.__init__(self, pos, None)
         
     def canTraverse(self):
         return self.nodeCount < 3
     
+    def isJumpable(self):
+        return False
+    
 class FaceNode(Node):
-    def __init__(self, pos):
-        Node.__init__(self, pos)
+    def __init__(self, pos, block):
+        Node.__init__(self, pos, block)
     
     def canTraverse(self):
         return self.nodeCount == 1
     
 class CornerNode(Node):
-    def __init__(self, pos):
-        Node.__init__(self, pos)
+    def __init__(self, pos, block):
+        Node.__init__(self, pos, block)
         
     def canTraverse(self):
         return self.nodeCount < 4
@@ -252,3 +269,6 @@ class Flag:
     def jumpDone(self):
         self.jumps += 1
         self.flagPos[1] -= FLAG_MAX_HEIGHT / self.maxJumps
+        
+    def isComplete(self):
+        return self.jumps == self.maxJumps
