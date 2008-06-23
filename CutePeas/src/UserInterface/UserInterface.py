@@ -1,16 +1,16 @@
 import pygame, sys
-
 from pygame.locals import *
-from Button import Button
-from Images import images
-from Cursor import Cursor
-from Tool import *
-from Scenery import *
-import Text, Score, Animation, Timer, Particles.Particles
+
+import Animation
+import Button
 import Constants
+import Cursor
+import Images
+import Score
+import Text
+import Timer
+import Tool
 from Constants import *
-
-
 
 
 class UserInterface:
@@ -18,7 +18,7 @@ class UserInterface:
         self.activeWidgets = []
         self.passiveWidgets = []
         self.scene = None
-        self.cursor = Cursor(images["Pointer-Standard"])
+        self.cursor = Cursor.Cursor(Images.images["Pointer-Standard"])
 
     def addButton(self, button):
         self.buttons.append(button)

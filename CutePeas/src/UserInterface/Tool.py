@@ -1,80 +1,88 @@
-from Images import images
-import Scenery
+import Images 
 import Objects.Block
+from Constants import *
+import Coordinates
 
 
 class Tool:
-    def __init__(self, cursorIcon):
+    def __init__(self, cursorIcon, scene):
         self.cursorIcon = cursorIcon
         self.listeners = []
+        self.pos = (0,0)
+        self.scene = scene
     
-    def invokeTool(self, target):
+    def positionChanged(self, newPos):
+        self.pos = (newPos[X], newPos[Y])
+    
+    def invokeTool(self):
         pass
     
-    def render(self, screen, slot):
-        pass
-    
-    def setPos(self, x, y):
+    def render(self, screen):
         pass
     
 class DeleteTool(Tool):
-    def __init__(self):
-        self.cursorIcon = images["Pointer-Delete"]
+    def __init__(self, scene):
+        Tool.__init__(self, Images.images["Pointer-Delete"], scene)
     
-    def invokeTool(self, target):
-        if target:
-            target.deleteBlock()
+    def invokeTool(self):
+        scene = self.scene
+        if scene.canRemoveBlock(self.pos):
+            scene.removeBlock(self.pos)
         
 class BlockTool(Tool):
-    def __init__(self):
-        self.cursorIcon = images["Pointer-Standard"]
+    def __init__(self, scene):
+        Tool.__init__(self, Images.images["Pointer-Standard"], scene)
         self.block = self.newBlock()
     
-    def invokeTool(self, target):
-        if target and not target.block:
-            target.addBlock(self.block)
+    def invokeTool(self):
+        scene = self.scene
+        if scene.canPlaceBlock(self.pos):
+            scene.placeBlock(self.pos, self.block)
             self.block = self.newBlock()
     
-    def render(self, screen, slot):
-        if self.block:
-            self.setPos(slot.x, slot.y)
+    def render(self, screen):
+        if self.scene.canPlaceBlock(self.pos):
+            print 'true'
             self.block.render(screen)
+        else:
+            print ' false'
     
-    def setPos(self, x, y):
-        self.block.x = x
-        self.block.y = y
+    def positionChanged(self, pos):
+        snappedPos = Coordinates.snapPixelPosToBoxPixelPos(pos)
+        Tool.positionChanged(self, snappedPos)
+        self.block.pos = (snappedPos[X], snappedPos[Y])
 
 class GelBlockTool(BlockTool):
-    def __init__(self):
-        BlockTool.__init__(self)
+    def __init__(self, scene):
+        BlockTool.__init__(self, scene)
     
     def newBlock(self):
         return Objects.Block.Block("Block-Place-Gel", "Block-Gel")
     
 class NormalBlockTool(BlockTool):
-    def __init__(self):
-        BlockTool.__init__(self)
+    def __init__(self, scene):
+        BlockTool.__init__(self, scene)
     
     def newBlock(self):
         return Objects.Block.Block("Block-Place-Normal", "Block-Normal")
         
 class LeftRampTool(BlockTool):
-    def __init__(self):
-        BlockTool.__init__(self)
+    def __init__(self, scene):
+        BlockTool.__init__(self, scene)
     
     def newBlock(self):
         return Objects.Block.LeftRampBlock("Block-Place-LeftRamp", "Block-LeftRamp")
     
 class RightRampTool(BlockTool):
-    def __init__(self):
-        BlockTool.__init__(self)
+    def __init__(self, scene):
+        BlockTool.__init__(self, scene)
 
     def newBlock(self):
         return Objects.Block.RightRampBlock("Block-Place-RightRamp", "Block-RightRamp")
     
 class SpringTool(BlockTool):
-    def __init__(self):
-        BlockTool.__init__(self)        
+    def __init__(self, scene):
+        BlockTool.__init__(self, scene)        
 
     def newBlock(self):
         return Objects.Block.Block("Block-Place-Spring", "Block-Spring")

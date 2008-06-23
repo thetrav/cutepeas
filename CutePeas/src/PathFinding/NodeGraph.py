@@ -10,7 +10,7 @@ import Coordinates
 
 NODE_X_GAP = BLOCK_WIDTH/2
 NODE_Y_GAP = BLOCK_HEIGHT/2
-FLAG_MAX_HEIGHT = 40
+FLAG_MAX_HEIGHT = 30
 FLAG_HEIGHT = 68
 
 
@@ -66,12 +66,6 @@ class NodeGraph:
         #radius is in block nodes, and by circle I mean square
         pass
     
-    def eventFired(self, id, block):
-        if id == Objects.Block.DONE_GHOSTING_IN_EVENT:
-            self.addNodes(block.createNodes())
-        elif id == Objects.Block.DONE_GHOSTING_OUT_EVENT:
-            self.removeNodes(block.createNodes())
-    
     def storeNode(self, node):
         self.nodes[str(node.pos)] = node
         
@@ -91,6 +85,9 @@ class NodeGraph:
             for key in self.nodes:
                     self.nodes[key].render(screen)
     
+    def placeBlock(self, block):
+        self.addNodes(block.createNodes())
+    
     def addNodes(self, toAdd):
         for node in toAdd:
             if self.hasNodeAt(node.pos):
@@ -98,7 +95,10 @@ class NodeGraph:
             else:
                 self.storeNode(node)
         Event.fireEvent(EVENT_NODE_GRAPH_UPDATED, self)
-                
+    
+    def removeBlock(self, block):
+        self.removeNodes(block.createNodes())
+    
     def removeNodes(self, toRemove):
         for node in toRemove:
             if self.hasNodeAt(node.pos):
@@ -256,16 +256,18 @@ class Flag:
         self.pos = (pos[0]-10, pos[1]-FLAG_HEIGHT)
         self.jumps = 0
         self.maxJumps = maxJumps
-        self.flagPos = [pos[0]+5, pos[1]]
+        self.flagPos = [pos[0], pos[1] - FLAG_MAX_HEIGHT]
+        self.peas = set()
     
     def render(self, surface):
         surface.blit(Images.images["Flag-Pole"], self.pos)
         if self.jumps > 0:
             surface.blit(Images.images["Flag-Good"], self.flagPos)
     
-    def jumpDone(self):
-        self.jumps += 1
-        self.flagPos[1] -= FLAG_MAX_HEIGHT / self.maxJumps
+    def jumpDone(self, pea):
+        if pea not in self.peas:
+            self.jumps += 1
+            self.flagPos[1] -= FLAG_MAX_HEIGHT / self.maxJumps
         
     def isComplete(self):
         return self.jumps == self.maxJumps

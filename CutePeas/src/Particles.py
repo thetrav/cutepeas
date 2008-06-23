@@ -1,4 +1,4 @@
-from Images import images
+import Images
 
 GRAVITY = 0.008
 FRICTION = 1
@@ -83,18 +83,20 @@ class ExplodeEmitter(Emitter):
     def emitExplosion(self):
         self.explodeTimer = 1500
         pos = self.pos
-        pos[0] = pos[0] + 20
-        pos[1] = pos[1] - 20
-        img = images["Gold-Ball"]
+        pos[0] = pos[0]
+        pos[1] = pos[1]
+        img = Images.images["Gold-Ball"]
         for vel in (
-                    (-1,-3),
-                    ( 0,-3),
-                    ( 1,-2),
-                    (-1, 0),
-                    ( 1, 0),
-                    (-1, -1),
-                    ( 0, -1),
-                    ( 1, -1),
+                    (-1, -4.3),
+                    (-0.4, -3.9),
+                    ( 0.1, -4),
+                    ( 0.5, -4.5),
+                    ( 0.95, -3.8),
+                    (-1.2, -3),
+                    (-0.7, -3.3),
+                    ( 0, -3.4),
+                    ( 0.3, -3.2),
+                    ( 1.1, -3.1),
                     ):
             self.particles.append(GravityParticle(img, pos, vel, 500, self))
     

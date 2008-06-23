@@ -3,7 +3,6 @@ import math
 import Animation
 from PathFinding.NodeGraph import *
 from Constants import *
-import Physics.QuickPhysics
 
 GHOST_TIMER_INIT = 2999
 DONE_GHOSTING_IN_EVENT = "Done Ghosting In Event"
@@ -15,18 +14,20 @@ class Block:
             self.ghostingImage = images[ghostingImage]
         if displayImage != None:
             self.image = images[displayImage]
-        self.x = 0
-        self.y = 0
+        self.pos = (0,0)
         self.ghostingIn = False
         self.ghostingOut = False
         self.resetTimer()
         self.geom = None
         self.flagPlaced = False
         
+    def dispose(self):
+        pass
+        
     def createNodes(self):
-        print "block xy="+str(self.x)+" " +str(self.y)
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
+        print "block xy="+str(self.pos[X])+" " +str(self.pos[Y])
+        x = self.pos[X]
+        y = self.pos[Y] + BLOCK_Y_OVERLAP
         nodes = [
                  CornerNode((x, y), self),
                  FaceNode((x+BLOCK_WIDTH/2, y), self),
@@ -40,8 +41,8 @@ class Block:
         return nodes
     
     def getPoints(self):
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
+        x = self.pos[X]
+        y = self.pos[Y] + BLOCK_Y_OVERLAP
         points = [(x,y),
                   (x+BLOCK_WIDTH, y), 
                   (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), 
@@ -65,11 +66,11 @@ class Block:
     
     def render(self, screen):
         if self.isGhosting():
-            screen.blit(self.ghostingImage, (self.x, self.y))
+            screen.blit(self.ghostingImage, (self.pos[X], self.pos[Y]))
             ghostTimerImage = images[str(int(math.floor(self.ghostTimer/1000)+1))]
-            screen.blit(ghostTimerImage, (self.x+35, self.y+25))
+            screen.blit(ghostTimerImage, (self.pos[X]+35, self.pos[Y]+25))
         else:
-            screen.blit(self.image, (self.x, self.y))
+            screen.blit(self.image, (self.pos[X], self.pos[Y]))
         
     def isGhosting(self):
         return self.ghostingIn or self.ghostingOut
@@ -101,9 +102,9 @@ class LeftRampBlock(Block):
         Block.__init__(self, ghostingImage, displayImage)
         
     def createNodes(self):
-        print "block xy="+str(self.x)+" " +str(self.y)
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
+        print "block xy="+str(self.pos[X])+" " +str(self.pos[Y])
+        x = self.pos[X]
+        y = self.pos[Y] + BLOCK_Y_OVERLAP
         nodes = [CornerNode((x, y + BLOCK_HEIGHT), self),
                  FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2), self),
                  CornerNode((x+BLOCK_WIDTH, y), self),
@@ -114,8 +115,8 @@ class LeftRampBlock(Block):
         return nodes
     
     def getPoints(self):
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
+        x = self.pos[X]
+        y = self.pos[Y] + BLOCK_Y_OVERLAP
         points = [(x,y+BLOCK_HEIGHT), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), (x+BLOCK_WIDTH, y) ]
         return points
 
@@ -124,9 +125,9 @@ class RightRampBlock(Block):
         Block.__init__(self, ghostingImage, displayImage)
         
     def createNodes(self):
-        print "block xy="+str(self.x)+" " +str(self.y)
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
+        print "block xy="+str(self.pos[X])+" " +str(self.pos[Y])
+        x = self.pos[X]
+        y = self.pos[Y] + BLOCK_Y_OVERLAP
         nodes = [CornerNode((x, y), self),
                  FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2), self),
                  CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
@@ -137,8 +138,8 @@ class RightRampBlock(Block):
         return nodes
     
     def getPoints(self):
-        x = self.x
-        y = self.y + BLOCK_Y_OVERLAP
+        x = self.pos[X]
+        y = self.pos[Y] + BLOCK_Y_OVERLAP
         points = [(x,y), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), (x, y+BLOCK_HEIGHT) ]
         return points
 

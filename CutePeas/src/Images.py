@@ -29,7 +29,8 @@ def buttonImageSet(name, list):
     list.append("Button-"+name+"-Down")
     
 def loadImages():
-    imageStrings = ["Background",
+    imageStrings = ["Alert-Ninja",
+                    "Background",
                     "Logo",
                     "Gold-Ball", 
                     "Happy-Points",
@@ -38,6 +39,7 @@ def loadImages():
                     "Flag-Bad",
                     "Icon-Time",
                     "Pea-Standard",
+                    "Pea-Happy",
                     "Tool-Background", 
                     "Tool-Selected", 
                     "Tool-Delete", 
