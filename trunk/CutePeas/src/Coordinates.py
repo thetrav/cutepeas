@@ -19,7 +19,7 @@ def pixelsToBoxIndex(pos, offset, gap):
 def boxIndexToPixels(pos, offset, gap):
     return pos * gap + offset
 
-def pixelPosToBoxIndex(pos, slots):
+def pixelPosToBoxIndex(pos):
     i = pixelsToBoxIndex(pos[X], X_OFFSET, BLOCK_WIDTH)
     j = pixelsToBoxIndex(pos[Y], Y_OFFSET, BLOCK_HEIGHT)
     
@@ -30,10 +30,13 @@ def pixelPosToBoxIndex(pos, slots):
     #    j = j-1
     return (i,j)
 
-def boxIndexToPixelPos(x, y):
-    i = boxIndexToPixels(x, X_OFFSET, BLOCK_WIDTH)
-    j = boxIndexToPixels(y, Y_OFFSET, BLOCK_HEIGHT)
+def boxIndexToPixelPos(pos):
+    i = boxIndexToPixels(pos[X], X_OFFSET, BLOCK_WIDTH)
+    j = boxIndexToPixels(pos[Y], Y_OFFSET, BLOCK_HEIGHT)
     return (i,j)
+
+def snapPixelPosToBoxPixelPos(pos):
+    return boxIndexToPixelPos(pixelPosToBoxIndex(pos))
 
 def pixelsToNearestNodePixels(pos, offset, gap):
     return int(math.floor((pos - offset) / gap) * gap + offset)

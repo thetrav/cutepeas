@@ -1,15 +1,16 @@
-from Images import images
-from UserInterface.Button import *
-from UserInterface.Tool import *
-from UserInterface.Scenery import *
 import Animation
-from UserInterface.Score import *
-from UserInterface.Timer import *
-import PathFinding.NodeGraph
-from Constants import *
+import Event
+import Images
 import Objects.Block
 import Objects.Pea
 import Physics.OdePhysics
+import PathFinding.NodeGraph
+import Scene
+from Constants import *
+from UserInterface.Button import *
+from UserInterface.Tool import *
+from UserInterface.Score import *
+from UserInterface.Timer import *
 
 def newButton(image, yPos, tool):
     return ToolButton(image, tool, (725, yPos), 47, 47)
@@ -17,53 +18,71 @@ def newButton(image, yPos, tool):
 class BasicLevel:
     def __init__(self, userInterface):
         self.userInterface = userInterface
-        self.buttonPanel = ButtonPanel((720, 10))
         
-        userInterface.addActiveWidget(self.buttonPanel)
-        self.buttonPanel.addListener(self.userInterface)
+        self.score = self.createScoreWidget()
+        self.timer = self.createTimerWidget()
+        self.nodeGraph = self.createNodeGraph()
+        self.physicsManager = self.createPhysicsManager()
+        self.scene = self.createScene()
+        self.buttonPanel = self.createToolPanel()
+        self.scene.addPea(Objects.Pea.Pea((0, 600), self.nodeGraph, self.physicsManager))
+        self.scene.addPea(Objects.Pea.Pea((100, 600), self.nodeGraph, self.physicsManager))
+        self.scene.addPea(Objects.Pea.Pea((200, 600), self.nodeGraph, self.physicsManager))
+        self.scene.addPea(Objects.Pea.Pea((300, 600), self.nodeGraph, self.physicsManager))
+        self.scene.addPea(Objects.Pea.Pea((400, 600), self.nodeGraph, self.physicsManager))
         
+    def render(self, screen):
+        screen.blit(Images.images["Background"], (0,0))
+        screen.blit(Images.images["Plate"], (5, 520))
+        self.scene.render(screen)
+        self.userInterface.render(screen)
+        
+    def dispose(self):
+        self.scene.dispose()
+        self.buttonPanel.dispose()
+        self.timer.dispose()
+        self.score.dispose()
+        
+    def createScene(self):
+        scene = Scene.Scene(self.nodeGraph, self.physicsManager)
+        self.userInterface.setScene(scene)
+        return scene
+
+    def createPhysicsManager(self):
+        physicsManager = Physics.OdePhysics.OdePhysicsManager()
+        Animation.animations.append(physicsManager)
+        return physicsManager
+    
+    def createNodeGraph(self):
+        nodeGraph = PathFinding.NodeGraph.NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
+        return nodeGraph
+    
+    def createToolPanel(self):
+        buttonPanel = ButtonPanel((720, 10))
+        self.userInterface.addActiveWidget(buttonPanel)
+        buttonPanel.addListener(self.userInterface)
         yStart = 15
         spacing = 50
-        for button in (newButton("Delete", yStart, DeleteTool()),
-                        newButton("Gel", yStart + spacing, GelBlockTool()),
-                        newButton("Normal", yStart + spacing*2, NormalBlockTool()),
-                        newButton("LeftRamp", yStart + spacing*3, LeftRampTool()),
-                        newButton("RightRamp", yStart + spacing*4, RightRampTool()),
-                        newButton("Spring", yStart + spacing*5, SpringTool())
+        for button in (newButton("Delete", yStart, DeleteTool(self.scene)),
+                        newButton("Gel", yStart + spacing, GelBlockTool(self.scene)),
+                        newButton("Normal", yStart + spacing*2, NormalBlockTool(self.scene)),
+                        newButton("LeftRamp", yStart + spacing*3, LeftRampTool(self.scene)),
+                        newButton("RightRamp", yStart + spacing*4, RightRampTool(self.scene)),
+                        newButton("Spring", yStart + spacing*5, SpringTool(self.scene))
                         ):
-            self.buttonPanel.addButton(button)
-        
-        self.userInterface.setScene(Scenery(BLOCKS_WIDE, BLOCKS_HIGH))
-        
-        self.score = Score((300, 10))
-        Animation.animations.append(self.score)
-        self.userInterface.addPassiveWidget(self.score)
-        
-        self.timer = Timer((600, 10))
-        Animation.animations.append(self.timer)
-        self.userInterface.addPassiveWidget(self.timer)
-        
-        self.nodeGraph = PathFinding.NodeGraph.NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
-        
-        Event.addListener(Objects.Block.DONE_GHOSTING_IN_EVENT, self.nodeGraph)
-        Event.addListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self.nodeGraph)
-        
-        
-        self.physicsManager = Physics.OdePhysics.OdePhysicsManager()
-        
-        Event.addListener(Objects.Block.DONE_GHOSTING_IN_EVENT, self.physicsManager)
-        Event.addListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self.physicsManager)
-        
-        self.pea = Objects.Pea.Pea(images["Pea-Standard"], (121, 50), self.nodeGraph, self.physicsManager)
-        Animation.animations.append(self.pea)
-        Animation.animations.append(self.physicsManager)
-        
+            buttonPanel.addButton(button)
+        return buttonPanel
     
-    def render(self, screen):
-        screen.blit(images["Background"], (0,0))
-        screen.blit(images["Plate"], (5, 520))
-        self.userInterface.render(screen)
-        self.nodeGraph.render(screen)
-        self.pea.render(screen)
-        self.physicsManager.render(screen)
+    def createScoreWidget(self):
+        score = Score((300, 10))
+        Animation.animations.append(score)
+        self.userInterface.addPassiveWidget(score)
+        return score
+    
+    def createTimerWidget(self):
+        timer = Timer((600, 10))
+        Animation.animations.append(timer)
+        self.userInterface.addPassiveWidget(timer)
+        return timer
+    
         

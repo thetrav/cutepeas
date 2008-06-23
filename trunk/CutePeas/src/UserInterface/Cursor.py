@@ -1,12 +1,10 @@
 import pygame.mouse
-
-from Images import images
+from Constants import *
 
 class Cursor:
     def __init__(self, image):
         self.image = image
-        self.x = 0
-        self.y = 0
+        self.pos = (0,0)
         self.tool = None
         self.slot = None
         self.scene = None
@@ -17,25 +15,24 @@ class Cursor:
     
     def render(self, screen):
         if self.tool:
-            if self.slot:
-                self.tool.render(screen, self.slot)
-            screen.blit(self.tool.cursorIcon, (self.x, self.y))
+            self.tool.render(screen)
+            screen.blit(self.tool.cursorIcon, self.pos)
         else:
-            screen.blit(self.image, (self.x, self.y))
+            screen.blit(self.image, self.pos)
     
     def toolChanged(self, tool):
         self.tool = tool
+        tool.positionChanged(self.pos)
         
     def toolCleared(self):
         self.tool = None
     
     def toolUsed(self):
         if self.tool:
-            self.tool.invokeTool(self.slot)
+            self.tool.invokeTool()
     
     def mouseMotion(self, event):
-        self.x = event.pos[0]
-        self.y = event.pos[1]
-        if self.tool and self.scene:
-            self.slot = self.scene.pickSlot(event.pos)
+        self.pos = (event.pos[X], event.pos[Y])
+        if self.tool:
+            self.tool.positionChanged(self.pos)
             

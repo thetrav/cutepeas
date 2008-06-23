@@ -4,6 +4,7 @@ import Constants
 import Objects.Block
 import pygame
 import Coordinates
+import Animation
 
 physics_step_size = 0.016
 GRAVITY = 9.81
@@ -45,22 +46,17 @@ class OdePhysicsManager:
         self.blocks = []
         self.peas = []
         self.timeCounter = 0.0
+        Animation.animations.append(self)
         
     def dispose(self):
-        pass
-    
-    def eventFired(self, id, block):
-        if id == Objects.Block.DONE_GHOSTING_IN_EVENT:
-            self.addBlock(block)
-        elif id == Objects.Block.DONE_GHOSTING_OUT_EVENT:
-            self.removeBlock(block)
+        Animation.animations.remove(self)
     
     def removeBlock(self, block):
         self.blocks.remove(block)
         self.space.remove(block.geom)
         block.geom = None
     
-    def addBlock(self, block):
+    def placeBlock(self, block):
         #adjust pos from top left coord for center coord
         triMeshData = ode.TriMeshData()
         points = block.getPoints()
