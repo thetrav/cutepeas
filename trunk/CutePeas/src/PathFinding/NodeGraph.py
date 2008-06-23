@@ -35,12 +35,10 @@ class NodeGraph:
             prev = node
             
     def placeFlag(self, flag, node):
-        print "placing flag at ", flag.pos
         self.flags.append(flag)
         node.placeFlag(flag)
             
     def findNearestNode(self, pos):
-        print "finding node at ", pos, " in ", self.nodes.keys()
         bestNode = None
         bestDistance = None
         for key in self.nodes.keys():
@@ -116,7 +114,6 @@ class NodeGraph:
 def findPath(currentNode):
     root = MinMaxNode(currentNode)
     buildTree(root, [currentNode])
-    #printTree(root, 0)
     path = buildPath(root, [])
     return path
 
@@ -185,7 +182,6 @@ class Node:
             pygame.draw.line(screen, linkColor, pos, node.pos)
     
     def merge(self, node):
-        print "merging"
         for linked in node.linkedNodes:
             linked.unLinkNode(node)
             linked.linkNode(self)

@@ -42,10 +42,7 @@ class BlockTool(Tool):
     
     def render(self, screen):
         if self.scene.canPlaceBlock(self.pos):
-            print 'true'
             self.block.render(screen)
-        else:
-            print ' false'
     
     def positionChanged(self, pos):
         snappedPos = Coordinates.snapPixelPosToBoxPixelPos(pos)

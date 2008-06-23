@@ -4,6 +4,7 @@ import Objects.Pea
 import Physics.OdePhysics
 import Animation
 import Scene
+import sys
 import Coordinates
 from UserInterface import Text
 from UserInterface.Button import TitleScreenButton
@@ -45,7 +46,7 @@ class TitleScreen:
     
     def buttonFired(self, button):
         if button == self.exitButton:
-            raise "quit"
+            sys.exit(0)
         if button == self.newGameButton:
             self.transition()
     

@@ -80,7 +80,6 @@ class OdePhysicsManager:
     
     def addPea(self, pea):
         odePos = Coordinates.pixelPosToOdePos(pea.pos)
-        print "adding pea at ", odePos
         pea.body = ode.Body(self.world)
         mass = ode.Mass()
         mass.setSphere(2500, Coordinates.pixelsToOde(PEA_RADIUS))
@@ -95,8 +94,6 @@ class OdePhysicsManager:
         
     def removePea(self, pea):
         self.peas.remove(pea)
-        print self.peas
-        #self.world.remove(pea.body)
         self.space.remove(pea.geom)
         pea.body = None
         pea.geom = None
