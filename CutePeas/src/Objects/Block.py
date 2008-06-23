@@ -25,7 +25,6 @@ class Block:
         pass
         
     def createNodes(self):
-        print "block xy="+str(self.pos[X])+" " +str(self.pos[Y])
         x = self.pos[X]
         y = self.pos[Y] + BLOCK_Y_OVERLAP
         nodes = [
@@ -102,7 +101,6 @@ class LeftRampBlock(Block):
         Block.__init__(self, ghostingImage, displayImage)
         
     def createNodes(self):
-        print "block xy="+str(self.pos[X])+" " +str(self.pos[Y])
         x = self.pos[X]
         y = self.pos[Y] + BLOCK_Y_OVERLAP
         nodes = [CornerNode((x, y + BLOCK_HEIGHT), self),
@@ -125,7 +123,6 @@ class RightRampBlock(Block):
         Block.__init__(self, ghostingImage, displayImage)
         
     def createNodes(self):
-        print "block xy="+str(self.pos[X])+" " +str(self.pos[Y])
         x = self.pos[X]
         y = self.pos[Y] + BLOCK_Y_OVERLAP
         nodes = [CornerNode((x, y), self),

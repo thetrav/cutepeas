@@ -54,7 +54,6 @@ class Scene:
     
     def canPlaceBlock(self, pixelPos):
         pos = Coordinates.pixelPosToBoxIndex(pixelPos)
-        print 'can place at:',pixelPos,' index:',pos
         return self.inBlockArea(pos) and self.getBlock(pos) == None 
     
     def placeBlock(self, pos, block):
