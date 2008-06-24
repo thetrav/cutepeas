@@ -1,0 +1,19 @@
+#summary Analysis of determining bounces for scoring purposes.
+
+= Introduction =
+
+The current physics implementation OdePhysics, throws out a collision event every time there is a collision, at first glance it would appear that we can simply take every collision and treat it as a new bounce for score.
+
+If life were that simple I'd be finished with this project a lot quicker.  Unfortunately, using that technique ends up with over 200 bounces for a manouver that I estimate as being worth 3 scored bounces.
+
+= Details =
+
+There are a two separate issues that are causing this behaviour
+  # low velocity collisions at the end of the jump
+  # multiple collisions thrown against the same object on a single bounce
+
+
+I've ran some statistical analysis of a standard physics jump and produced the following graph.
+the xpos and ypos have been adjusted to lower the change in the Y axis, as the velocities are quite low values.  
+I'm considering normalising the positional values, as all we really need to look at are the change patterns rather than specific values.
+http://travis.dixon.net.au/wp-content/uploads/2008/06/bounce-graph.PNG
