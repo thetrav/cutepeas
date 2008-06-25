@@ -50,5 +50,3 @@ Obviously that would be a substantial overhead both in dev time and cpu cycles, 
 
 == Obvious solution ==
 This is just here for completeness, but I get the feeling that there's an obvious solution that I just haven't figured out yet that makes the whole problem just go away.
-
-== 
