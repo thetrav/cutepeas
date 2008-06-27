@@ -1,7 +1,7 @@
 import pygame.draw
 import Constants
 from Constants import *
-from UserInterface.Text import *
+import UserInterface.Text
 import Event
 import Objects.Block
 import math
@@ -49,16 +49,6 @@ class NodeGraph:
         if bestNode == None:
             raise(" could not find a node")
         return bestNode
-        #snapped = str(Coordinates.pixelPosToNearestNode(pos))
-        #haven't gotten this working yet.  Is theoretically more efficient
-        #best = None
-        #for key in self.nodes.keys():
-        #    current = self.nodes.get(key)
-        #    if best == None or current.pos[X] == snapped[X] and current.pos[Y] < best.pos[Y]:
-        #        best = current
-        #if best == None:
-        #    raise "pea could not find node nearest to:  " + str(pos) + " which translated to snapped position of: " + str(snapped)
-        #return best
     
     def checkCircle(self, center, radius):
         #radius is in block nodes, and by circle I mean square
@@ -143,7 +133,7 @@ def buildTree(minMaxNode, nodesInTree):
 class MinMaxNode:
     def __init__(self, node):
         self.node = node
-        self.score = node.pos[Y]
+        self.score = node.pos[Y]# if node.isJumpable() else node.pos[Y]/100
         self.linkedNodes = []
     
 class Node:
@@ -152,7 +142,7 @@ class Node:
         self.linkedNodes = set()
         self.nodeCount = 1
         self.flag = None
-        self.block = block
+        self.blocks = [block]
         
     def isJumpable(self):
         if self.flag == None:
@@ -176,22 +166,28 @@ class Node:
         
     def render(self, screen, traversableNodeColor=(0,200,0), blockedNodeColor=(250,0,0),linkColor=(0,0,200)):
         pos = self.pos
-        renderText(str(self.nodeCount), pos, screen, (0,0,200))
         pygame.draw.circle(screen, traversableNodeColor if self.canTraverse() else blockedNodeColor , pos, 8)
         for node in self.linkedNodes:
             pygame.draw.line(screen, linkColor, pos, node.pos)
+        UserInterface.Text.renderText(str(self.nodeCount), (pos[X]-4, pos[Y]-4), screen, (200,200,0), "NODE_FONT")
     
     def merge(self, node):
+        #sort out node links
         for linked in node.linkedNodes:
             linked.unLinkNode(node)
             linked.linkNode(self)
             self.linkNode(linked)
-        self.nodeCount += 1
         node.linkedNodes.clear()
+        #sort out block links
+        for block in node.blocks:
+            self.blocks.append(block)
+        #increment node count
+        self.nodeCount += 1
         
     def placeFlag(self, flag):
         self.flag = flag
-        self.block.flagPlaced = True
+        for block in self.blocks:
+            block.flagPlaced = True
 
 class PlateNode(Node):
     def __init__(self, pos):
@@ -220,12 +216,18 @@ class FaceNode(Node):
     def canTraverse(self):
         return self.nodeCount == 1
     
+    def isJumpable(self):
+        return False
+    
 class CornerNode(Node):
     def __init__(self, pos, block):
         Node.__init__(self, pos, block)
         
     def canTraverse(self):
         return self.nodeCount < 4
+    
+    def isJumpable(self):
+        return Node.isJumpable(self) and self.nodeCount == 1
         
 def toScreenCoords(x):
     return x*BLOCK_WIDTH/2 + X_OFFSET
@@ -254,16 +256,24 @@ class Flag:
         self.maxJumps = maxJumps
         self.flagPos = [pos[0], pos[1] - FLAG_MAX_HEIGHT]
         self.peas = set()
+        self.flagImage = Images.images["Flag-Good"]
+        self.isSafe = True
     
     def render(self, surface):
         surface.blit(Images.images["Flag-Pole"], self.pos)
         if self.jumps > 0:
-            surface.blit(Images.images["Flag-Good"], self.flagPos)
+            surface.blit(self.flagImage, (self.flagPos[X]-3, self.flagPos[Y]+6))
     
     def jumpDone(self, pea):
-        if pea not in self.peas:
+        if pea not in self.peas and self.isSafe:
             self.jumps += 1
             self.flagPos[1] -= FLAG_MAX_HEIGHT / self.maxJumps
         
     def isComplete(self):
         return self.jumps == self.maxJumps
+    
+    def deadlyJump(self):
+        self.jumps = self.maxJumps
+        self.flagPos[1] = self.pos[1]
+        self.flagImage = Images.images["Flag-Bad"]
+        self.isSafe = False

@@ -5,6 +5,7 @@ import Objects.Block
 import pygame
 import Coordinates
 import Animation
+import Event
 
 physics_step_size = 0.016
 GRAVITY = 9.81
@@ -13,18 +14,36 @@ BOUNCE = 0.8
 PEA_COLOR = (0,200,0)
 BLOCK_COLOR = (200,200,0)
 SURFACE_LINE_THICKNESS = 4
+PEA_COLLISION_EVENT = "pea collision event"
+
+def returnBounceFunction():
+    return BOUNCE
 
 def createBoxRect(pos):
     return (pos[0] - BLOCK_WIDTH/2, pos[1] - BLOCK_HEIGHT/2, BLOCK_WIDTH, BLOCK_HEIGHT)
 
 def near_callback(args, geom1, geom2):
+    if geom1.isPea() and geom2.isPea():
+        return
+    if geom1.isPea():
+        closeCollisionTest(geom1, geom2, args)
+    elif geom2.isPea():
+        closeCollisionTest(geom2, geom1, args)
+
+def closeCollisionTest(peaGeom, geom, args):
     world,contactgroup = args
-    contacts = ode.collide(geom1, geom2)
+    contacts = ode.collide(peaGeom, geom)
+    collision = False
     for c in contacts:
-        c.setBounce(BOUNCE)
+        collision = True
+        bounce = geom.bounce
+        c.setBounce(bounce)
         c.setMu(5000)
         j = ode.ContactJoint(world, contactgroup, c)
-        j.attach(geom1.getBody(), geom2.getBody())
+        j.attach(peaGeom.getBody(), geom.getBody())
+    if collision:
+        print ' hit ', geom.name
+        Event.fireEvent(PEA_COLLISION_EVENT, (peaGeom, geom))
         
 def getNext(ind, max):
     if ind < max - 2:
@@ -39,21 +58,34 @@ class OdePhysicsManager:
         self.world.setERP(0.8)
         self.world.setCFM(1E-5)
         self.space = ode.Space()
-        floor = ode.GeomPlane(self.space, (0,-1,0), Coordinates.pixelsToOde(-FLOOR_POS))
-        leftWall = ode.GeomPlane(self.space, (1,0,0), Coordinates.pixelsToOde(0))
-        rightWall = ode.GeomPlane(self.space, (-1,0,0), Coordinates.pixelsToOde(-SCREEN_WIDTH))
+        
+        #floor
+        self.createPlane((0,-1,0), -FLOOR_POS, "floor")
+        #left wall 
+        self.createPlane((1,0,0), 0, "left wall")
+        #right wall
+        self.createPlane((-1,0,0), -SCREEN_WIDTH, "right wall")
+        
         self.contactgroup = ode.JointGroup()
         self.blocks = []
         self.peas = []
         self.timeCounter = 0.0
         Animation.animations.append(self)
-        
+    
+    def createPlane(self, normal, distance, name):
+        plane = ode.GeomPlane(self.space, normal, Coordinates.pixelsToOde(distance))
+        plane.isPea = returnFalseFunction
+        plane.isBlock = returnFalseFunction
+        plane.bounce = BOUNCE
+        plane.name = name
+    
     def dispose(self):
         Animation.animations.remove(self)
     
     def removeBlock(self, block):
         self.blocks.remove(block)
         self.space.remove(block.geom)
+        block.geom.block = None
         block.geom = None
     
     def placeBlock(self, block):
@@ -75,8 +107,15 @@ class OdePhysicsManager:
             else :
                 faces.append((i, getNext(i, numVerts), getNext(getNext(i, numVerts), numVerts)))
         triMeshData.build(verts, faces)
-        block.geom = ode.GeomTriMesh(triMeshData, self.space)
+        geom = ode.GeomTriMesh(triMeshData, self.space)
+        geom.block = block
+        geom.isPea = returnFalseFunction
+        geom.isBlock = returnTrueFunction
+        geom.bounce = block.bounce
         self.blocks.append(block)
+        geom.name="block"
+        block.geom = geom
+        
     
     def addPea(self, pea):
         odePos = Coordinates.pixelPosToOdePos(pea.pos)
@@ -86,17 +125,25 @@ class OdePhysicsManager:
         pea.body.setMass(mass)
     
         # Create a box geom for collision detection
-        pea.geom = ode.GeomSphere(self.space, Coordinates.pixelsToOde(PEA_RADIUS))
-        pea.geom.setBody(pea.body)
+        geom = ode.GeomSphere(self.space, Coordinates.pixelsToOde(PEA_RADIUS))
+        geom.setBody(pea.body)
         
         pea.body.setPosition(odePos)
         self.peas.append(pea)
+        geom.pea = pea
+        geom.isPea = returnTrueFunction
+        geom.isBlock = returnFalseFunction
+        geom.name = "pea"
+        pea.geom = geom
         
     def removePea(self, pea):
-        self.peas.remove(pea)
-        self.space.remove(pea.geom)
-        pea.body = None
-        pea.geom = None
+        #self.peas.remove(pea)
+        #self.space.remove(pea.geom)
+        #pea.body = None
+        #pea.geom.pea = None
+        #pea.geom = None
+        pea.body.disable()
+        pea.geom.disable()
         
     def render(self, screen):
         if Constants.DRAW_HIT_BOXES:
@@ -121,8 +168,16 @@ class OdePhysicsManager:
             #nullify any z axis velocity and rotation
             for pea in self.peas:
                 pea_pos = pea.body.getPosition()
-                pea.body.setPosition((pea_pos[0], pea_pos[1], 0.0))
+                pea.body.setPosition((pea_pos[X], pea_pos[Y], 0.0))
                 vel = pea.body.getLinearVel()
-                pea.body.setLinearVel((vel[0], vel[1], 0))
-                pea.body.setAngularVel((0, 0, 0))
+                pea.body.setLinearVel((vel[X], vel[Y], 0))
+                pea.body.setAngularVel((0, 0, 0))#pea.body.getAngularVel()[Z]))
+                
+    def jumpPea(self, pea, vel):
+        odePos = Coordinates.pixelPosToOdePos(pea.pos)
+        pea.body.setPosition(odePos)
+        pea.body.setLinearVel(vel)
+        pea.body.enable()
+        pea.geom.enable()
+        pea.oneFreeCollision = True #this is a dirty filthy hack.  I believe moving the pea through a heap of stuff recks collision detection
     

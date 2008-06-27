@@ -7,9 +7,15 @@ from Constants import *
 GHOST_TIMER_INIT = 2999
 DONE_GHOSTING_IN_EVENT = "Done Ghosting In Event"
 DONE_GHOSTING_OUT_EVENT = "Done Ghosting Out Event"
+NORMAL_BLOCK_BOUNCE = 2
+SPRING_BLOCK_BOUNCE = 10
+GEL_BLOCK_BOUNCE = 0.5
+
+GEL_MAX_SURVIVABLE_VELOCITY_MOD = 1
+SPRING_MAX_SURVIVABLE_VELOCITY_MOD = 1
 
 class Block:
-    def __init__(self, ghostingImage= None, displayImage = None):
+    def __init__(self, ghostingImage= None, displayImage = None, bounce=NORMAL_BLOCK_BOUNCE, maxSurvivableVelocityMod = 1):
         if ghostingImage != None:
             self.ghostingImage = images[ghostingImage]
         if displayImage != None:
@@ -20,9 +26,15 @@ class Block:
         self.resetTimer()
         self.geom = None
         self.flagPlaced = False
+        self.bounce = bounce
+        self.bouncePoints = 1000
+        self.maxSurvivableVelocityMod = maxSurvivableVelocityMod
         
     def dispose(self):
         pass
+    
+    def getBouncePoints(self):
+        return self.bouncePoints
         
     def createNodes(self):
         x = self.pos[X]
@@ -140,11 +152,3 @@ class RightRampBlock(Block):
         points = [(x,y), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), (x, y+BLOCK_HEIGHT) ]
         return points
 
-def verticalSurface(pos):
-    return Physics.QuickPhysics.VerticalSurface(pos)
-
-def horizontalSurface(pos):
-    return Physics.QuickPhysics.HorizontalSurface(pos)
-
-def diagonalSurface(left, right):
-    return Physics.QuickPhysics.DiagonalSurface(left, right)

@@ -54,7 +54,7 @@ class GelBlockTool(BlockTool):
         BlockTool.__init__(self, scene)
     
     def newBlock(self):
-        return Objects.Block.Block("Block-Place-Gel", "Block-Gel")
+        return Objects.Block.Block("Block-Place-Gel", "Block-Gel", Objects.Block.GEL_BLOCK_BOUNCE, Objects.Block.GEL_MAX_SURVIVABLE_VELOCITY_MOD)
     
 class NormalBlockTool(BlockTool):
     def __init__(self, scene):
@@ -82,5 +82,5 @@ class SpringTool(BlockTool):
         BlockTool.__init__(self, scene)        
 
     def newBlock(self):
-        return Objects.Block.Block("Block-Place-Spring", "Block-Spring")
+        return Objects.Block.Block("Block-Place-Spring", "Block-Spring", Objects.Block.SPRING_BLOCK_BOUNCE, Objects.Block.SPRING_MAX_SURVIVABLE_VELOCITY_MOD)
     

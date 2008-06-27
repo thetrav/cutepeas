@@ -20,6 +20,7 @@ class Scene:
     def getBlock(self, index):
         return self.blocks[index[X]][index[Y]]
     
+    
     def setBlock(self, index, block):
         self.blocks[index[X]][index[Y]] = block
     
@@ -64,7 +65,7 @@ class Scene:
         
     def canRemoveBlock(self, pixelPos):
         pos = Coordinates.pixelPosToBoxIndex(pixelPos)
-        return self.inBlockArea(pos) and self.getBlock(pos) != None and not self.getBlock(pos).isGhosting()
+        return self.inBlockArea(pos) and self.getBlock(pos) != None and not self.getBlock(pos).isGhosting() and not self.getBlock(pos).flagPlaced
     
     def removeBlock(self, pixelPos):
         pos = Coordinates.pixelPosToBoxIndex(pixelPos)

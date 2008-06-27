@@ -39,6 +39,7 @@ EVENT_NODE_GRAPH_UPDATED = "EVENT_NODE_GRAPH_UPDATED"
 
 X = 0
 Y = 1
+Z = 2
 
 DRAW_HIT_BOXES = False
 DRAW_NODES = False
@@ -54,3 +55,9 @@ def output(start, words):
     for word in words:
         start += str(word)
     print start
+    
+def returnFalseFunction():
+    return False
+
+def returnTrueFunction():
+    return True
