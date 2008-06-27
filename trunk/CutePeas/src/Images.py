@@ -40,6 +40,8 @@ def loadImages():
                     "Icon-Time",
                     "Pea-Standard",
                     "Pea-Happy",
+                    "Pea-Hurt",
+                    "Pea-Ghost",
                     "Tool-Background", 
                     "Tool-Selected", 
                     "Tool-Delete", 
