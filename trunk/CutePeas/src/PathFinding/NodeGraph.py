@@ -279,6 +279,7 @@ class Flag:
         return self.isSafe and not self.isComplete()
     
     def deadlyJump(self):
+        self.jumps += 1
         self.flagPos[1] = self.pos[1]
         self.flagImage = Images.images["Flag-Bad"]
         self.isSafe = False
