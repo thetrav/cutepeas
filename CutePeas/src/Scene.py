@@ -55,7 +55,10 @@ class Scene:
     
     def canPlaceBlock(self, pixelPos):
         pos = Coordinates.pixelPosToBoxIndex(pixelPos)
-        return self.inBlockArea(pos) and self.getBlock(pos) == None 
+        return self.inBlockArea(pos) and self.getBlock(pos) == None and self.noFlagAtPos((pos[X],pos[Y]+1))
+                                                                                    
+    def noFlagAtPos(self, pos):
+        return not(self.inBlockArea(pos) and self.getBlock(pos) != None and self.getBlock(pos).flagPlaced) 
     
     def placeBlock(self, pos, block):
         block.pos = pos

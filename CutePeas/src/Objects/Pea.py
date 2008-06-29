@@ -25,11 +25,13 @@ def workOutJumpDirection(node):
             return -1 if node.pos[X] < linkedNode.pos[X] else 1
 
 def climbAnimation(pea, timeD):
+    if pea.currentNode == None:
+        pea.findNewNodeAndPath()
+        pea.timer = NODE_TIMER
     if pea.timer < 0:
-        pea.previousNode = pea.currentNode
         pea.setNode(pea.path.pop(0))
         if len(pea.path) == 0:
-            if pea.currentNode.isJumpable():
+            if pea.currentNode.isJumpable() and (pea.currentNode.flag == None or pea.currentNode.flag not in pea.flags):
                 pea.jump()
             else:
                 pea.path = PathFinding.NodeGraph.findPath(pea.currentNode)
@@ -67,29 +69,29 @@ class Pea:
     def __init__(self, pos, nodeGraph, physics):
         self.image = Images.images["Pea-Standard"]
         self.body = None
-        self.nodeGraph = nodeGraph
         self.pos = pos
-        self.setNode(self.nodeGraph.findNearestNode(self.pos))
-        self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+        self.initPathFinding(nodeGraph)
         Event.addListener(EVENT_NODE_GRAPH_UPDATED, self)
         Event.addListener(Physics.OdePhysics.PEA_COLLISION_EVENT, self)
-        self.rotateAngle = 0
-        self.rotateIncrement = 90
-        self.rotated = False
         self.listeners = []
-        self.reverse = False
         self.timer = 0
         self.physicsManager = physics
         self.playAnimation = climbAnimation
         self.flags = []
         self.currentFlag = None
-        self.previousNode = None
+        
         Animation.animations.append(self)
         self.particleSystem = Particles.ParticleSystem()
         self.blocksHit = []
         self.physicsManager.addPea(self)
+        self.physicsManager.removePea(self)
         self.hitThisFrame = None
-        self.oneFreeCollision = False
+    
+    def initPathFinding(self, nodeGraph):
+        self.currentNode = None
+        self.nodeGraph = nodeGraph
+        self.findNewNodeAndPath()
+        self.previousNode = None
     
     def dispose(self):
         Event.removeListener(EVENT_NODE_GRAPH_UPDATED, self)
@@ -99,7 +101,7 @@ class Pea:
         return self.currentNode
     
     def setNode(self, node):
-        self.reverse = False
+        self.previousNode = self.currentNode
         self.currentNode = node
         self.pos = self.currentNode.pos
         self.timer = NODE_TIMER
@@ -123,6 +125,7 @@ class Pea:
         else :
             self.currentFlag = PathFinding.NodeGraph.Flag(self.pos, 5)
             self.nodeGraph.placeFlag(self.currentFlag, self.currentNode)
+        self.flags.append(self.currentFlag)
         self.pos = (self.pos[X], self.pos[Y] - PEA_RADIUS*1.5)
         self.physicsManager.jumpPea(self, (workOutJumpDirection(self.currentNode)*4, -3.5, 0.0))
         self.playAnimation = jumpAnimation
@@ -175,6 +178,14 @@ class Pea:
         self.beginClimb()
         
     def beginClimb(self):
+        self.currentNode = None
         self.playAnimation = climbAnimation
-        self.setNode(self.nodeGraph.findNearestNode(self.pos))
-        self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+        self.findNewNodeAndPath()
+
+    def findNewNodeAndPath(self):
+        nearestNode = self.nodeGraph.findNearestNode(self.pos)
+        if nearestNode.pea == None: 
+            self.setNode(nearestNode)
+            self.path = PathFinding.NodeGraph.findPath(self.currentNode)
+        else:
+            self.currentNode = None
