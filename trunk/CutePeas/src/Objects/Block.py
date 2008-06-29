@@ -11,8 +11,8 @@ NORMAL_BLOCK_BOUNCE = 2
 SPRING_BLOCK_BOUNCE = 10
 GEL_BLOCK_BOUNCE = 0.5
 
-GEL_MAX_SURVIVABLE_VELOCITY_MOD = 1
-SPRING_MAX_SURVIVABLE_VELOCITY_MOD = 1
+GEL_MAX_SURVIVABLE_VELOCITY_MOD = 4
+SPRING_MAX_SURVIVABLE_VELOCITY_MOD = 1.8
 
 class Block:
     def __init__(self, ghostingImage= None, displayImage = None, bounce=NORMAL_BLOCK_BOUNCE, maxSurvivableVelocityMod = 1):
@@ -49,6 +49,10 @@ class Block:
                  CornerNode((x, y + BLOCK_HEIGHT), self),
                  FaceNode((x, y + BLOCK_HEIGHT/2), self)]
         loopNodes(nodes)
+        
+        nodes[4].jumpable = False
+        nodes[6].jumpable = False
+        
         return nodes
     
     def getPoints(self):
@@ -122,6 +126,10 @@ class LeftRampBlock(Block):
                  CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
                  FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT), self)]
         loopNodes(nodes)
+        
+        nodes[0].jumpable = False
+        nodes[4].jumpable = False
+        
         return nodes
     
     def getPoints(self):
@@ -144,6 +152,10 @@ class RightRampBlock(Block):
                  CornerNode((x, y + BLOCK_HEIGHT), self),
                  FaceNode((x, y + BLOCK_HEIGHT/2), self)]
         loopNodes(nodes)
+        
+        nodes[2].jumpable = False
+        nodes[4].jumpable = False
+        
         return nodes
     
     def getPoints(self):

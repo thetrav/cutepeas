@@ -13,8 +13,6 @@ NODE_Y_GAP = BLOCK_HEIGHT/2
 FLAG_MAX_HEIGHT = 30
 FLAG_HEIGHT = 68
 
-
-
 def distance(pos, posStrings):
     xDistance = pos[0] - int(posStrings[0])
     yDistance = pos[1] - int(posStrings[1])
@@ -104,6 +102,7 @@ class NodeGraph:
 def findPath(currentNode):
     root = MinMaxNode(currentNode)
     buildTree(root, [currentNode])
+    #printTree(root, 1)
     path = buildPath(root, [])
     return path
 
@@ -115,25 +114,26 @@ def buildPath(minMaxNode, currentPath):
     return currentPath
 
 def printTree(node, depth):
-    print " "*depth + str(node.node.pos) + " score:" + str(node.score)
+    print " "*depth, node.node.pos, " score:" , node.score, ' jumpable:', node.node.isJumpable()
     for linked in node.linkedNodes:
         printTree(linked, depth+1)
 
-def buildTree(minMaxNode, nodesInTree):
-    for linked in minMaxNode.node.linkedNodes:
+def buildTree(parent, nodesInTree):
+    for linked in parent.node.linkedNodes:
         if linked.canTraverse() and linked not in nodesInTree:
             newNode = MinMaxNode(linked)
-            minMaxNode.linkedNodes.append(newNode)
             nodesInTree.append(linked)
             score = buildTree(newNode, nodesInTree)
-            if score < minMaxNode.score:
-                minMaxNode.score = score 
-    return minMaxNode.score
+            parent.linkedNodes.append(newNode)
+            if score < parent.score:
+                parent.score = score
+    parent.node.score = parent.score
+    return parent.score
         
 class MinMaxNode:
     def __init__(self, node):
         self.node = node
-        self.score = node.pos[Y]# if node.isJumpable() else node.pos[Y]/100
+        self.score = node.pos[Y] if node.isJumpable() else SCREEN_HEIGHT
         self.linkedNodes = []
     
 class Node:
@@ -143,12 +143,15 @@ class Node:
         self.nodeCount = 1
         self.flag = None
         self.blocks = [block]
+        self.pea = None
+        self.score = None
+        self.jumpable = True
         
     def isJumpable(self):
         if self.flag == None:
-            return True
+            return self.jumpable
         else:
-            return not self.flag.isComplete()
+            return self.flag.isJumpable()
     
     def linkNode(self, node):
         assert node is not self
@@ -170,6 +173,7 @@ class Node:
         for node in self.linkedNodes:
             pygame.draw.line(screen, linkColor, pos, node.pos)
         UserInterface.Text.renderText(str(self.nodeCount), (pos[X]-4, pos[Y]-4), screen, (200,200,0), "NODE_FONT")
+        UserInterface.Text.renderText(str(self.score), (pos[X], pos[Y]-4), screen, (0,0,0), "NODE_FONT")
     
     def merge(self, node):
         #sort out node links
@@ -255,9 +259,8 @@ class Flag:
         self.jumps = 0
         self.maxJumps = maxJumps
         self.flagPos = [pos[0], pos[1] - FLAG_MAX_HEIGHT]
-        self.peas = set()
         self.flagImage = Images.images["Flag-Good"]
-        self.isSafe = True
+        self.isSafe = False
     
     def render(self, surface):
         surface.blit(Images.images["Flag-Pole"], self.pos)
@@ -265,15 +268,17 @@ class Flag:
             surface.blit(self.flagImage, (self.flagPos[X]-3, self.flagPos[Y]+6))
     
     def jumpDone(self, pea):
-        if pea not in self.peas and self.isSafe:
-            self.jumps += 1
-            self.flagPos[1] -= FLAG_MAX_HEIGHT / self.maxJumps
+        self.jumps += 1
+        self.flagPos[1] -= FLAG_MAX_HEIGHT / self.maxJumps
+        self.isSafe = True
         
     def isComplete(self):
         return self.jumps == self.maxJumps
     
+    def isJumpable(self):
+        return self.isSafe and not self.isComplete()
+    
     def deadlyJump(self):
-        self.jumps = self.maxJumps
         self.flagPos[1] = self.pos[1]
         self.flagImage = Images.images["Flag-Bad"]
         self.isSafe = False
