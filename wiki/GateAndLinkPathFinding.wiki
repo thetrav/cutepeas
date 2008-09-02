@@ -18,7 +18,7 @@ If we assume peas can't climb along the ceiling of blocks then corners each have
 
 Links each have exactly 2 corners, links can either be open or blocked. the three kinds of links are left, top and right.
 
-A pea is going to approach a node/gate/corner via a link (the inbound link) and want to know what open outbound links there are.
+A pea is going to approach a gate via a link (the inbound link) and want to know what open outbound links there are.
 
 To calculate this the gate is first queried, and it then queries all its links under all its corners to build a list of open links.
 
@@ -30,7 +30,7 @@ A right link is open unless the gate of its top corner has either the top right 
 A top link is open unless the gate of its left corner has the top right position occupied AND the gate of its right corner has the top left position occupied (indicating a block directly on top)
 
 == jump traversal ==
-A jump between corners is available where a gate is jumpable and horizontally next to another jumpable gate
+A jump between gates is available where a gate is jumpable and horizontally next to another jumpable gate
 This allows peas to jump traverse between ramps, which looks pretty precarious in some situations, but they are ninja's after all :)
 
 = Calculating jump positions =
