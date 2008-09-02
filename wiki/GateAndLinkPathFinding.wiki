@@ -25,7 +25,7 @@ To calculate this the gate is first queried, and it then queries all its links u
 = calculating traversable paths =
 A left link is open unless the gate of its top corner has either the top left or bottom left positions occupied (indicating an overhang to the left or another block to the left)
 
-A right link is open unless the gate of its top corner has either the top right or bottom right positions occipied (indicating either an overhang to the right or another block to the right)
+A right link is open unless the gate of its top corner has either the top right or bottom right positions occupied (indicating either an overhang to the right or another block to the right)
 
 A top link is open unless the gate of its left corner has the top right position occupied AND the gate of its right corner has the top left position occupied (indicating a block directly on top)
 
