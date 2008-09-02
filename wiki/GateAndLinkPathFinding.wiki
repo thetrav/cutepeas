@@ -2,7 +2,9 @@
 #labels Phase-Implementation,Phase-Design
 
 = Introduction =
-The first NodeGraph implementation, while functional, is becoming slightly cumbersome to work with.  In order to get around the overhang and jump traversal problems I've decided to overhaul it with what amounts to a more or less brute force system.
+The first NodeGraph implementation, while functional, is becoming slightly cumbersome to work with.
+
+To solve the problem with peas squeezing between two diagonal blocks, all links that lead to an overhang are marked blocked.
 
 Each potential corner of a block occupies a corner of a gate, therefore gates can be occupied by a maximum of 4 corners
 
@@ -16,7 +18,8 @@ Gates can have 0 to 4 corners, alternatively 1 to 4 if we only create the gates 
 
 If we assume peas can't climb along the ceiling of blocks then corners each have 1 or 2 links.  Once placed corners always have exactly 1 gate
 
-Links each have exactly 2 corners, links can either be open or blocked. the three kinds of links are left, top and right.
+Links each have exactly 2 corners, links can either be open or blocked. 
+There are five kinds of links: left, top, right, left ramp, right ramp.
 
 A pea is going to approach a gate via a link (the inbound link) and want to know what open outbound links there are.
 
@@ -28,6 +31,10 @@ A left link is open unless the gate of its top corner has either the top left or
 A right link is open unless the gate of its top corner has either the top right or bottom right positions occupied (indicating either an overhang to the right or another block to the right)
 
 A top link is open unless the gate of its left corner has the top right position occupied AND the gate of its right corner has the top left position occupied (indicating a block directly on top)
+
+A left ramp is open unless the gate of its top corner has the top left position occupied (indicating an overhang)
+
+A right ramp is open unless the gate of its top corner has the top right position occupied (indicating an overhang)
 
 == jump traversal ==
 A jump between gates is available where a gate is jumpable and horizontally next to another jumpable gate
