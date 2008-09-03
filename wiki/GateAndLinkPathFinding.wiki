@@ -62,4 +62,7 @@ Only gates can be jumped from
 If only the bottom left position is occupied, then a right jump is allowed
 If only the bottom right position is occupied, then a left jump is allowed
 
-This allows peas to jump from the lower side of ramps, which may or may not be desired.
+This does not allow peas to jump from the lower side of ramps, which may or may not be desired.
+This also does not allow peas to jump from a peak made of two ramps /\
+
+If any of these circumstances become desirable in the future it should be relatively simple to code in exceptions as all the link types and corner positions are explicitly maintained
