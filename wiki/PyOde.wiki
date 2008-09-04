@@ -1,4 +1,4 @@
-#Summary third party physics library.
+#summary third party physics library.
 
 = Introduction =
 pyode is a set of python bindings for the Open Dynamics Engine ( http://www.ode.org )
