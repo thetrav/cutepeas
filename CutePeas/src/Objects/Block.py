@@ -1,7 +1,9 @@
-from Images import images
+import Event
 import math
 import Animation
-from PathFinding.NodeGraph import *
+import PathFinding.GateAndLink.Corner
+import UserInterface.Scroll
+from Images import images
 from Constants import *
 
 GHOST_TIMER_INIT = 2999
@@ -36,24 +38,8 @@ class Block:
     def getBouncePoints(self):
         return self.bouncePoints
         
-    def createNodes(self):
-        x = self.pos[X]
-        y = self.pos[Y] + BLOCK_Y_OVERLAP
-        nodes = [
-                 CornerNode((x, y), self),
-                 FaceNode((x+BLOCK_WIDTH/2, y), self),
-                 CornerNode((x+BLOCK_WIDTH, y), self),
-                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2), self),
-                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT), self),
-                 CornerNode((x, y + BLOCK_HEIGHT), self),
-                 FaceNode((x, y + BLOCK_HEIGHT/2), self)]
-        loopNodes(nodes)
-        
-        nodes[4].jumpable = False
-        nodes[6].jumpable = False
-        
-        return nodes
+    def createCorners(self):
+        return PathFinding.GateAndLink.Corner.createBoxLinkedCorners(self.pos)
     
     def getPoints(self):
         x = self.pos[X]
@@ -81,11 +67,11 @@ class Block:
     
     def render(self, screen):
         if self.isGhosting():
-            screen.blit(self.ghostingImage, (self.pos[X], self.pos[Y]))
+            UserInterface.Scroll.globalViewPort.blit(screen, self.ghostingImage, (self.pos[X], self.pos[Y]))
             ghostTimerImage = images[str(int(math.floor(self.ghostTimer/1000)+1))]
-            screen.blit(ghostTimerImage, (self.pos[X]+35, self.pos[Y]+25))
+            UserInterface.Scroll.globalViewPort.blit(screen, ghostTimerImage, (self.pos[X]+35, self.pos[Y]+25))
         else:
-            screen.blit(self.image, (self.pos[X], self.pos[Y]))
+            UserInterface.Scroll.globalViewPort.blit(screen, self.image, self.pos)
         
     def isGhosting(self):
         return self.ghostingIn or self.ghostingOut
@@ -116,21 +102,8 @@ class LeftRampBlock(Block):
     def __init__(self, ghostingImage= None, displayImage = None):
         Block.__init__(self, ghostingImage, displayImage)
         
-    def createNodes(self):
-        x = self.pos[X]
-        y = self.pos[Y] + BLOCK_Y_OVERLAP
-        nodes = [CornerNode((x, y + BLOCK_HEIGHT), self),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2), self),
-                 CornerNode((x+BLOCK_WIDTH, y), self),
-                 FaceNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT/2), self),
-                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT), self)]
-        loopNodes(nodes)
-        
-        nodes[0].jumpable = False
-        nodes[4].jumpable = False
-        
-        return nodes
+    def createCorners(self):
+        return PathFinding.GateAndLink.Corner.createLeftRampLinkedCorners(self.pos)
     
     def getPoints(self):
         x = self.pos[X]
@@ -142,21 +115,8 @@ class RightRampBlock(Block):
     def __init__(self, ghostingImage= None, displayImage = None):
         Block.__init__(self, ghostingImage, displayImage)
         
-    def createNodes(self):
-        x = self.pos[X]
-        y = self.pos[Y] + BLOCK_Y_OVERLAP
-        nodes = [CornerNode((x, y), self),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT/2), self),
-                 CornerNode((x+BLOCK_WIDTH, y + BLOCK_HEIGHT), self),
-                 FaceNode((x+BLOCK_WIDTH/2, y + BLOCK_HEIGHT), self),
-                 CornerNode((x, y + BLOCK_HEIGHT), self),
-                 FaceNode((x, y + BLOCK_HEIGHT/2), self)]
-        loopNodes(nodes)
-        
-        nodes[2].jumpable = False
-        nodes[4].jumpable = False
-        
-        return nodes
+    def createCorners(self):
+        return PathFinding.GateAndLink.Corner.createRightRampLinkedCorners(self.pos)
     
     def getPoints(self):
         x = self.pos[X]

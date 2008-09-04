@@ -9,7 +9,9 @@ import Coordinates
 from UserInterface import Text
 from UserInterface.Button import TitleScreenButton
 from Level import BasicLevel
-from PathFinding.NodeGraph import *
+from Constants import *
+import PathFinding.GateAndLink.Graph
+import UserInterface.Scroll
 
 class TitleScreen:
     def __init__(self, userInterface, transitionListener):
@@ -18,7 +20,7 @@ class TitleScreen:
         self.highScoreList = HighScoreList((100,100))
         self.exitButton = self.addButton("Exit-Game", (600, 150), 200, 50)
         self.newGameButton = self.addButton("New-Game", (580, 100), 200, 50)
-        self.nodeGraph = NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET + BLOCK_Y_OVERLAP)
+        self.nodeGraph = PathFinding.GateAndLink.Graph.NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET)
         self.physicsManager = Physics.OdePhysics.OdePhysicsManager()
         self.scene = Scene.Scene(self.nodeGraph, self.physicsManager)
         self.userInterface.setScene(self.scene)
@@ -53,7 +55,7 @@ class TitleScreen:
     def render(self, screen):
         screen.blit(Images.images["Background"], (0,0))
         screen.blit(Images.images["Logo"], (10,10))
-        screen.blit(Images.images["Plate"], (5, 520))
+        UserInterface.Scroll.globalViewPort.blit(screen, Images.images["Plate"], (5, 520))
         self.userInterface.render(screen)
         self.highScoreList.render(screen)
         #flagPos = (315, 280)

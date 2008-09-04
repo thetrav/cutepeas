@@ -1,4 +1,5 @@
 import Images
+import UserInterface.Scroll
 
 GRAVITY = 0.008
 FRICTION = 1
@@ -33,7 +34,7 @@ class Particle:
         self.pos[1] = self.pos[1] + self.vel[1]
     
     def render(self, screen):
-        screen.blit(self.image, self.pos)
+        UserInterface.Scroll.globalViewPort.blit(screen, self.image, self.pos)
 
         
 class ExpireParticle(Particle):
