@@ -1,6 +1,7 @@
 import pygame.draw
 import Constants
 from Constants import *
+from PathFinding.GateAndLink.PackageConstants import *
 import UserInterface.Text
 import Event
 import Objects.Block
@@ -71,8 +72,11 @@ class NodeGraph:
             for key in self.nodes:
                     self.nodes[key].render(screen)
     
+    def placeFlag(self, flag):
+        pass
+    
     def placeBlock(self, block):
-        self.addNodes(block.createNodes())
+        self.addNodes(block.createCorners())
     
     def addNodes(self, toAdd):
         for node in toAdd:
@@ -83,7 +87,7 @@ class NodeGraph:
         Event.fireEvent(EVENT_NODE_GRAPH_UPDATED, self)
     
     def removeBlock(self, block):
-        self.removeNodes(block.createNodes())
+        self.removeNodes(block.createCorners())
     
     def removeNodes(self, toRemove):
         for node in toRemove:

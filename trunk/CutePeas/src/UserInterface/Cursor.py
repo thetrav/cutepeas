@@ -1,5 +1,6 @@
 import pygame.mouse
 from Constants import *
+import Scroll
 
 class Cursor:
     def __init__(self, image):
@@ -22,7 +23,7 @@ class Cursor:
     
     def toolChanged(self, tool):
         self.tool = tool
-        tool.positionChanged(self.pos)
+        tool.positionChanged(Scroll.rePos(self.pos))
         
     def toolCleared(self):
         self.tool = None
@@ -34,5 +35,10 @@ class Cursor:
     def mouseMotion(self, event):
         self.pos = (event.pos[X], event.pos[Y])
         if self.tool:
-            self.tool.positionChanged(self.pos)
-            
+            self.tool.positionChanged(Scroll.rePos(self.pos))
+        if self.pos[Y] < UP_SCROLL_LINE:
+            Scroll.globalViewPort.yVel = Y_SCROLL_SPEED
+        elif self.pos[Y] > DOWN_SCROLL_LINE:
+            Scroll.globalViewPort.yVel = -Y_SCROLL_SPEED
+        else:
+            Scroll.globalViewPort.yVel = 0

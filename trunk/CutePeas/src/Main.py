@@ -2,9 +2,9 @@ import pygame, sys
 import Animation, TitleScreen
 from Constants import *
 from pygame.locals import *
-from Images import *
-from UserInterface.Button import Button
-from UserInterface.UserInterface import UserInterface
+import UserInterface.UserInterface
+import UserInterface.Scroll
+import Images
 
 class Game:
     def __init__(self):
@@ -12,7 +12,7 @@ class Game:
         pygame.display.set_caption('Cute Peas')
         
         self.screen = pygame.display.get_surface()
-        loadImages()
+        Images.loadImages()
         
     
     def handleInput(self, events):
@@ -30,9 +30,11 @@ class Game:
     def transition(self, newLevel):
         self.level.dispose()
         self.level = newLevel
+        UserInterface.Scroll.globalViewPort.offset = [0,0]
         
     def main(self):
-        self.userInterface = UserInterface()
+        self.userInterface = UserInterface.UserInterface.UserInterface()
+        Animation.animations.append(UserInterface.Scroll.globalViewPort)
         self.level = TitleScreen.TitleScreen(self.userInterface, self)
         clock = pygame.time.Clock()
         clock.tick() #initialise timer
