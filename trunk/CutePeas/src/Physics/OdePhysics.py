@@ -6,6 +6,7 @@ import pygame
 import Coordinates
 import Animation
 import Event
+import UserInterface.Scroll
 
 physics_step_size = 0.016
 GRAVITY = 9.81
@@ -19,8 +20,8 @@ PEA_COLLISION_EVENT = "pea collision event"
 def returnBounceFunction():
     return BOUNCE
 
-def createBoxRect(pos):
-    return (pos[0] - BLOCK_WIDTH/2, pos[1] - BLOCK_HEIGHT/2, BLOCK_WIDTH, BLOCK_HEIGHT)
+def createBoxRect(odePos):
+    return (odePos[0] - BLOCK_WIDTH_ODE/2, odePos[1] - BLOCK_HEIGHT_ODE/2, BLOCK_WIDTH_ODE, BLOCK_HEIGHT_ODE)
 
 def near_callback(args, geom1, geom2):
     if geom1.isPea() and geom2.isPea():
@@ -42,7 +43,7 @@ def closeCollisionTest(peaGeom, geom, args):
         j = ode.ContactJoint(world, contactgroup, c)
         j.attach(peaGeom.getBody(), geom.getBody())
     if collision:
-        print ' hit ', geom.name
+        #print ' hit ', geom.name
         Event.fireEvent(PEA_COLLISION_EVENT, (peaGeom, geom))
         
 def getNext(ind, max):
@@ -60,11 +61,11 @@ class OdePhysicsManager:
         self.space = ode.Space()
         
         #floor
-        self.createPlane((0,-1,0), -FLOOR_POS, "floor")
+        self.createPlane((0,-1,0), -FLOOR_POS_ODE, "floor")
         #left wall 
         self.createPlane((1,0,0), 0, "left wall")
         #right wall
-        self.createPlane((-1,0,0), -SCREEN_WIDTH, "right wall")
+        self.createPlane((-1,0,0), -SCREEN_WIDTH_ODE, "right wall")
         
         self.contactgroup = ode.JointGroup()
         self.blocks = []
@@ -72,8 +73,8 @@ class OdePhysicsManager:
         self.timeCounter = 0.0
         Animation.animations.append(self)
     
-    def createPlane(self, normal, distance, name):
-        plane = ode.GeomPlane(self.space, normal, Coordinates.pixelsToOde(distance))
+    def createPlane(self, normal, odeDistance, name):
+        plane = ode.GeomPlane(self.space, normal, odeDistance)
         plane.isPea = returnFalseFunction
         plane.isBlock = returnFalseFunction
         plane.bounce = BOUNCE
@@ -89,14 +90,13 @@ class OdePhysicsManager:
         block.geom = None
     
     def placeBlock(self, block):
-        #adjust pos from top left coord for center coord
         triMeshData = ode.TriMeshData()
         points = block.getPoints()
         verts = []
         faces = []
         #create two vertices for each point
         for point in points:
-            frontPoint = Coordinates.pixelPosToOdePos(point)
+            frontPoint = point
             verts.append(frontPoint)
             verts.append((frontPoint[0], frontPoint[1], 1.0))
         #create one triangle for each vertice
@@ -118,7 +118,7 @@ class OdePhysicsManager:
         
     
     def addPea(self, pea):
-        odePos = Coordinates.pixelPosToOdePos(pea.pos)
+        odePos = pea.odePos
         pea.body = ode.Body(self.world)
         mass = ode.Mass()
         mass.setSphere(2500, Coordinates.pixelsToOde(PEA_RADIUS))
@@ -128,7 +128,7 @@ class OdePhysicsManager:
         geom = ode.GeomSphere(self.space, Coordinates.pixelsToOde(PEA_RADIUS))
         geom.setBody(pea.body)
         
-        pea.body.setPosition(odePos)
+        #pea.body.setPosition(odePos)
         self.peas.append(pea)
         geom.pea = pea
         geom.isPea = returnTrueFunction
@@ -147,16 +147,8 @@ class OdePhysicsManager:
         
     def render(self, screen):
         if Constants.DRAW_HIT_BOXES:
-            for ball in self.peas:
-                odePos = ball.body.getPosition()
-                pos = Coordinates.odePosToPixelPos(odePos)
-                #print "drawing ball at ",pos
-                pygame.draw.circle(screen, PEA_COLOR, pos, PEA_RADIUS, SURFACE_LINE_THICKNESS)
-            
             for block in self.blocks:
-                #odePos = box.getPosition()
-                #pos = Coordinates.odePosToPixelPos(odePos)
-                pygame.draw.polygon(screen, BLOCK_COLOR, block.getPoints(), SURFACE_LINE_THICKNESS)
+                UserInterface.Scroll.globalViewPort.drawPolygon(screen, BLOCK_COLOR, block.getPoints(), SURFACE_LINE_THICKNESS)
     
     def update(self, timeD):
         self.timeCounter += (timeD*0.001)#milliseconds to seconds
@@ -174,10 +166,10 @@ class OdePhysicsManager:
                 pea.body.setAngularVel((0, 0, 0))#pea.body.getAngularVel()[Z]))
                 
     def jumpPea(self, pea, vel):
-        odePos = Coordinates.pixelPosToOdePos(pea.pos)
+        odePos = (pea.odePos[X], pea.odePos[Y], 0)
         pea.body.setPosition(odePos)
         pea.body.setLinearVel(vel)
         pea.body.enable()
         pea.geom.enable()
-        pea.oneFreeCollision = True #this is a dirty filthy hack.  I believe moving the pea through a heap of stuff recks collision detection
+        pea.oneFreeCollision = True #this is a dirty filthy hack.  I believe moving the pea through a heap of stuff wrecks collision detection
     

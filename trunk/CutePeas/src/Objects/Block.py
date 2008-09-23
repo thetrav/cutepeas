@@ -5,6 +5,7 @@ import PathFinding.GateAndLink.Corner
 import UserInterface.Scroll
 from Images import images
 from Constants import *
+import Coordinates
 
 GHOST_TIMER_INIT = 2999
 DONE_GHOSTING_IN_EVENT = "Done Ghosting In Event"
@@ -16,13 +17,16 @@ GEL_BLOCK_BOUNCE = 0.5
 GEL_MAX_SURVIVABLE_VELOCITY_MOD = 4
 SPRING_MAX_SURVIVABLE_VELOCITY_MOD = 1.8
 
+TIMER_OFFSET_X = Coordinates.pixelsToOde(35)
+TIMER_OFFSET_Y = Coordinates.pixelsToOde(25)
+
 class Block:
     def __init__(self, ghostingImage= None, displayImage = None, bounce=NORMAL_BLOCK_BOUNCE, maxSurvivableVelocityMod = 1):
         if ghostingImage != None:
             self.ghostingImage = images[ghostingImage]
         if displayImage != None:
             self.image = images[displayImage]
-        self.pos = (0,0)
+        self.odePos = (0.0,0.0)
         self.ghostingIn = False
         self.ghostingOut = False
         self.resetTimer()
@@ -39,17 +43,18 @@ class Block:
         return self.bouncePoints
         
     def createCorners(self):
-        return PathFinding.GateAndLink.Corner.createBoxLinkedCorners(self.pos)
-    
+        return PathFinding.GateAndLink.Corner.createBoxLinkedCorners(self.odePos)
+        
+    #points are used for creating trimeshes in ode physics manager
     def getPoints(self):
-        x = self.pos[X]
-        y = self.pos[Y] + BLOCK_Y_OVERLAP
-        points = [(x,y),
-                  (x+BLOCK_WIDTH, y), 
-                  (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), 
-                  (x, y+BLOCK_HEIGHT)]
+        x = self.odePos[X]
+        y = self.odePos[Y] + BLOCK_Y_OVERLAP_ODE
+        points = [(x,y,0),
+                  (x+BLOCK_WIDTH_ODE, y,0), 
+                  (x+BLOCK_WIDTH_ODE, y+BLOCK_HEIGHT_ODE,0), 
+                  (x, y+BLOCK_HEIGHT_ODE,0)]
         return points
-    
+        
     def resetTimer(self):
         self.ghostTimer = GHOST_TIMER_INIT
     
@@ -67,11 +72,11 @@ class Block:
     
     def render(self, screen):
         if self.isGhosting():
-            UserInterface.Scroll.globalViewPort.blit(screen, self.ghostingImage, (self.pos[X], self.pos[Y]))
+            UserInterface.Scroll.globalViewPort.blit(screen, self.ghostingImage, (self.odePos[X], self.odePos[Y]))
             ghostTimerImage = images[str(int(math.floor(self.ghostTimer/1000)+1))]
-            UserInterface.Scroll.globalViewPort.blit(screen, ghostTimerImage, (self.pos[X]+35, self.pos[Y]+25))
+            UserInterface.Scroll.globalViewPort.blit(screen, ghostTimerImage, (self.odePos[X]+TIMER_OFFSET_X, self.odePos[Y]+TIMER_OFFSET_Y))
         else:
-            UserInterface.Scroll.globalViewPort.blit(screen, self.image, self.pos)
+            UserInterface.Scroll.globalViewPort.blit(screen, self.image, self.odePos)
         
     def isGhosting(self):
         return self.ghostingIn or self.ghostingOut
@@ -103,12 +108,13 @@ class LeftRampBlock(Block):
         Block.__init__(self, ghostingImage, displayImage)
         
     def createCorners(self):
-        return PathFinding.GateAndLink.Corner.createLeftRampLinkedCorners(self.pos)
-    
+        return PathFinding.GateAndLink.Corner.createLeftRampLinkedCorners(self.odePos)
+
+    #points are used for creating trimeshes in ode physics manager
     def getPoints(self):
-        x = self.pos[X]
-        y = self.pos[Y] + BLOCK_Y_OVERLAP
-        points = [(x,y+BLOCK_HEIGHT), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), (x+BLOCK_WIDTH, y) ]
+        x = self.odePos[X]
+        y = self.odePos[Y] + BLOCK_Y_OVERLAP_ODE
+        points = [(x,y+BLOCK_HEIGHT_ODE,0), (x+BLOCK_WIDTH_ODE, y+BLOCK_HEIGHT_ODE,0), (x+BLOCK_WIDTH_ODE, y,0) ]
         return points
 
 class RightRampBlock(Block):
@@ -116,11 +122,11 @@ class RightRampBlock(Block):
         Block.__init__(self, ghostingImage, displayImage)
         
     def createCorners(self):
-        return PathFinding.GateAndLink.Corner.createRightRampLinkedCorners(self.pos)
+        return PathFinding.GateAndLink.Corner.createRightRampLinkedCorners(self.odePos)
     
+    #points are used for creating trimeshes in ode physics manager
     def getPoints(self):
-        x = self.pos[X]
-        y = self.pos[Y] + BLOCK_Y_OVERLAP
-        points = [(x,y), (x+BLOCK_WIDTH, y+BLOCK_HEIGHT), (x, y+BLOCK_HEIGHT) ]
+        x = self.odePos[X]
+        y = self.odePos[Y] + BLOCK_Y_OVERLAP_ODE
+        points = [(x,y,0), (x+BLOCK_WIDTH_ODE, y+BLOCK_HEIGHT_ODE,0), (x, y+BLOCK_HEIGHT_ODE,0)]
         return points
-

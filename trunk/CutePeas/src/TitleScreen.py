@@ -13,6 +13,9 @@ from Constants import *
 import PathFinding.GateAndLink.Graph
 import UserInterface.Scroll
 
+def indexToOdePos(index):
+    return (index[X] * BLOCK_WIDTH_ODE + X_OFFSET_ODE, index[Y] * BLOCK_HEIGHT_ODE + Y_OFFSET_ODE, 0)
+
 class TitleScreen:
     def __init__(self, userInterface, transitionListener):
         self.userInterface = userInterface
@@ -20,7 +23,7 @@ class TitleScreen:
         self.highScoreList = HighScoreList((100,100))
         self.exitButton = self.addButton("Exit-Game", (600, 150), 200, 50)
         self.newGameButton = self.addButton("New-Game", (580, 100), 200, 50)
-        self.nodeGraph = PathFinding.GateAndLink.Graph.NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET)
+        self.nodeGraph = PathFinding.GateAndLink.Graph.NodeGraph(BLOCKS_WIDE, Coordinates.pixelsToOde(SCREEN_HEIGHT - 60))
         self.physicsManager = Physics.OdePhysics.OdePhysicsManager()
         self.scene = Scene.Scene(self.nodeGraph, self.physicsManager)
         self.userInterface.setScene(self.scene)
@@ -33,15 +36,14 @@ class TitleScreen:
         self.addBlock(Objects.Block.Block("Block-Place-Normal", "Block-Normal"), (4, 8))
         self.addBlock(Objects.Block.Block("Block-Place-Spring", "Block-Spring"), (6, 8))
         self.addBlock(Objects.Block.Block("Block-Place-Gel", "Block-Gel"), (8, 8))
-        self.scene.addPea(Objects.Pea.Pea((0, 600), self.nodeGraph, self.physicsManager))
+        self.scene.addPea(Objects.Pea.Pea((10, 9, 0), self.nodeGraph, self.physicsManager))
         
-    def addBlock(self, block, pos):
-        pixelPos = Coordinates.boxIndexToPixelPos(pos)
-        self.scene.placeBlock(pixelPos, block)
+    def addBlock(self, block, index):
+        self.scene.placeBlock(indexToOdePos(index), block)
         block.doneGhostingIn()
         
-    def addButton(self, name, pos, width, height):
-        button = TitleScreenButton(name, pos, width, height)
+    def addButton(self, name, pixelPos, width, height):
+        button = TitleScreenButton(name, pixelPos, width, height)
         button.addListener(self)
         self.userInterface.addActiveWidget(button)
         return button
@@ -55,13 +57,11 @@ class TitleScreen:
     def render(self, screen):
         screen.blit(Images.images["Background"], (0,0))
         screen.blit(Images.images["Logo"], (10,10))
-        UserInterface.Scroll.globalViewPort.blit(screen, Images.images["Plate"], (5, 520))
+        UserInterface.Scroll.globalViewPort.blit(screen, Images.images["Plate"], Coordinates.pixelPosToOdePos((5, 520)))
         self.userInterface.render(screen)
         self.highScoreList.render(screen)
-        #flagPos = (315, 280)
-        #screen.blit(images["Flag-Pole"], flagPos)
-        #screen.blit(images["Flag-Good"], (flagPos[0]+5, flagPos[1]+20))
         self.scene.render(screen)
+        self.physicsManager.render(screen)
         
     def transition(self):
         self.transitionListener.transition(BasicLevel(self.userInterface))
@@ -75,14 +75,14 @@ LINE_WIDTH = 30
 LINE_SPACING = 20
         
 class HighScoreList:
-    def __init__(self, pos):
+    def __init__(self, pixelPos):
         self.scores = [("The Trav","6:33"),("Kamal", "7:00"), ("Rory", "7:01"), ("Scott", "7:15")]
-        self.pos = pos
+        self.pixelPos = pixelPos
         
     def render(self, screen):
-        Text.renderText("High Scores", self.pos, screen, (250,220,0), "TITLE_FONT")
-        xPos = self.pos[0]
-        yPos = self.pos[1] + 60
+        Text.renderText("High Scores", self.pixelPos, screen, (250,220,0), "TITLE_FONT")
+        xPos = self.pixelPos[0]
+        yPos = self.pixelPos[1] + 60
         for score in self.scores:
             renderString = score[0] + ((LINE_WIDTH - len(score[0]) - len(score[1])) * ".") + score[1]
             Text.renderText(renderString, (xPos, yPos), screen, (0,100,0))

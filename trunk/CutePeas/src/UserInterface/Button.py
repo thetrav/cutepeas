@@ -1,8 +1,8 @@
 from Images import images
 
 class ButtonPanel:
-    def __init__(self, pos):
-        self.pos = pos
+    def __init__(self, pixelPos):
+        self.pixelPos = pixelPos
         self.buttons = []
         self.listeners = []
         self.selectedButton = None
@@ -19,7 +19,7 @@ class ButtonPanel:
             listener.buttonFired(button)
     
     def render(self, screen):
-        screen.blit(images["Tool-Background"], self.pos)
+        screen.blit(images["Tool-Background"], self.pixelPos)
         for button in self.buttons:
             button.render(screen)
         
@@ -59,15 +59,15 @@ class ButtonPanel:
             
 
 class Button:
-    def __init__(self, buttonUpImage, buttonDownImage, buttonHoverImage, pos, width, height):
+    def __init__(self, buttonUpImage, buttonDownImage, buttonHoverImage, pixelPos, width, height):
         self.listeners = []
         self.buttonDown = False
         self.mouseHover = False
         self.upImage = buttonUpImage
         self.downImage = buttonDownImage
         self.hoverImage = buttonHoverImage
-        self.x = pos[0]
-        self.y = pos[1]
+        self.x = pixelPos[0]
+        self.y = pixelPos[1]
         self.width = width
         self.height = height
         
@@ -114,8 +114,8 @@ class Button:
         pass
         
 class ToolButton (Button):
-    def __init__(self, image, tool, pos, width, height):
-        Button.__init__(self, images["Tool-"+image], images["Tool-"+image], images["Tool-"+image], pos, width, height)
+    def __init__(self, image, tool, pixelPos, width, height):
+        Button.__init__(self, images["Tool-"+image], images["Tool-"+image], images["Tool-"+image], pixelPos, width, height)
         self.selectedImage = images["Tool-Selected"]
         self.tool = tool
         self.selected = False
@@ -134,6 +134,6 @@ class ToolButton (Button):
             listener.selectEvent(self)
     
 class TitleScreenButton (Button):
-    def __init__(self, imageSetName, pos, width, height):
-        Button.__init__(self, images["Button-"+imageSetName], images["Button-"+imageSetName+"-Down"], images["Button-"+imageSetName+"-Hover"], pos, width, height)
+    def __init__(self, imageSetName, pixelPos, width, height):
+        Button.__init__(self, images["Button-"+imageSetName], images["Button-"+imageSetName+"-Down"], images["Button-"+imageSetName+"-Hover"], pixelPos, width, height)
     

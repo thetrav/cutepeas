@@ -4,12 +4,17 @@ import Objects.Block
 from Constants import *
 
 def toKey(pos):
-    return str(pos)
+    return str((pos[X], pos[Y]))
+
+# note, this is deliberately backwards because we want a reversed list
+def compareBlockKeys(a, b):
+    posA = a[1:-1].split(',')
+    posB = b[1:-1].split(',')
+    return int(float(posB[Y])-float(posA[Y]))
    
 class Scene:
     def __init__(self, nodeGraph, physicsManager):
-        self.blocks = []
-        self.createGrid()
+        self.blocks = {}
         self.flags = {}
         self.peas = []
         self.nodeGraph = nodeGraph
@@ -17,24 +22,18 @@ class Scene:
         Event.addListener(Objects.Block.DONE_GHOSTING_IN_EVENT, self)
         Event.addListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self)
     
-    def getBlock(self, index):
-        return self.blocks[index[X]][index[Y]]
+    def getBlock(self, odePos):
+        return self.blocks[toKey(odePos)]
     
-    
-    def setBlock(self, index, block):
-        self.blocks[index[X]][index[Y]] = block
-    
-    def createGrid(self):
-        for x in xrange(9):
-            self.blocks.append([])
-            for y in xrange(9):
-                self.blocks[x].append(None)
+    def hasBlockAt(self, odePos):
+        return self.blocks.has_key(toKey(odePos))
+        
+    def setBlock(self, odePos, block):
+        self.blocks[toKey(odePos)] = block
     
     def render(self, screen):
-        for column in self.blocks:
-            for block in reversed(column):
-                if block != None:
-                    block.render(screen)
+        for key in sorted(self.blocks.keys(), compareBlockKeys):
+            self.blocks[key].render(screen)
         self.nodeGraph.render(screen)
         for pea in self.peas:
             pea.render(screen)
@@ -42,54 +41,34 @@ class Scene:
     def dispose(self):
         for pea in self.peas:
             pea.dispose()
-        for column in self.blocks:
-            for block in column:
-                if block != None:
-                    block.dispose()
+            for key in self.blocks.keys():
+                self.blocks[key].dispose()
         self.physicsManager.dispose()
         Event.removeListener(Objects.Block.DONE_GHOSTING_IN_EVENT, self)
         Event.removeListener(Objects.Block.DONE_GHOSTING_OUT_EVENT, self)
     
-    def inBlockArea(self, pos):
-        return pos[X] >= 0 and pos[Y] >= 0 and pos[X] < len(self.blocks) and pos[Y] < len(self.blocks[pos[X]])
-    
-    def canPlaceBlock(self, pixelPos):
-        pos = Coordinates.pixelPosToBoxIndex(pixelPos)
-        return self.inBlockArea(pos) and self.getBlock(pos) == None and self.noFlagAtPos((pos[X],pos[Y]+1))
+    def canPlaceBlock(self, odePos):
+        return not self.hasBlockAt(odePos)
                                                                                     
-    def noFlagAtPos(self, pos):
-        return not(self.inBlockArea(pos) and self.getBlock(pos) != None and self.getBlock(pos).flagPlaced) 
-    
-    def placeBlock(self, pos, block):
-        block.pos = pos
-        index = Coordinates.pixelPosToBoxIndex(pos)
-        self.setBlock(index, block)
+    def placeBlock(self, odePos, block):
+        block.odePos = odePos
+        self.setBlock(odePos, block)
         block.ghostIn()
         
-    def canRemoveBlock(self, pixelPos):
-        pos = Coordinates.pixelPosToBoxIndex(pixelPos)
-        return self.inBlockArea(pos) and self.getBlock(pos) != None and not self.getBlock(pos).isGhosting() and not self.getBlock(pos).flagPlaced
+    def canRemoveBlock(self, odePos):
+        return self.hasBlockAt(odePos) and not self.getBlock(odePos).isGhosting()
     
-    def removeBlock(self, pixelPos):
-        pos = Coordinates.pixelPosToBoxIndex(pixelPos)
-        self.getBlock(pos).ghostOut()
+    def removeBlock(self, odePos):
+        self.getBlock(odePos).ghostOut()
         
     def eventFired(self, id, block):
         if id == Objects.Block.DONE_GHOSTING_IN_EVENT:
             self.nodeGraph.placeBlock(block)
             self.physicsManager.placeBlock(block)
         elif id == Objects.Block.DONE_GHOSTING_OUT_EVENT:
-            index = Coordinates.pixelPosToBoxIndex(block.pos)
             self.nodeGraph.removeBlock(block)
             self.physicsManager.removeBlock(block)
-            self.setBlock(index, None)
-    
-    def canPlaceFlag(self, pos):
-        return not self.flags.has_key(toKey(pos))
-    
-    def placeFlag(self, pos, flag):
-        self.flags[toKey(pos)] = flag
-        self.nodeGraph.placeFlag(flag)
+            self.blocks.pop(toKey(block.odePos))
     
     def addPea(self, pea):
         self.peas.append(pea)

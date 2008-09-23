@@ -9,15 +9,26 @@ import Particles
 import Physics.OdePhysics
 import UserInterface.Score
 import UserInterface.Scroll
+import math
 
 NODE_TIMER = 200
 FALL_END_TIMER = 2000
 MIN_VEL = 0.001
 CELEBRATION_TIMER = 5000
-GHOST_Y_VEL = -0.1
+GHOST_Y_VEL = Coordinates.pixelsToOde(-0.1)
 TIME_HURT = 3000
 MAX_SURVIVABLE_Y_VELOCITY = 12
 TRANSITION_JUMP_TIMER = 400
+GHOST_MAX_HEIGHT = Coordinates.pixelsToOde(-100)
+
+PEA_RENDER_OFFSET_X = Coordinates.pixelsToOde(PEA_RADIUS)
+PEA_RENDER_OFFSET_Y = Coordinates.pixelsToOde(PEA_RADIUS)
+
+NINJA_RENDER_OFFSET_X = Coordinates.pixelsToOde(36)
+NINJA_RENDER_OFFSET_Y = Coordinates.pixelsToOde(60)
+
+PEA_HITBOX_COLOR = (0,255,0)
+PEA_POS_COLOR = (150,0,0)
 
 def climbAnimation(pea, timeD):
     if pea.currentNode == None:
@@ -36,21 +47,19 @@ def climbAnimation(pea, timeD):
                 pea.path = PathFinding.GateAndLink.Path.findPath(pea.currentNode)
                 
 def transitionJumpAnimation(pea, timeD):
-    pea.pos = Coordinates.odePosToPixelPos(pea.body.getPosition())
+    pea.odePos = pea.body.getPosition()
     if pea.timer < 0:
         pea.endTransitionJump()
         
             
 def jumpAnimation(pea, timeD):
-    pea.pos = Coordinates.odePosToPixelPos(pea.body.getPosition())
-    pos = pea.pos
+    pea.odePos = pea.body.getPosition()
     vel = pea.body.getLinearVel()
     
     #test for fall death
     if pea.hitThisFrame != None and not pea.oneFreeCollision:
         geom = pea.hitThisFrame[0]
         yVel = pea.hitThisFrame[1][Y]
-        print 'hit at ', yVel
         if yVel > MAX_SURVIVABLE_Y_VELOCITY * (1 if not geom.isBlock() else geom.block.maxSurvivableVelocityMod):
             pea.jumpDeath() 
     pea.hitThisFrame = None
@@ -68,9 +77,9 @@ def celebrateAnimation(pea, timeD):
 def deathAnimation(pea, timeD):
     if pea.timer <= 0:
         pea.image = Images.images["Pea-Ghost"]
-        pea.pos = (pea.pos[X], pea.pos[Y] + GHOST_Y_VEL * timeD)
-        if pea.pos[Y] < - 100:
-            pea.pos = (0, SCREEN_HEIGHT)
+        pea.odePos = (pea.odePos[X], pea.odePos[Y] + GHOST_Y_VEL * timeD)
+        if pea.odePos[Y] < GHOST_MAX_HEIGHT:
+            pea.odePos = Coordinates.pixelPosToOdePos((0, 0))
             pea.currentNode = None
             pea.previousNode = None
             pea.findNewNodeAndPath()
@@ -78,10 +87,10 @@ def deathAnimation(pea, timeD):
             pea.image = Images.images["Pea-Standard"]
             
 class Pea:
-    def __init__(self, pos, nodeGraph, physics):
+    def __init__(self, odePos, nodeGraph, physics):
         self.image = Images.images["Pea-Standard"]
         self.body = None
-        self.pos = pos
+        self.odePos = odePos
         self.initPathFinding(nodeGraph)
         Event.addListener(EVENT_NODE_GRAPH_UPDATED, self)
         Event.addListener(Physics.OdePhysics.PEA_COLLISION_EVENT, self)
@@ -115,7 +124,7 @@ class Pea:
     def setNode(self, node):
         self.previousNode = self.currentNode
         self.currentNode = node
-        self.pos = self.currentNode.pos
+        self.odePos = self.currentNode.odePos
         self.timer = NODE_TIMER
             
     def render(self, screen):
@@ -125,15 +134,19 @@ class Pea:
         if self.playAnimation == celebrateAnimation:
             self.renderCelebration(screen)
         self.particleSystem.render(screen)
-        UserInterface.Scroll.globalViewPort.blit(screen, self.image, (self.pos[X] - PEA_RADIUS, self.pos[Y] - PEA_RADIUS))
+        UserInterface.Scroll.globalViewPort.blit(screen, self.image, (self.odePos[X] - PEA_RENDER_OFFSET_X, self.odePos[Y] - PEA_RENDER_OFFSET_Y))
+        if Constants.DRAW_HIT_BOXES:
+            UserInterface.Scroll.globalViewPort.drawCircle(screen, PEA_HITBOX_COLOR, self.odePos, PEA_RADIUS)
+            posText = str(math.floor(self.odePos[X])) + ', ' + str(math.floor(self.odePos[Y]))
+            UserInterface.Scroll.globalViewPort.renderText(posText, self.odePos, screen, PEA_POS_COLOR, "PEA_FONT")
         
     def renderCelebration(self, screen):
-        ninjaPos = (self.pos[X] - 36, self.pos[Y] - 60)
+        ninjaPos = (self.odePos[X] - NINJA_RENDER_OFFSET_X, self.odePos[Y] - NINJA_RENDER_OFFSET_Y)
         UserInterface.Scroll.globalViewPort.blit(screen, Images.images["Alert-Ninja"], ninjaPos)
         
     def jumpTransition(self, link):
-        originPos = link.origin.pos
-        self.pos = (originPos[X], originPos[Y] - PEA_RADIUS)
+        originPos = link.origin.odePos
+        self.odePos = (originPos[X], originPos[Y] - PEA_RADIUS)
         self.physicsManager.jumpPea(self, (link.origin.gate.getJumpDirection()[X]*5.5, -2.0, 0.0))
         self.timer = TRANSITION_JUMP_TIMER
         self.playAnimation = transitionJumpAnimation
@@ -145,7 +158,7 @@ class Pea:
 #            self.currentFlag = PathFinding.NodeGraph.Flag(self.pos, 5)
 #            self.nodeGraph.placeFlag(self.currentFlag, self.currentNode)
 #        self.flags.append(self.currentFlag)
-        self.pos = (self.pos[X], self.pos[Y] - PEA_RADIUS*1.5)
+        self.odePos = (self.odePos[X], self.odePos[Y] - Coordinates.pixelsToOde(PEA_RADIUS*1.5))
         self.physicsManager.jumpPea(self, (self.currentNode.getJumpDirection()[X]*4.0, -3.5, 0.0))
         self.playAnimation = jumpAnimation
         self.timer = FALL_END_TIMER
@@ -158,8 +171,8 @@ class Pea:
                 
     def eventFired(self, eventId, source):
         if eventId == EVENT_NODE_GRAPH_UPDATED:
-            if not source.hasGateAt(self.currentNode.pos):
-                self.currentNode = source.findNearestNode(self.currentNode.pos)
+            if not source.hasGateAt(self.currentNode.odePos):
+                self.currentNode = source.findNearestNode(self.currentNode.odePos)
             self.path = PathFinding.GateAndLink.Path.findPath(self.currentNode)
         elif eventId == Physics.OdePhysics.PEA_COLLISION_EVENT:
             self.hitThisFrame = (source[1], self.body.getLinearVel())
@@ -181,7 +194,7 @@ class Pea:
         self.physicsManager.removePea(self)
         self.playAnimation = climbAnimation
         self.timer = NODE_TIMER
-        if self.nodeGraph.findNearestNode(self.pos) != self.currentNode:
+        if self.nodeGraph.findNearestNode(self.odePos) != self.currentNode:
             self.beginClimb()
         
     def endScoredJump(self):
@@ -194,7 +207,7 @@ class Pea:
         self.timer = CELEBRATION_TIMER
         self.playAnimation = celebrateAnimation
         self.image = Images.images["Pea-Happy"]
-        self.particleSystem.addEmitter(Particles.ExplodeEmitter(self.pos, CELEBRATION_TIMER))
+        self.particleSystem.addEmitter(Particles.ExplodeEmitter(self.odePos, CELEBRATION_TIMER))
         for block in self.blocksHit:
             Event.fireEvent(UserInterface.Score.SCORE_AWARDED_EVENT, block.getBouncePoints())
         self.blocksHit = []
@@ -209,7 +222,7 @@ class Pea:
         self.findNewNodeAndPath()
 
     def findNewNodeAndPath(self):
-        nearestNode = self.nodeGraph.findNearestNode(self.pos)
+        nearestNode = self.nodeGraph.findNearestNode(self.odePos)
         if nearestNode.pea == None: 
             self.setNode(nearestNode)
             self.path = PathFinding.GateAndLink.Path.findPath(self.currentNode)

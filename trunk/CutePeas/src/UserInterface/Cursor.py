@@ -5,7 +5,7 @@ import Scroll
 class Cursor:
     def __init__(self, image):
         self.image = image
-        self.pos = (0,0)
+        self.pixelPos = (0,0)
         self.tool = None
         self.slot = None
         self.scene = None
@@ -17,13 +17,13 @@ class Cursor:
     def render(self, screen):
         if self.tool:
             self.tool.render(screen)
-            screen.blit(self.tool.cursorIcon, self.pos)
+            screen.blit(self.tool.cursorIcon, self.pixelPos)
         else:
-            screen.blit(self.image, self.pos)
+            screen.blit(self.image, self.pixelPos)
     
     def toolChanged(self, tool):
         self.tool = tool
-        tool.positionChanged(Scroll.rePos(self.pos))
+        tool.positionChanged(Scroll.pixelsPosToOdePos(self.pixelPos))
         
     def toolCleared(self):
         self.tool = None
@@ -33,12 +33,12 @@ class Cursor:
             self.tool.invokeTool()
     
     def mouseMotion(self, event):
-        self.pos = (event.pos[X], event.pos[Y])
+        self.pixelPos = (event.pos[X], event.pos[Y])
         if self.tool:
-            self.tool.positionChanged(Scroll.rePos(self.pos))
-        if self.pos[Y] < UP_SCROLL_LINE:
-            Scroll.globalViewPort.yVel = Y_SCROLL_SPEED
-        elif self.pos[Y] > DOWN_SCROLL_LINE:
-            Scroll.globalViewPort.yVel = -Y_SCROLL_SPEED
+            self.tool.positionChanged(Scroll.pixelsPosToOdePos(self.pixelPos))
+        if self.pixelPos[Y] < UP_SCROLL_LINE:
+            Scroll.globalViewPort.odeVelY = Y_SCROLL_SPEED_ODE
+        elif self.pixelPos[Y] > DOWN_SCROLL_LINE:
+            Scroll.globalViewPort.odeVelY = -Y_SCROLL_SPEED_ODE
         else:
-            Scroll.globalViewPort.yVel = 0
+            Scroll.globalViewPort.odeVelY = 0

@@ -2,16 +2,16 @@ from Images import images
 import Text
 
 class Timer:
-    def __init__(self, pos):
+    def __init__(self, pixelPos):
         self.time = 0
-        self.pos = pos
+        self.pixelPos = pixelPos
         
     def update(self, timeD):
         self.time = self.time + timeD*3
         
     def render(self, screen):
-        screen.blit(images["Icon-Time"], self.pos)
-        Text.renderText(self.getFormattedTime(), (self.pos[0]+30, self.pos[1]), screen)
+        screen.blit(images["Icon-Time"], self.pixelPos)
+        Text.renderText(self.getFormattedTime(), (self.pixelPos[0]+30, self.pixelPos[1]), screen)
         
     def getFormattedTime(self):
         return str(self.getMinutes()) + ":" + self.formatSeconds(self.getSeconds())

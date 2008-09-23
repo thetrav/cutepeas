@@ -1,5 +1,6 @@
 import Images
 import UserInterface.Scroll
+import Coordinates
 
 GRAVITY = 0.008
 FRICTION = 1
@@ -24,22 +25,22 @@ class ParticleSystem:
         self.emitters.remove(emitter)
     
 class Particle:
-    def __init__(self, image, pos, vel):
+    def __init__(self, image, odePos, odeVel):
         self.image = image
-        self.pos = [pos[0],pos[1]]
-        self.vel = [vel[0], vel[1]]
+        self.odePos = [odePos[0],odePos[1]]
+        self.odeVel = [odeVel[0], odeVel[1]]
     
     def update(self, timeD):
-        self.pos[0] = self.pos[0] + self.vel[0]
-        self.pos[1] = self.pos[1] + self.vel[1]
+        self.odePos[0] = self.odePos[0] + self.odeVel[0]
+        self.odePos[1] = self.odePos[1] + self.odeVel[1]
     
     def render(self, screen):
-        UserInterface.Scroll.globalViewPort.blit(screen, self.image, self.pos)
+        UserInterface.Scroll.globalViewPort.blit(screen, self.image, self.odePos)
 
         
 class ExpireParticle(Particle):
-    def __init__(self, image, pos, vel, timeToLive, listener):
-        Particle.__init__(self, image, pos, vel)
+    def __init__(self, image, odePos, odeVel, timeToLive, listener):
+        Particle.__init__(self, image, odePos, odeVel)
         self.timeToLive = timeToLive
         self.listener = listener
     
@@ -50,12 +51,12 @@ class ExpireParticle(Particle):
             self.listener.particleExpired(self)
             
 class GravityParticle(ExpireParticle):
-    def __init__(self, image, pos, vel, timeToLive, listener):
-        ExpireParticle.__init__(self, image, pos, vel, timeToLive, listener)
+    def __init__(self, image, odePos, odeVel, timeToLive, listener):
+        ExpireParticle.__init__(self, image, odePos, odeVel, timeToLive, listener)
         
     def update(self, timeD):
-        self.vel[1] = self.vel[1] + timeD * GRAVITY
-        self.vel[0] = self.vel[0] * FRICTION
+        self.odeVel[1] = self.odeVel[1] + timeD * GRAVITY
+        self.odeVel[0] = self.odeVel[0] * FRICTION
         ExpireParticle.update(self, timeD)
         
 class Emitter:
@@ -75,17 +76,15 @@ class Emitter:
         self.listeners.append(listener)
         
 class ExplodeEmitter(Emitter):
-    def __init__(self, pos, timeToLive = 5000):
+    def __init__(self, odePos, timeToLive = 5000):
         Emitter.__init__(self)
         self.timeToLive = timeToLive
-        self.pos = [pos[0],pos[1]]
+        self.odePos = [odePos[0],odePos[1]]
         self.emitExplosion()
     
     def emitExplosion(self):
         self.explodeTimer = 1500
-        pos = self.pos
-        pos[0] = pos[0]
-        pos[1] = pos[1]
+        odePos = self.odePos
         img = Images.images["Gold-Ball"]
         for vel in (
                     (-1, -4.3),
@@ -99,7 +98,7 @@ class ExplodeEmitter(Emitter):
                     ( 0.3, -3.2),
                     ( 1.1, -3.1),
                     ):
-            self.particles.append(GravityParticle(img, pos, vel, 500, self))
+            self.particles.append(GravityParticle(img, odePos, Coordinates.pixelPosToOdePos(vel), 500, self))
     
     def update(self, timeD):
         Emitter.update(self, timeD)

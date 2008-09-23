@@ -3,13 +3,14 @@ import Text
 import Event
 
 SCORE_AWARDED_EVENT = "score awarded event"
+SCORE_TEXT_X_OFFSET = 30
 
 class Score:
-    def __init__(self, pos):
+    def __init__(self, pixelPos):
         self.score = 0
         self.toAdd = 0
         self.addRate = 1
-        self.pos = pos
+        self.pixelPos = pixelPos
         Event.addListener(SCORE_AWARDED_EVENT, self)
         
     def addScore(self, newPoints):
@@ -28,5 +29,5 @@ class Score:
             self.addScore(source)
     
     def render(self, screen):
-        screen.blit(Images.images["Happy-Points"], self.pos)
-        Text.renderText(str(self.score), (self.pos[0]+30, self.pos[1]), screen)
+        screen.blit(Images.images["Happy-Points"], self.pixelPos)
+        Text.renderText(str(self.score), (self.pixelPos[0]+SCORE_TEXT_X_OFFSET, self.pixelPos[1]), screen)

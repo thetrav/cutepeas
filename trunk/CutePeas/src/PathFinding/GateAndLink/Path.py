@@ -29,7 +29,7 @@ def buildPath(minMaxNode, currentPath):
     return currentPath
 
 def printTree(node, depth):
-    print " "*depth, node.gate.pos, " score:" , node.score, ' jump dir:', node.gate.getJumpDirection()
+    print " "*depth, node.gate.odePos, " score:" , node.score, ' jump dir:', node.gate.getJumpDirection()
     for linked in node.linkedNodes:
         printTree(linked, depth+1)
 
@@ -37,10 +37,10 @@ class MinMaxNode:
     def __init__(self, inboundLink, gate):
         self.gate = gate
         self.link= inboundLink
-        self.score = gate.pos[Y] if gate.getJumpDirection() else SCREEN_HEIGHT
+        self.score = gate.odePos[Y] if gate.getJumpDirection() else SCREEN_HEIGHT_ODE
         self.linkedNodes = []
         
     def render(self, screen):
-        UserInterface.Scroll.globalViewPort.drawCircle(screen, (255,0,255) , (self.gate.pos[X], self.gate.pos[Y]), 15, 3)
+        UserInterface.Scroll.globalViewPort.drawCircle(screen, (255,0,255) , (self.gate.odePos[X], self.gate.odePos[Y]), 15, 3)
         if self.link:
             self.link.render(screen, (255,0,255))
