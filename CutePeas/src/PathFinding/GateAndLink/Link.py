@@ -23,7 +23,7 @@ class Link:
     
     def render(self, screen, color=None):
             drawColor = color if color else self.openColor if self.isOpen() else self.closedColor
-            UserInterface.Scroll.globalViewPort.drawLine(screen, drawColor, self.left.pos, self.right.pos, 3)
+            UserInterface.Scroll.globalViewPort.drawLine(screen, drawColor, self.left.odePos, self.right.odePos, 3)
             
     def other(self, gate):
         return self.left.gate if gate != self.left.gate else self.right.gate
@@ -68,9 +68,9 @@ class RightRampLink(Link):
     
 class JumpTraversalLink(Link):
     def __init__(self, origin, destination):
-        self.origin = PathFinding.GateAndLink.Corner.Corner(origin.pos, JUMP)
+        self.origin = PathFinding.GateAndLink.Corner.Corner(origin.odePos, JUMP)
         self.origin.gate = origin
-        self.destination = PathFinding.GateAndLink.Corner.Corner(destination.pos, JUMP)
+        self.destination = PathFinding.GateAndLink.Corner.Corner(destination.odePos, JUMP)
         self.destination.gate = destination
         self.openColor=(180,180,180)
         self.closedColor=(180,0,0)
@@ -82,7 +82,7 @@ class JumpTraversalLink(Link):
         return self.origin.gate if gate != self.origin.gate else self.destination.gate
     
     def render(self, screen, color=None):
-        UserInterface.Scroll.globalViewPort.drawLine(screen, self.openColor if self.isOpen() else self.closedColor, self.origin.pos, self.destination.pos, 3)
+        UserInterface.Scroll.globalViewPort.drawLine(screen, self.openColor if self.isOpen() else self.closedColor, self.origin.odePos, self.destination.odePos, 3)
         
     def isJumpTransition(self):
         return True

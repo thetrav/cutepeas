@@ -4,66 +4,66 @@ import PathFinding.GateAndLink.Link
 import UserInterface.Scroll
 
 
-def topLeftPos(pos):
-    return (pos[X], pos[Y])
+def topLeftPos(odePos):
+    return (odePos[X], odePos[Y])
 
-def topRightPos(pos):
-    return (pos[X] + BLOCK_WIDTH, pos[Y])
+def topRightPos(odePos):
+    return (odePos[X] + BLOCK_WIDTH_ODE, odePos[Y])
 
-def bottomLeftPos(pos):
-    return (pos[X], pos[Y] + BLOCK_HEIGHT)
+def bottomLeftPos(odePos):
+    return (odePos[X], odePos[Y] + BLOCK_HEIGHT_ODE)
 
-def bottomRightPos(pos):
-    return (pos[X] + BLOCK_WIDTH, pos[Y] + BLOCK_HEIGHT)
+def bottomRightPos(odePos):
+    return (odePos[X] + BLOCK_WIDTH_ODE, odePos[Y] + BLOCK_HEIGHT_ODE)
 
-def createLeftRampLinkedCorners(pos):
+def createLeftRampLinkedCorners(odePos):
     #leftRamp link
         #bottom left gate is top right corner - 1
-    bottomLeftGateTopRightCorner = Corner(bottomLeftPos(pos), TOP_RIGHT)
+    bottomLeftGateTopRightCorner = Corner(bottomLeftPos(odePos), TOP_RIGHT)
         #top right gate is bottom left corner - 2
-    topRightGateBottomLeftCorner = Corner(topRightPos(pos), BOTTOM_LEFT)
+    topRightGateBottomLeftCorner = Corner(topRightPos(odePos), BOTTOM_LEFT)
     PathFinding.GateAndLink.Link.LeftRampLink(bottomLeftGateTopRightCorner, topRightGateBottomLeftCorner)
     #right Link
         #top right gate is bottom left corner - 2
         #bottom right gate is top left corner - 3
-    bottomRightGateTopLeftCorner = Corner(bottomRightPos(pos), TOP_LEFT)
+    bottomRightGateTopLeftCorner = Corner(bottomRightPos(odePos), TOP_LEFT)
     PathFinding.GateAndLink.Link.RightLink(bottomRightGateTopLeftCorner, topRightGateBottomLeftCorner)
     return (bottomLeftGateTopRightCorner,
             topRightGateBottomLeftCorner,
             bottomRightGateTopLeftCorner)
     
-def createRightRampLinkedCorners(pos):
+def createRightRampLinkedCorners(odePos):
     #left link
         #bottom left gate is top right corner - 1
-    bottomLeftGateTopRightCorner = Corner(bottomLeftPos(pos), TOP_RIGHT)
+    bottomLeftGateTopRightCorner = Corner(bottomLeftPos(odePos), TOP_RIGHT)
         #top left gate is bottom right corner - 2
-    topLeftGateBottomRightCorner = Corner(topLeftPos(pos), BOTTOM_RIGHT)
+    topLeftGateBottomRightCorner = Corner(topLeftPos(odePos), BOTTOM_RIGHT)
     PathFinding.GateAndLink.Link.LeftLink(bottomLeftGateTopRightCorner, topLeftGateBottomRightCorner)
     #right Ramp Link
         #top left gate is bottom right corner - 2
         #bottom right gate is top left corner - 3
-    bottomRightGateTopLeftCorner = Corner(bottomRightPos(pos), TOP_LEFT)
+    bottomRightGateTopLeftCorner = Corner(bottomRightPos(odePos), TOP_LEFT)
     PathFinding.GateAndLink.Link.RightRampLink(bottomRightGateTopLeftCorner, topLeftGateBottomRightCorner)
     return (bottomLeftGateTopRightCorner,
             topLeftGateBottomRightCorner,
             bottomRightGateTopLeftCorner)
 
-def createBoxLinkedCorners(pos):
+def createBoxLinkedCorners(odePos):
     #left link
         #bottom left gate top right corner - 1
-    bottomLeftGateTopRightCorner = Corner(bottomLeftPos(pos), TOP_RIGHT)
+    bottomLeftGateTopRightCorner = Corner(bottomLeftPos(odePos), TOP_RIGHT)
         #top left gate bottom right corner - 2
-    topLeftGateBottomRightCorner = Corner(topLeftPos(pos), BOTTOM_RIGHT)
+    topLeftGateBottomRightCorner = Corner(topLeftPos(odePos), BOTTOM_RIGHT)
     PathFinding.GateAndLink.Link.LeftLink(bottomLeftGateTopRightCorner, topLeftGateBottomRightCorner)
     #top link
         #top left gate bottom right corner - 2
         #top right gate bottom left corner - 3
-    topRightGateBottomLeftCorner = Corner(topRightPos(pos), BOTTOM_LEFT)
+    topRightGateBottomLeftCorner = Corner(topRightPos(odePos), BOTTOM_LEFT)
     PathFinding.GateAndLink.Link.TopLink(topLeftGateBottomRightCorner, topRightGateBottomLeftCorner)
     #right link
         #top right gate bottom left corner - 3
         #bottom right gate top left corner - 4
-    bottomRightGateTopLeftCorner = Corner(bottomRightPos(pos), TOP_LEFT)
+    bottomRightGateTopLeftCorner = Corner(bottomRightPos(odePos), TOP_LEFT)
     PathFinding.GateAndLink.Link.RightLink(bottomRightGateTopLeftCorner, topRightGateBottomLeftCorner)
     return (bottomLeftGateTopRightCorner,
             topLeftGateBottomRightCorner,
@@ -71,14 +71,14 @@ def createBoxLinkedCorners(pos):
             bottomRightGateTopLeftCorner)
 
 class Corner:
-    def __init__(self, pos, position):
+    def __init__(self, odePos, position):
         self.links = []
         self.gate = None
-        self.pos = pos
+        self.odePos = odePos
         self.position = position
     
     def render(self, screen, offset):
-        UserInterface.Scroll.globalViewPort.drawCircle(screen, (0,255,0) , (self.pos[0] + offset[0], self.pos[1] + offset[1]), 3)
+        UserInterface.Scroll.globalViewPort.drawCircle(screen, (0,255,0) , (self.odePos[0] + offset[0], self.odePos[1] + offset[1]), 3)
         for link in self.links:
             link.render(screen)
     

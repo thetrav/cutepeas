@@ -4,23 +4,27 @@ import PathFinding.GateAndLink.Link
 from Utils import *
 import UserInterface.Scroll
 import UserInterface.Text
+import Coordinates
+
+TEXT_OFFSET_X = Coordinates.pixelsToOde(20)
+TEXT_OFFSET_Y = Coordinates.pixelsToOde(20)
 
 def createGate(x, y):
-    xPixelPos = toScreenCoords(x)
-    return Gate((xPixelPos, y))
+    xOdePos = toScreenCoords(x)
+    return Gate((xOdePos, y))
 
-def createGateRect(pos):
-    return (pos[0] - 10, pos[1] - 10, 20, 20)
+def createGateRect(odePos):
+    return (odePos[0] - Coordinates.pixelsToOde(10), odePos[1] - Coordinates.pixelsToOde(10), Coordinates.pixelsToOde(20), Coordinates.pixelsToOde(20))
 
-def getJumpLink(graph, originGate, destinationPos):
-    if graph.hasGateAt(destinationPos):
-        destinationGate = graph.grabGate(destinationPos)
+def getJumpLink(graph, originGate, destinationOdePos):
+    if graph.hasGateAt(destinationOdePos):
+        destinationGate = graph.grabGate(destinationOdePos)
         if destinationGate.getJumpDirection():
             return PathFinding.GateAndLink.Link.JumpTraversalLink(originGate, destinationGate)
 
 class Gate:
-    def __init__(self, pos):
-        self.pos = pos
+    def __init__(self, odePos):
+        self.odePos = odePos
         self.positions = {}
         self.score = SCREEN_HEIGHT
         self.pea = None
@@ -33,18 +37,18 @@ class Gate:
             color = (255,255,0)
         elif jumpDir == RIGHT_JUMP:
             color = (0, 255, 255)
-        UserInterface.Scroll.globalViewPort.drawRect(screen, color, createGateRect(self.pos))
+        UserInterface.Scroll.globalViewPort.drawRect(screen, color, createGateRect(self.odePos))
         
-        UserInterface.Scroll.globalViewPort.renderText(str(self.score), (self.pos[X]+20, self.pos[Y]-20), screen, (255,0,0), "NODE_FONT")
+        UserInterface.Scroll.globalViewPort.renderText(str(self.score), (self.odePos[X]+TEXT_OFFSET_X, self.odePos[Y]-TEXT_OFFSET_Y), screen, (255,0,0), "NODE_FONT")
         
         if self.get(TOP_LEFT):
-            self.get(TOP_LEFT).render(screen, (-5, -5))
+            self.get(TOP_LEFT).render(screen, Coordinates.pixelPosToOdePos((-5, -5)))
         if self.get(TOP_RIGHT):
-            self.get(TOP_RIGHT).render(screen, (5, -5))
+            self.get(TOP_RIGHT).render(screen, Coordinates.pixelPosToOdePos((5, -5)))
         if self.get(BOTTOM_LEFT):
-            self.get(BOTTOM_LEFT).render(screen, (-5, 5))
+            self.get(BOTTOM_LEFT).render(screen, Coordinates.pixelPosToOdePos((-5, 5)))
         if self.get(BOTTOM_RIGHT):
-            self.get(BOTTOM_RIGHT).render(screen, (5,5))
+            self.get(BOTTOM_RIGHT).render(screen, Coordinates.pixelPosToOdePos((5,5)))
     
     def get(self, key):
         if self.positions.has_key(key):
@@ -65,10 +69,10 @@ class Gate:
         openLinks = []
         link = None
         if self.getJumpDirection() == LEFT_JUMP:
-            leftGatePos = (self.pos[X] - BLOCK_WIDTH, self.pos[Y])
+            leftGatePos = (self.odePos[X] - BLOCK_WIDTH_ODE, self.odePos[Y])
             link = getJumpLink(self.graph, self, leftGatePos)
         elif self.getJumpDirection() == RIGHT_JUMP:
-            rightGatePos = (self.pos[X] + BLOCK_WIDTH, self.pos[Y])
+            rightGatePos = (self.odePos[X] + BLOCK_WIDTH_ODE, self.odePos[Y])
             link = getJumpLink(self.graph, self, rightGatePos)
         if link:
             openLinks.append(link)

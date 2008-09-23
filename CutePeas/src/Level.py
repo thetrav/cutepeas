@@ -32,9 +32,10 @@ class BasicLevel:
 #        self.scene.addPea(Objects.Pea.Pea((300, 600), self.nodeGraph, self.physicsManager))
 #        self.scene.addPea(Objects.Pea.Pea((400, 600), self.nodeGraph, self.physicsManager))
         
+        
     def render(self, screen):
         screen.blit(Images.images["Background"], (0,0))
-        UserInterface.Scroll.globalViewPort.blit(screen, Images.images["Plate"], (5, 520))
+        UserInterface.Scroll.globalViewPort.blit(screen, Images.images["Plate"], Coordinates.pixelPosToOdePos((5, 520)))
         self.scene.render(screen)
         self.userInterface.render(screen)
         
@@ -55,7 +56,7 @@ class BasicLevel:
         return physicsManager
     
     def createNodeGraph(self):
-        nodeGraph = PathFinding.GateAndLink.Graph.NodeGraph(BLOCKS_WIDE, BLOCKS_HIGH * BLOCK_HEIGHT + Y_OFFSET)
+        nodeGraph = PathFinding.GateAndLink.Graph.NodeGraph(BLOCKS_WIDE, Coordinates.pixelsToOde(SCREEN_HEIGHT - 60))
         return nodeGraph
     
     def createToolPanel(self):

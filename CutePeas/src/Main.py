@@ -38,10 +38,14 @@ class Game:
         self.level = TitleScreen.TitleScreen(self.userInterface, self)
         clock = pygame.time.Clock()
         clock.tick() #initialise timer
+        timeToRun = 250
         while True:
             self.handleInput(pygame.event.get())
-            for animation in Animation.animations:
-                animation.update(clock.get_time())
+            if timeToRun > 0:
+                time = clock.get_time()
+                for animation in Animation.animations:
+                    animation.update(time)
+                #timeToRun -= time
             self.render(self.screen)
             clock.tick(MAX_FPS)
         
