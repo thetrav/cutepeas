@@ -28,8 +28,11 @@ class ButtonPanel:
             button.mouseMotion(event)
     
     def mouseDown(self, event):
+        buttonFired = False
         for button in self.buttons:
-            button.mouseDown(event)
+            if button.mouseDown(event):
+                buttonFired = True
+        return buttonFired
     
     def mouseUp(self, event):
         for button in self.buttons:
@@ -76,11 +79,15 @@ class Button:
     
     def mouseDown(self, event):
         self.buttonDown = True if self.mouseHover else False
+        return self.buttonDown
     
     def mouseUp(self, event):
+        fired= False
         if self.mouseHover and self.buttonDown :
             self.fireEvent()
+            fired = True
         self.buttonDown = False
+        return fired
     
     def mouseMotion(self, event):
         mouse = event.pos

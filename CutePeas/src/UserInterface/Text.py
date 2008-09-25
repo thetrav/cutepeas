@@ -6,7 +6,7 @@ FONT_SIZE = 30
 fonts = {
          "DEFAULT_FONT" : pygame.font.Font('freesansbold.ttf', FONT_SIZE),
          "TITLE_FONT" : pygame.font.Font('freesansbold.ttf', 50),
-         "NODE_FONT" : pygame.font.Font('freesansbold.ttf', 14),
+         "NODE_FONT" : pygame.font.Font('freesansbold.ttf', 8),
          "PEA_FONT" : pygame.font.Font('freesansbold.ttf', 8),
          }
 

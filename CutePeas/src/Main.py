@@ -13,7 +13,6 @@ class Game:
         
         self.screen = pygame.display.get_surface()
         Images.loadImages()
-        
     
     def handleInput(self, events):
         for event in events:

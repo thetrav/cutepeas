@@ -146,7 +146,7 @@ class Pea:
         
     def jumpTransition(self, link):
         originPos = link.origin.odePos
-        self.odePos = (originPos[X], originPos[Y] - PEA_RADIUS)
+        self.odePos = (originPos[X], originPos[Y] - Coordinates.pixelsToOde(PEA_RADIUS))
         self.physicsManager.jumpPea(self, (link.origin.gate.getJumpDirection()[X]*5.5, -2.0, 0.0))
         self.timer = TRANSITION_JUMP_TIMER
         self.playAnimation = transitionJumpAnimation

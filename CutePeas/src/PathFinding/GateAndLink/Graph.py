@@ -6,6 +6,7 @@ from PathFinding.GateAndLink.Gate import *
 from PathFinding.GateAndLink.Corner import *
 from PathFinding.GateAndLink.PackageConstants import *
 from PathFinding.GateAndLink.Link import *
+import math
 
 
 
@@ -19,9 +20,13 @@ def linkFloorGates(prev, current):
     link = TopLink(bottomRight, bottomLeft)
     
 def distance(odePos, posStrings):
-    xDistance = odePos[0] - float(posStrings[0])
-    yDistance = odePos[1] - float(posStrings[1])
-    return xDistance * xDistance + yDistance * yDistance
+    try:
+        xDistance = math.fabs(odePos[0] - float(posStrings[0]))
+        yDistance = math.fabs(odePos[1] - float(posStrings[1]))
+        return xDistance + yDistance
+    except error:
+        print ' got an error for odepos',odePos,' posstrings',posStrings,' error:',error
+        raise error
 
 class NodeGraph:
     def __init__(self, numFloorBlocks, yOdePos):
@@ -62,6 +67,9 @@ class NodeGraph:
         key = str(corner.odePos)
         if not self.gates.has_key(key):
             self.storeGate(Gate(corner.odePos))
+            print 'new gate'
+        else:
+            print 'existing gate'
         self.gates[key].positions[corner.position] = corner
         corner.gate = self.gates[key]
     
@@ -94,4 +102,5 @@ class NodeGraph:
                 bestDistance = distance(odePos, nodePos)
         if bestNode == None:
             raise(" could not find a node")
+        print 'closest node to ',odePos,' is at ',bestNode.odePos
         return bestNode
