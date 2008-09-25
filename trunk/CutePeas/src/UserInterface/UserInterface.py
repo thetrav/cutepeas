@@ -56,9 +56,14 @@ class UserInterface:
             self.cursor.mouseMotion(event)
         elif event.type == MOUSEBUTTONDOWN:
             if event.button == LEFT:
+                noWidgetFired = True
                 for widget in self.activeWidgets:
-                    widget.mouseDown(event)
-                self.cursor.toolUsed()
+                    print 'calling mouseDown'
+                    if widget.mouseDown(event):
+                        print 'button down'
+                        noWidgetFired = False
+                if noWidgetFired:
+                    self.cursor.toolUsed()
             elif event.button == RIGHT:
                 self.deSelectEvent()
                 self.cursor.toolCleared()

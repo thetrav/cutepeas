@@ -39,7 +39,8 @@ class Gate:
             color = (0, 255, 255)
         UserInterface.Scroll.globalViewPort.drawRect(screen, color, createGateRect(self.odePos))
         
-        UserInterface.Scroll.globalViewPort.renderText(str(self.score), (self.odePos[X]+TEXT_OFFSET_X, self.odePos[Y]-TEXT_OFFSET_Y), screen, (255,0,0), "NODE_FONT")
+        odePos = ['%.2f' %pos for pos in self.odePos]
+        UserInterface.Scroll.globalViewPort.renderText(str(odePos), (self.odePos[X]-TEXT_OFFSET_X, self.odePos[Y]-TEXT_OFFSET_Y), screen, (0,0,0), "NODE_FONT")
         
         if self.get(TOP_LEFT):
             self.get(TOP_LEFT).render(screen, Coordinates.pixelPosToOdePos((-5, -5)))
