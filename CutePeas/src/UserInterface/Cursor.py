@@ -34,11 +34,6 @@ class Cursor:
     
     def mouseMotion(self, event):
         self.pixelPos = (event.pos[X], event.pos[Y])
+        Scroll.globalViewPort.mouseMoved(self.pixelPos[Y])
         if self.tool:
             self.tool.positionChanged(Scroll.pixelsPosToOdePos(self.pixelPos))
-        if self.pixelPos[Y] < UP_SCROLL_LINE:
-            Scroll.globalViewPort.odeVelY = Y_SCROLL_SPEED_ODE
-        elif self.pixelPos[Y] > DOWN_SCROLL_LINE:
-            Scroll.globalViewPort.odeVelY = -Y_SCROLL_SPEED_ODE
-        else:
-            Scroll.globalViewPort.odeVelY = 0
