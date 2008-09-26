@@ -152,12 +152,6 @@ class Pea:
         self.playAnimation = transitionJumpAnimation
         
     def jump(self):
-#        if self.currentNode.flag != None:
-#            self.currentFlag = self.currentNode.flag 
-#        else :
-#            self.currentFlag = PathFinding.NodeGraph.Flag(self.pos, 5)
-#            self.nodeGraph.placeFlag(self.currentFlag, self.currentNode)
-#        self.flags.append(self.currentFlag)
         self.odePos = (self.odePos[X], self.odePos[Y] - Coordinates.pixelsToOde(PEA_RADIUS*1.5))
         self.physicsManager.jumpPea(self, (self.currentNode.getJumpDirection()[X]*4.0, -3.5, 0.0))
         self.playAnimation = jumpAnimation

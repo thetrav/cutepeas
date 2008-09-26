@@ -8,8 +8,6 @@ from PathFinding.GateAndLink.PackageConstants import *
 from PathFinding.GateAndLink.Link import *
 import math
 
-
-
 def linkFloorGates(prev, current):
     bottomRight = Corner(prev.odePos, BOTTOM_RIGHT)
     bottomRight.gate = prev

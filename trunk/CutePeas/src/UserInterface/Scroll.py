@@ -27,6 +27,15 @@ class ViewPort:
         self.odeOffset[Y] += self.odeVelY * timeD
         if self.odeOffset[Y] < 0:
             self.odeOffset[Y] = 0
+            
+    def mouseMoved(self, yPixelPos):
+        if yPixelPos < UP_SCROLL_LINE:
+            self.odeVelY = Y_SCROLL_SPEED * SCROLL_LINE_HEIGHT / (yPixelPos+1)
+        elif yPixelPos > DOWN_SCROLL_LINE:
+            distancePastLine = yPixelPos - DOWN_SCROLL_LINE
+            self.odeVelY = -Y_SCROLL_SPEED * SCROLL_LINE_HEIGHT / (SCROLL_LINE_HEIGHT - distancePastLine + 1)
+        else:
+            self.odeVelY = 0
         
     def blit(self, screen, image, gameCoords):
         screen.blit(image, odePosToPixelPos(gameCoords))

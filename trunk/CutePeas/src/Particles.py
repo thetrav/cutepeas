@@ -55,7 +55,7 @@ class GravityParticle(ExpireParticle):
         ExpireParticle.__init__(self, image, odePos, odeVel, timeToLive, listener)
         
     def update(self, timeD):
-        self.odeVel[1] = self.odeVel[1] + timeD * GRAVITY
+        self.odeVel[1] = self.odeVel[1] + Coordinates.pixelsToOde(timeD * GRAVITY)
         self.odeVel[0] = self.odeVel[0] * FRICTION
         ExpireParticle.update(self, timeD)
         
