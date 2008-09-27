@@ -17,7 +17,7 @@ MIN_VEL = 0.001
 CELEBRATION_TIMER = 5000
 GHOST_Y_VEL = Coordinates.pixelsToOde(-0.1)
 TIME_HURT = 3000
-MAX_SURVIVABLE_Y_VELOCITY = 12
+MAX_SURVIVABLE_Y_VELOCITY = 20
 TRANSITION_JUMP_TIMER = 400
 GHOST_MAX_HEIGHT = Coordinates.pixelsToOde(-100)
 
@@ -39,7 +39,6 @@ def climbAnimation(pea, timeD):
         pea.setNode(node.gate)
         if node.link and node.link.isJumpTransition():
             pea.jumpTransition(node.link)
-            print 'nodeGate=', node.gate, ' origin', node.link.origin.gate, ' destination', node.link.destination.gate
         if len(pea.path) == 0:
             if pea.currentNode.isJumpable():
                 pea.jump()

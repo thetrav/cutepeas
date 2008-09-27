@@ -23,6 +23,8 @@ def buildTree(parent, gatesInTree):
 
 def buildPath(minMaxNode, currentPath):
     currentPath.append(minMaxNode)
+    if minMaxNode.isEndPoint():
+        return currentPath
     for node in minMaxNode.linkedNodes:
         if node.score == minMaxNode.score:
             return buildPath(node, currentPath)
@@ -39,6 +41,13 @@ class MinMaxNode:
         self.link= inboundLink
         self.score = gate.odePos[Y] if gate.isJumpable() else SCREEN_HEIGHT_ODE
         self.linkedNodes = []
+        self.trueScore = self.score
+        
+    def isEndPoint(self):
+        if self.score == self.trueScore:
+            if self.gate.isJumpable():
+                return True
+        return False
         
     def render(self, screen):
         UserInterface.Scroll.globalViewPort.drawCircle(screen, (255,0,255) , (self.gate.odePos[X], self.gate.odePos[Y]), 15, 3)
