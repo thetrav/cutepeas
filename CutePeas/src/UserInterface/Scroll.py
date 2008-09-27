@@ -103,4 +103,4 @@ def dataPointAnalysis(scroll, cursor):
     snappedPos = Coordinates.snapOdePosToBoxOdePos(odePos)
     print 'snapped=',snappedPos
 
-snapReport()
+#snapReport()

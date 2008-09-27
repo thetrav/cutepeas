@@ -41,7 +41,7 @@ def climbAnimation(pea, timeD):
             pea.jumpTransition(node.link)
             print 'nodeGate=', node.gate, ' origin', node.link.origin.gate, ' destination', node.link.destination.gate
         if len(pea.path) == 0:
-            if pea.currentNode.getJumpDirection() :#and (pea.currentNode.flag == None or pea.currentNode.flag not in pea.flags):
+            if pea.currentNode.isJumpable():
                 pea.jump()
             else:
                 pea.path = PathFinding.GateAndLink.Path.findPath(pea.currentNode)
@@ -98,7 +98,6 @@ class Pea:
         self.timer = 0
         self.physicsManager = physics
         self.playAnimation = climbAnimation
-        self.flags = []
         self.currentFlag = None
         
         Animation.animations.append(self)
@@ -152,6 +151,8 @@ class Pea:
         self.playAnimation = transitionJumpAnimation
         
     def jump(self):
+        self.currentFlag = self.currentNode.getFlag()
+        self.currentFlag.startJump(self)
         self.odePos = (self.odePos[X], self.odePos[Y] - Coordinates.pixelsToOde(PEA_RADIUS*1.5))
         self.physicsManager.jumpPea(self, (self.currentNode.getJumpDirection()[X]*4.0, -3.5, 0.0))
         self.playAnimation = jumpAnimation
@@ -165,8 +166,8 @@ class Pea:
                 
     def eventFired(self, eventId, source):
         if eventId == EVENT_NODE_GRAPH_UPDATED:
-            if not source.hasGateAt(self.currentNode.odePos):
-                self.currentNode = source.findNearestNode(self.currentNode.odePos)
+            if not self.nodeGraph.hasGateAt(self.currentNode.odePos):
+                self.currentNode = self.nodeGraph.findNearestNode(self.currentNode.odePos)
             self.path = PathFinding.GateAndLink.Path.findPath(self.currentNode)
         elif eventId == Physics.OdePhysics.PEA_COLLISION_EVENT:
             self.hitThisFrame = (source[1], self.body.getLinearVel())
@@ -180,8 +181,8 @@ class Pea:
     
     def jumpDeath(self):
         self.physicsManager.removePea(self)
-#        self.currentFlag.deadlyJump()
-#        self.currentFlag = None
+        self.currentFlag.endJump(False)
+        self.currentFlag = None
         self.beginDeathAnimation()
     
     def endTransitionJump(self):
@@ -193,8 +194,8 @@ class Pea:
         
     def endScoredJump(self):
         self.physicsManager.removePea(self)
-#        self.currentFlag.jumpDone(self)
-#        self.currentFlag = None
+        self.currentFlag.endJump(True)
+        self.currentFlag = None
         self.beginCelebration()
         
     def beginCelebration(self):

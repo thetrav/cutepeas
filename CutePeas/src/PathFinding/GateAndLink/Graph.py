@@ -49,7 +49,6 @@ class NodeGraph:
     def addCorners(self, corners):
         for corner in corners:
             self.storeCorner(corner)
-        
             
     def removeCorners(self, corners):
         for corner in corners:
@@ -65,9 +64,6 @@ class NodeGraph:
         key = str(corner.odePos)
         if not self.gates.has_key(key):
             self.storeGate(Gate(corner.odePos))
-            print 'new gate'
-        else:
-            print 'existing gate'
         self.gates[key].positions[corner.position] = corner
         corner.gate = self.gates[key]
     
@@ -86,9 +82,8 @@ class NodeGraph:
         gate.graph = None
         
     def render(self, screen):
-        if Constants.DRAW_NODES:
-            for key in self.gates:
-                self.gates[key].render(screen)
+        for key in self.gates:
+            self.gates[key].render(screen)
 
     def findNearestNode(self, odePos):
         bestNode = None
@@ -100,5 +95,4 @@ class NodeGraph:
                 bestDistance = distance(odePos, nodePos)
         if bestNode == None:
             raise(" could not find a node")
-        print 'closest node to ',odePos,' is at ',bestNode.odePos
         return bestNode
