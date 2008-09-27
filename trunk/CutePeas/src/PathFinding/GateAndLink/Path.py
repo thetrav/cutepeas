@@ -37,7 +37,7 @@ class MinMaxNode:
     def __init__(self, inboundLink, gate):
         self.gate = gate
         self.link= inboundLink
-        self.score = gate.odePos[Y] if gate.getJumpDirection() else SCREEN_HEIGHT_ODE
+        self.score = gate.odePos[Y] if gate.isJumpable() else SCREEN_HEIGHT_ODE
         self.linkedNodes = []
         
     def render(self, screen):

@@ -1,10 +1,12 @@
 from Constants import *
+import Constants
 from PathFinding.GateAndLink.PackageConstants import *
 import PathFinding.GateAndLink.Link
 from Utils import *
 import UserInterface.Scroll
 import UserInterface.Text
 import Coordinates
+import Objects.Flag
 
 TEXT_OFFSET_X = Coordinates.pixelsToOde(20)
 TEXT_OFFSET_Y = Coordinates.pixelsToOde(20)
@@ -29,27 +31,38 @@ class Gate:
         self.score = SCREEN_HEIGHT
         self.pea = None
         self.graph = None
+        self.flag = None
     
     def render(self, screen):
-        jumpDir = self.getJumpDirection()
-        color = (0,0,255)
-        if jumpDir == LEFT_JUMP:
-            color = (255,255,0)
-        elif jumpDir == RIGHT_JUMP:
-            color = (0, 255, 255)
-        UserInterface.Scroll.globalViewPort.drawRect(screen, color, createGateRect(self.odePos))
+        if self.flag:
+            self.flag.render(screen)
+        if Constants.DRAW_NODES:
+            jumpDir = self.getJumpDirection()
+            color = (0,0,255)
+            if jumpDir == LEFT_JUMP:
+                color = (255,255,0)
+            elif jumpDir == RIGHT_JUMP:
+                color = (0, 255, 255)
+            UserInterface.Scroll.globalViewPort.drawRect(screen, color, createGateRect(self.odePos))
+            
+            odePos = ['%.2f' %pos for pos in self.odePos]
+            UserInterface.Scroll.globalViewPort.renderText(str(self.score), (self.odePos[X]-TEXT_OFFSET_X, self.odePos[Y]-TEXT_OFFSET_Y), screen, (0,0,0), "NODE_FONT")
+            
+            if self.get(TOP_LEFT):
+                self.get(TOP_LEFT).render(screen, Coordinates.pixelPosToOdePos((-5, -5)))
+            if self.get(TOP_RIGHT):
+                self.get(TOP_RIGHT).render(screen, Coordinates.pixelPosToOdePos((5, -5)))
+            if self.get(BOTTOM_LEFT):
+                self.get(BOTTOM_LEFT).render(screen, Coordinates.pixelPosToOdePos((-5, 5)))
+            if self.get(BOTTOM_RIGHT):
+                self.get(BOTTOM_RIGHT).render(screen, Coordinates.pixelPosToOdePos((5,5)))
+    
+    def getFlag(self):
+        if self.flag == None:
+            print 'creating new flag'
+            self.flag = Objects.Flag.Flag(self.odePos) 
+        return self.flag
         
-        odePos = ['%.2f' %pos for pos in self.odePos]
-        UserInterface.Scroll.globalViewPort.renderText(str(odePos), (self.odePos[X]-TEXT_OFFSET_X, self.odePos[Y]-TEXT_OFFSET_Y), screen, (0,0,0), "NODE_FONT")
-        
-        if self.get(TOP_LEFT):
-            self.get(TOP_LEFT).render(screen, Coordinates.pixelPosToOdePos((-5, -5)))
-        if self.get(TOP_RIGHT):
-            self.get(TOP_RIGHT).render(screen, Coordinates.pixelPosToOdePos((5, -5)))
-        if self.get(BOTTOM_LEFT):
-            self.get(BOTTOM_LEFT).render(screen, Coordinates.pixelPosToOdePos((-5, 5)))
-        if self.get(BOTTOM_RIGHT):
-            self.get(BOTTOM_RIGHT).render(screen, Coordinates.pixelPosToOdePos((5,5)))
     
     def get(self, key):
         if self.positions.has_key(key):
@@ -65,6 +78,9 @@ class Gate:
                 return RIGHT_JUMP
             if self.get(BOTTOM_RIGHT):
                 return LEFT_JUMP
+    
+    def isJumpable(self):
+        return (self.getJumpDirection() and (self.flag == None or self.flag.isJumpable()))
     
     def getOpenLinks(self, inboundLink):
         openLinks = []
