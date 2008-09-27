@@ -59,7 +59,6 @@ class Gate:
     
     def getFlag(self):
         if self.flag == None:
-            print 'creating new flag'
             self.flag = Objects.Flag.Flag(self.odePos) 
         return self.flag
         
@@ -80,7 +79,10 @@ class Gate:
                 return LEFT_JUMP
     
     def isJumpable(self):
-        return (self.getJumpDirection() and (self.flag == None or self.flag.isJumpable()))
+        return (self.getJumpDirection() and (self.flag == None or self.flag.isJumpable()) and self.inJumpBounds())
+    
+    def inJumpBounds(self):
+        return self.odePos[X] > 0 and self.odePos[X] < SCREEN_WIDTH_ODE
     
     def getOpenLinks(self, inboundLink):
         openLinks = []

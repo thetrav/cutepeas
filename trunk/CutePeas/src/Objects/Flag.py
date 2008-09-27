@@ -51,8 +51,5 @@ class Flag:
     
     def isJumpable(self):
         jumpable = not (self.isComplete() or self.peaJumping())
-        print 'isComplete',self.isComplete()
-        print 'peaJumping', self.peaJumping()
-        print 'isjumpable',jumpable
         return jumpable
     

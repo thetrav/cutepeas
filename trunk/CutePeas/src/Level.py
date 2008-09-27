@@ -27,8 +27,8 @@ class BasicLevel:
         self.scene = self.createScene()
         self.buttonPanel = self.createToolPanel()
         self.scene.addPea(Objects.Pea.Pea((0, 600), self.nodeGraph, self.physicsManager))
-#        self.scene.addPea(Objects.Pea.Pea((100, 600), self.nodeGraph, self.physicsManager))
-#        self.scene.addPea(Objects.Pea.Pea((200, 600), self.nodeGraph, self.physicsManager))
+        self.scene.addPea(Objects.Pea.Pea((100, 600), self.nodeGraph, self.physicsManager))
+        self.scene.addPea(Objects.Pea.Pea((200, 600), self.nodeGraph, self.physicsManager))
 #        self.scene.addPea(Objects.Pea.Pea((300, 600), self.nodeGraph, self.physicsManager))
 #        self.scene.addPea(Objects.Pea.Pea((400, 600), self.nodeGraph, self.physicsManager))
         

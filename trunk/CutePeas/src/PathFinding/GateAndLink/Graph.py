@@ -32,11 +32,15 @@ class NodeGraph:
         
         prev = Gate((X_OFFSET_ODE, yOdePos))
         self.storeGate(prev)
+        #ensure plate edges aren't jumpable
+        self.storeCorner(Corner(prev.odePos, BOTTOM_LEFT))
         for x in xrange(numFloorBlocks):
             gate = createGate(x+1, yOdePos)
             self.storeGate(gate)
             linkFloorGates(prev, gate)
             prev = gate
+        #ensure plate edges aren't jumpable
+        self.storeCorner(Corner(prev.odePos, BOTTOM_RIGHT))
         
     def placeBlock(self, block):
         self.addCorners(block.createCorners())
