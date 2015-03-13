@@ -1,0 +1,2 @@
+# Notes #
+Pygame has support for rendering true type fonts but it's pretty clunky.  We might want to wrap it in a package or maybe even write our own font printer that just uses a bunch of single character images for blitting.
